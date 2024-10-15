@@ -19,5 +19,11 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - run: npm ci --legacy-peer-deps
+      - name: nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx
+
+      - run: npm ci
       - run: npm run pull-request

@@ -24,7 +24,13 @@ jobs:
           node-version: 20
           cache: "npm"
 
+      - name: nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx
+
       - run: npm ci
-      - run: npm run release -- --first-release --skip-publish
+      - run: npm run release -- --yes
       - run: ls -la
       - run: ls -la apps/home-assistant-matter-hub
