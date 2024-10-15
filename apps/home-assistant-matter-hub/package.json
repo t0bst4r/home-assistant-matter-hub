@@ -1,0 +1,78 @@
+{
+  "name": "home-assistant-matter-hub",
+  "description": "",
+  "version": "3.0.0-alpha.0",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "home-assistant-matter-hub": "./dist/backend/cli.js"
+  },
+  "author": {
+    "email": "t0bst4r@outlook.com",
+    "name": "t0bst4r",
+    "url": "https://github.com/t0bst4r"
+  },
+  "keywords": [
+    "home-assistant",
+    "homeassistant",
+    "home",
+    "assistant",
+    "apple home",
+    "google home",
+    "apple",
+    "google",
+    "alexa",
+    "matter",
+    "matter.js",
+    "matterjs",
+    "project-chip",
+    "smart",
+    "smarthome",
+    "smart-home"
+  ],
+  "bugs": {
+    "url": "https://github.com/t0bst4r/home-assistant-matter-hub/issues"
+  },
+  "funding": {
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/t0bst4r"
+  },
+  "license": "Apache-2.0",
+  "repository": "github:t0bst4r/home-assistant-matter-hub",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build": "node build.js",
+    "test": "vitest run",
+    "start": "dotenvx run -- ./dist/backend/cli.js start --log-level=info"
+  },
+  "dependencies": {
+    "@project-chip/matter.js": "~0.10.6",
+    "@project-chip/matter-node.js": "~0.10.6",
+    "chalk": "^5.3.0",
+    "color": "^4.2.3",
+    "express": "^4.21.1",
+    "home-assistant-js-websocket": "^9.4.0",
+    "lodash": "^4.17.21",
+    "rxjs": "^7.8.1",
+    "strip-color": "^0.1.0",
+    "yargs": "^17.7.2",
+    "winston": "^3.15.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@home-assistant-matter-hub/backend": "*",
+    "@home-assistant-matter-hub/frontend": "*",
+    "@home-assistant-matter-hub/common": "*"
+  },
+  "nx": {
+    "targets": {
+      "start": {
+        "cache": false,
+        "dependsOn": [
+          "build"
+        ]
+      }
+    }
+  }
+}

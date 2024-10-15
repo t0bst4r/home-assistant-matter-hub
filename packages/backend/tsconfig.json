@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    // Compiler
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+
+    // Lint
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noImplicitOverride": true
+  },
+  "include": ["./src/"]
+}

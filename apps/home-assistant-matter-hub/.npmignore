@@ -1,0 +1,8 @@
+node_modules/
+test/
+.env*
+build.js
+tsconfig.json
+
+!dist/
+!package.json
