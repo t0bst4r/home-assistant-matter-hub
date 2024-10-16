@@ -1,0 +1,8 @@
+{
+  "name": "@home-assistant-matter-hub/documentation",
+  "version": "dev",
+  "private": true,
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {}
+}
