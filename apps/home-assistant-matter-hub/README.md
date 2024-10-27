@@ -121,6 +121,8 @@ Options:
   --home-assistant-access-token  A long-lived access token for your Home Assistant Instance  [string] [required]
 ```
 
+## 3. Bridge Configuration
+
 Using the User Interface you can set up multiple bridges and configure each to use different filters for your entities.
 Each bridge will be completely independent of the others and uses its own port for matter.
 
@@ -129,3 +131,47 @@ Each bridge will be completely independent of the others and uses its own port f
 
 > [!WARNING]
 > Alexa only supports port `5540`. Therefore, you cannot create multiple bridges to connect with Alexa.
+
+Every bridge has to have a `name` (string), `port` (number) and `filter` (object) property. The filter property has to
+include an `include` (array) and an `exclude` (array) property.
+
+```json
+{
+  "name": "My Hub",
+  "port": 5540,
+  "filter": {
+    "include": [],
+    "exclude": []
+  }
+}
+```
+
+A include- or exclude-item is an object having a `type` and a `value` property.
+The `type` can be one of:
+
+- `pattern` - a pattern matching your entity ids
+- `domain` - the domain you want to include or exclude
+- `platform` - the integration you want to include or exclude
+- `label` - the slug of a label you want to include or exclude
+
+The `value` property is a string containg the corresponding value. You can add multiple include or exclude rules which
+are then combined.
+All entities which match one of the include-rules will be included, but all entities which match one of the exclude
+rules will be excluded.
+
+```json
+{
+  "name": "My Hub",
+  "port": 5540,
+  "filter": {
+    "include": [
+      { "type": "label", "value": "my_voice_assist" },
+      { "type": "pattern", "value": "light.awesome*" }
+    ],
+    "exclude": [
+      { "type": "platform", "value": "hue" },
+      { "type": "domain", "value": "fan" }
+    ]
+  }
+}
+```
