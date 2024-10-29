@@ -50,4 +50,8 @@ const deviceCtrs: Record<
   cover: (b, p) =>
     new CoverDevice(b, p as MatterDeviceProps<CoverDeviceConfig>),
   climate: (b, p) => new ClimateDevice(b, p),
+  input_boolean: (b, p) => new SwitchDevice(b, p),
+  automation: (b, p) => new SwitchDevice(b, p),
+  script: (b, p) => new SwitchDevice(b, p),
+  scene: (b, p) => new SwitchDevice(b, p),
 };

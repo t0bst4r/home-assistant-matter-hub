@@ -2,7 +2,24 @@
   "name": "@home-assistant-matter-hub/documentation",
   "version": "3.0.0-alpha.8",
   "private": true,
-  "scripts": {},
+  "type": "module",
+  "scripts": {
+    "build": "node generate.js"
+  },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "nx": {
+    "targets": {
+      "build": {
+        "inputs": [
+          "default",
+          "{workspaceRoot}/README.md"
+        ],
+        "outputs": [
+          "!{projectRoot}/generated/.gitignore",
+          "{projectRoot}/generated"
+        ]
+      }
+    }
+  }
 }

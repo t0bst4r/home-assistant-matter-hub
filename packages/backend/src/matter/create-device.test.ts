@@ -89,6 +89,14 @@ const testEntities: Record<
     }),
   ],
   [HomeAssistantDomain.switch]: [createEntity("switch.sw1", "on")],
+  [HomeAssistantDomain.automation]: [
+    createEntity("automation.automation1", "on"),
+  ],
+  [HomeAssistantDomain.script]: [createEntity("script.script1", "on")],
+  [HomeAssistantDomain.scene]: [createEntity("scene.scene1", "on")],
+  [HomeAssistantDomain.input_boolean]: [
+    createEntity("input_boolean.input_boolean1", "on"),
+  ],
 };
 
 const basicInformation: BridgeBasicInformation = {

@@ -7,13 +7,16 @@
   },
   "targetDefaults": {
     "lint": {
+      "inputs": ["default"],
       "cache": true
     },
     "test": {
+      "inputs": ["default", "^default"],
       "cache": true
     },
     "build": {
       "cache": true,
+      "inputs": ["default", "^default"],
       "dependsOn": ["^build"]
     },
     "serve": {

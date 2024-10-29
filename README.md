@@ -165,13 +165,42 @@ rules will be excluded.
   "port": 5540,
   "filter": {
     "include": [
-      { "type": "label", "value": "my_voice_assist" },
-      { "type": "pattern", "value": "light.awesome*" }
+      {
+        "type": "label",
+        "value": "my_voice_assist"
+      },
+      {
+        "type": "pattern",
+        "value": "light.awesome*"
+      }
     ],
     "exclude": [
-      { "type": "platform", "value": "hue" },
-      { "type": "domain", "value": "fan" }
+      {
+        "type": "platform",
+        "value": "hue"
+      },
+      {
+        "type": "domain",
+        "value": "fan"
+      }
     ]
   }
 }
 ```
+
+## Supported Domains / Device Types
+
+| Domain        | Represented as Device Class                                          | Comment                                                                                                                                   |
+| ------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| light         | OnOffLight, DimmableLight, ColorTemperatureLight, ExtendedColorLight | Depends on the supported features attribute of the device.                                                                                |
+| switch        | OnOffPlugInUnit                                                      |                                                                                                                                           |
+| lock          | DoorLock                                                             |                                                                                                                                           |
+| fan           | OnOffPlugInUnit                                                      | Fans are supported in the matter specification, but they are not yet supported by Voice Assistants like Alexa, Google or Apple.           |
+| binary_sensor | ContactSensor, OccupancySensor                                       | All device-classes which are not really Occupancy or Contact types, are mapped to contact sensor. Feel free to open a PR to improve this. |
+| sensor        | TemperatureSensor, HumiditySensor                                    | Currently only Temperature and Humidity are supported. Feel free to open a PR to improve this.                                            |
+| cover         | WindowCovering                                                       |                                                                                                                                           |
+| climate       | Thermostat                                                           |                                                                                                                                           |
+| input_boolean | OnOffPlugInUnit                                                      |                                                                                                                                           |
+| script        | OnOffPlugInUnit                                                      |                                                                                                                                           |
+| automation    | OnOffPlugInUnit                                                      |                                                                                                                                           |
+| scene         | OnOffPlugInUnit                                                      |                                                                                                                                           |

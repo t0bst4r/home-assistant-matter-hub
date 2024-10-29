@@ -13,3 +13,10 @@ export function distDir(pkgName) {
   }
   return path.join(path.dirname(packagePath), packageJson.destination);
 }
+
+export function fileInPackage(pkgName, filePath) {
+  const packagePath = fileURLToPath(
+    import.meta.resolve(`${pkgName}/package.json`),
+  );
+  return path.join(path.dirname(packagePath), filePath);
+}
