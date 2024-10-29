@@ -55,7 +55,10 @@ export class ExtendedColorControlServer extends haMixin(
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(
       request.colorTemperatureMireds,
     );
-    await super.moveToColorTemperature(request);
+    await super.moveToColorTemperature({
+      ...request,
+      transitionTime: request.transitionTime ?? 1,
+    });
     await this.callAction(
       "light",
       "turn_on",
@@ -71,7 +74,10 @@ export class ExtendedColorControlServer extends haMixin(
   override async moveToHueAndSaturation(
     request: ColorControl.MoveToHueAndSaturationRequest,
   ) {
-    await super.moveToHueAndSaturation(request);
+    await super.moveToHueAndSaturation({
+      ...request,
+      transitionTime: request.transitionTime ?? 1,
+    });
     const color = ColorConverter.fromMatterHS(request.hue, request.saturation);
     const [hue, saturation] = ColorConverter.toHomeAssistantHS(color);
     await this.callAction(

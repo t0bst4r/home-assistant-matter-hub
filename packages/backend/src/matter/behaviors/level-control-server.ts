@@ -32,7 +32,10 @@ export function LevelControlServer(config: LevelControlConfig) {
     }
 
     override async moveToLevel(request: LevelControl.MoveToLevelRequest) {
-      await super.moveToLevel(request);
+      await super.moveToLevel({
+        ...request,
+        transitionTime: request.transitionTime ?? 1,
+      });
       const [domain, action] = config.moveToLevel.action.split(".");
       await this.callAction(
         domain,

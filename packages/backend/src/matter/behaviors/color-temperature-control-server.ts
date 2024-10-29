@@ -41,7 +41,10 @@ export class ColorTemperatureControlServer extends haMixin(
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(
       request.colorTemperatureMireds,
     );
-    await super.moveToColorTemperature(request);
+    await super.moveToColorTemperature({
+      ...request,
+      transitionTime: request.transitionTime ?? 1,
+    });
     await this.callAction(
       "light",
       "turn_on",
