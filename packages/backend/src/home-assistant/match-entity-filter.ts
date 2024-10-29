@@ -17,7 +17,7 @@ export function matchEntityFilter(
   return included && !excluded;
 }
 
-function testMatcher(
+export function testMatcher(
   entity: HomeAssistantEntityRegistryWithInitialState,
   matcher: HomeAssistantMatcher,
 ): boolean {
@@ -28,6 +28,20 @@ function testMatcher(
       return !!entity.labels && entity.labels.includes(matcher.value);
     case "platform":
       return entity.platform === matcher.value;
+    case "pattern":
+      return patternToRegex(matcher.value).test(entity.entity_id);
   }
   return false;
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
+function patternToRegex(pattern: string): RegExp {
+  const regex = pattern
+    .split("*")
+    .map((part) => escapeRegExp(part))
+    .join(".*");
+  return new RegExp(regex);
 }
