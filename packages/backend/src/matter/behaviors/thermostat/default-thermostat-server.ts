@@ -5,6 +5,7 @@ import {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { Behavior } from "@project-chip/matter.js/behavior";
+import { Thermostat } from "@project-chip/matter.js/cluster";
 
 export class DefaultThermostatServer extends ThermostatBaseServer(Base) {}
 
@@ -16,6 +17,8 @@ export namespace DefaultThermostatServer {
     return {
       localTemperature: state.currentTemperature,
       systemMode: state.systemMode,
+      controlSequenceOfOperation:
+        Thermostat.ControlSequenceOfOperation.CoolingAndHeating,
     };
   }
 }

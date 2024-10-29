@@ -5,6 +5,7 @@ import {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { Behavior } from "@project-chip/matter.js/behavior";
+import { Thermostat } from "@project-chip/matter.js/cluster";
 
 export class HeatingThermostatServer extends ThermostatBaseServer(
   Base.with("Heating"),
@@ -60,6 +61,8 @@ export namespace HeatingThermostatServer {
       occupiedHeatingSetpoint: state.targetTemperature,
       minHeatSetpointLimit: state.minTemperature,
       maxHeatSetpointLimit: state.maxTemperature,
+      controlSequenceOfOperation:
+        Thermostat.ControlSequenceOfOperation.HeatingOnly,
     };
   }
 }
