@@ -26,7 +26,21 @@ export function createStorageService(
 
   return {
     location,
-    factory: (ns) =>
-      new StorageBackendJsonFile(path.resolve(location, ns + ".json")),
+    factory: (ns) => new CustomStorage(path.resolve(location, ns + ".json")),
   };
+}
+
+export class CustomStorage extends StorageBackendJsonFile {
+  override async initialize() {
+    try {
+      await super.initialize();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (error.name !== "SyntaxError") {
+          throw error;
+        }
+      }
+    }
+    this.isInitialized = true;
+  }
 }
