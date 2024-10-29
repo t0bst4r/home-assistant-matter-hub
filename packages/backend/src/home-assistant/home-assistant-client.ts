@@ -57,13 +57,33 @@ export class HomeAssistantClient
     });
     const registry = await getRegistry(this.connection);
     this._registry = _.fromPairs(
-      _.toPairs(registry).filter(([, item]) => {
-        const hasState = !!item.initialState;
-        if (!hasState) {
-          this.log.warn("%s does not have an initial-state", item.entity_id);
-        }
-        return hasState;
-      }),
+      _.toPairs(registry)
+        .filter(([, item]) => {
+          const isHidden = item.hidden_by != undefined;
+          const isDisabled = item.disabled_by != undefined;
+          if (isHidden) {
+            this.log.debug(
+              "%s is hidden by %s",
+              item.entity_id,
+              item.hidden_by,
+            );
+          }
+          if (isDisabled) {
+            this.log.debug(
+              "%s is disabled by %s",
+              item.entity_id,
+              item.disabled_by,
+            );
+          }
+          return !isHidden && !isDisabled;
+        })
+        .filter(([, item]) => {
+          const hasState = !!item.initialState;
+          if (!hasState) {
+            this.log.warn("%s does not have an initial-state", item.entity_id);
+          }
+          return hasState;
+        }),
     );
 
     this.subscriptions = {};
