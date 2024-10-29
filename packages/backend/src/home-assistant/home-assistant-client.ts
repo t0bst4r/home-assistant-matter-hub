@@ -55,7 +55,17 @@ export class HomeAssistantClient
     this.connection = await createConnection({
       auth: createLongLivedTokenAuth(this.url, this.accessToken),
     });
-    this._registry = await getRegistry(this.connection);
+    const registry = await getRegistry(this.connection);
+    this._registry = _.fromPairs(
+      _.toPairs(registry).filter(([, item]) => {
+        const hasState = !!item.initialState;
+        if (!hasState) {
+          this.log.warn("%s does not have an initial-state", item.entity_id);
+        }
+        return hasState;
+      }),
+    );
+
     this.subscriptions = {};
   }
 
