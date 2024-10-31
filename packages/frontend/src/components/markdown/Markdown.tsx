@@ -4,7 +4,16 @@ import { rehypeGithubAlerts } from "rehype-github-alerts";
 import Box from "@mui/material/Box";
 import { Blockquote } from "./Blockquote.tsx";
 import { GithubAlert } from "./GithubAlert.tsx";
-import { Paper } from "@mui/material";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import remarkGfm from "remark-gfm";
 
 export interface MarkdownProps {
   children: string;
@@ -15,6 +24,7 @@ export const Markdown = (props: MarkdownProps) => {
     <ReactMarkdown
       children={props.children}
       rehypePlugins={[rehypeGithubAlerts]}
+      remarkPlugins={[remarkGfm]}
       components={components}
     />
   );
@@ -116,7 +126,7 @@ const components: Components = {
       className={props.className}
       component="pre"
       elevation={2}
-      sx={{ p: 2 }}
+      sx={{ p: 2, overflowX: "auto" }}
     >
       {props.children}
     </Paper>
@@ -132,5 +142,29 @@ const components: Components = {
     >
       {props.children}
     </Typography>
+  ),
+  table: (props) => (
+    <TableContainer>
+      <Table
+        children={props.children}
+        className={props.className}
+        size="small"
+      />
+    </TableContainer>
+  ),
+  thead: (props) => (
+    <TableHead children={props.children} className={props.className} />
+  ),
+  tbody: (props) => (
+    <TableBody children={props.children} className={props.className} />
+  ),
+  tr: (props) => (
+    <TableRow children={props.children} className={props.className} />
+  ),
+  th: (props) => (
+    <TableCell children={props.children} className={props.className} />
+  ),
+  td: (props) => (
+    <TableCell children={props.children} className={props.className} />
   ),
 };

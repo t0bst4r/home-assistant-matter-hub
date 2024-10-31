@@ -15,6 +15,9 @@ import {
 } from "@toolpad/core";
 import { routes } from "../routes.tsx";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useAppInfo } from "../hooks/app-info.ts";
+import { capitalize, useMediaQuery } from "@mui/material";
 
 const navigation: Navigation = routes
   .filter((route) => !!route.title)
@@ -26,6 +29,8 @@ const navigation: Navigation = routes
 
 export const AppLayout: FC = () => {
   const navigate = useNavigate();
+  const appInfo = useAppInfo();
+  const isLargeScreen = useMediaQuery("(min-width:600px)");
 
   const pathname = useLocation().pathname;
   const [searchParams] = useSearchParams();
@@ -39,10 +44,21 @@ export const AppLayout: FC = () => {
   );
   const branding = useMemo<Branding>(
     () => ({
-      title: "Home Assistant Matter Hub",
+      title: (
+        <>
+          <Typography variant="inherit" component="span" sx={{ mr: 1 }}>
+            {appInfo.name.split("-").map(capitalize).join("-")}
+          </Typography>
+          {isLargeScreen && (
+            <Typography variant="caption" component="span">
+              {appInfo.version}
+            </Typography>
+          )}
+        </>
+      ) as unknown as string,
       logo: <></>,
     }),
-    [],
+    [appInfo, isLargeScreen],
   );
 
   return (

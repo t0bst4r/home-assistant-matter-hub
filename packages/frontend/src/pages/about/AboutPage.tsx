@@ -4,7 +4,7 @@ import { Markdown } from "../../components/markdown/Markdown.tsx";
 
 export const AboutPage = () => {
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Markdown children={About} />
     </Container>
   );
