@@ -118,10 +118,15 @@ Options:
 
   --web-port                     Port used by the web application (default: 8482)                       [number]
 
+  --mdns-network-interface       Limit MDNS to this network interface                                   [string]
+
   --home-assistant-url           The HTTP-URL of your Home Assistant URL                     [string] [required]
 
   --home-assistant-access-token  A long-lived access token for your Home Assistant Instance  [string] [required]
 ```
+
+Each of those configuration options can be configured via environment variables, too. Simply prefix them with `HAMH_`
+and write them in capslock with underscores (e.g. `HAMH_MDNS_NETWORK_INTERFACE`).
 
 ## 3. Bridge Configuration
 

@@ -9,6 +9,7 @@ import * as ws from "ws";
 import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
 import {
   Environment,
+  MdnsService,
   StorageService,
 } from "@project-chip/matter.js/environment";
 import { Service } from "../utils/service.js";
@@ -24,6 +25,7 @@ interface Options {
   "web-port": number;
   "disable-log-colors": boolean;
   "storage-location"?: string;
+  "mdns-network-interface"?: string;
   "home-assistant-url": string;
   "home-assistant-access-token": string;
 }
@@ -60,6 +62,10 @@ function builder(yargs: Argv): Argv<Options> {
       description: "Port used by the web application",
       default: 8482,
     })
+    .option("mdns-network-interface", {
+      type: "string",
+      description: "Limit MDNS to this network interface",
+    })
     .option("home-assistant-url", {
       type: "string",
       description: "The HTTP-URL of your Home Assistant URL",
@@ -85,8 +91,16 @@ async function handler(
 
   const environment = Environment.default;
 
-  const storageConfig = createStorageService(logger, options.storageLocation);
+  const mdnsInterface = options.mdnsNetworkInterface?.trim() ?? "";
+  environment.set(
+    MdnsService,
+    new MdnsService(environment, {
+      ipv4: true,
+      networkInterface: mdnsInterface.length > 0 ? mdnsInterface : undefined,
+    }),
+  );
 
+  const storageConfig = createStorageService(logger, options.storageLocation);
   const storageService = environment.get(StorageService);
   storageService.location = storageConfig.location;
   storageService.factory = storageConfig.factory;

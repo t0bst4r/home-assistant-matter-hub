@@ -12,37 +12,39 @@ import {
 import { AggregatorEndpoint } from "@project-chip/matter.js/endpoints/AggregatorEndpoint";
 import crypto from "node:crypto";
 
-type ServerNodeProps = Node.Options<ServerNode.RootEndpoint>;
+type ServerNodeConfiguration = Node.Configuration<ServerNode.RootEndpoint>;
 
 export function bridgeFromJson(
   environment: Environment,
   data: BridgeData,
-): ServerNodeProps {
-  const commissioning = data.commissioning
-    ? {
-        commissioned: data.commissioning.isCommissioned,
-        passcode: data.commissioning.passcode,
-        discriminator: data.commissioning.discriminator,
-        pairingCodes: {
-          manualPairingCode: data.commissioning.manualPairingCode,
-          qrPairingCode: data.commissioning.qrPairingCode,
-        },
-        fabrics: _.fromPairs(
-          data.commissioning.fabrics
-            .map<ExposedFabricInformation>((fabric) => ({
-              fabricIndex: FabricIndex(fabric.fabricIndex),
-              fabricId: FabricId(fabric.fabricId),
-              nodeId: NodeId(fabric.nodeId),
-              rootNodeId: NodeId(fabric.rootNodeId),
-              rootVendorId: VendorId(fabric.rootVendorId),
-              label: fabric.label,
-            }))
-            .map((fabric) => [fabric.fabricIndex, fabric]),
-        ),
-      }
-    : undefined;
+): ServerNodeConfiguration {
+  const commissioning: ServerNodeConfiguration["commissioning"] =
+    data.commissioning
+      ? {
+          commissioned: data.commissioning.isCommissioned,
+          passcode: data.commissioning.passcode,
+          discriminator: data.commissioning.discriminator,
+          pairingCodes: {
+            manualPairingCode: data.commissioning.manualPairingCode,
+            qrPairingCode: data.commissioning.qrPairingCode,
+          },
+          fabrics: _.fromPairs(
+            data.commissioning.fabrics
+              .map<ExposedFabricInformation>((fabric) => ({
+                fabricIndex: FabricIndex(fabric.fabricIndex),
+                fabricId: FabricId(fabric.fabricId),
+                nodeId: NodeId(fabric.nodeId),
+                rootNodeId: NodeId(fabric.rootNodeId),
+                rootVendorId: VendorId(fabric.rootVendorId),
+                label: fabric.label,
+              }))
+              .map((fabric) => [fabric.fabricIndex, fabric]),
+          ),
+        }
+      : undefined;
 
   return {
+    type: ServerNode.RootEndpoint,
     environment: environment,
     id: data.id,
     network: {
