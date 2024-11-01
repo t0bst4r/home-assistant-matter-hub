@@ -38,6 +38,10 @@ export class MatterDevice<
   }
 
   async update(state: HomeAssistantEntityState) {
+    this.logger.silly(
+      "Update from HomeAssistant:\n%s",
+      JSON.stringify(state, null, 2),
+    );
     this.state$.next(state);
   }
 }

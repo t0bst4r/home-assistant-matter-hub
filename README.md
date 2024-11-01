@@ -108,7 +108,7 @@ Options:
   --help                         Show help                                                             [boolean]
 
   --log-level                    Set the log level                                                      [string]
-                                 choices: "debug", "info", "warn", "error"
+                                 choices: "silly", "debug", "info", "warn", "error"
                                  default: "info"
 
   --disable-log-colors           Disable colors in the logs (default: false)                           [boolean]
@@ -118,7 +118,7 @@ Options:
 
   --web-port                     Port used by the web application (default: 8482)                       [number]
 
-  --mdns-network-interface       Limit MDNS to this network interface                                   [string]
+  --mdns-network-interface       Limit mDNS to this network interface                                   [string]
 
   --home-assistant-url           The HTTP-URL of your Home Assistant URL                     [string] [required]
 

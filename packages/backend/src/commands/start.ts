@@ -45,7 +45,7 @@ function builder(yargs: Argv): Argv<Options> {
     .version(false)
     .option("log-level", {
       type: "string",
-      choices: ["debug", "info", "warn", "error"],
+      choices: ["silly", "debug", "info", "warn", "error"],
       default: "info",
     })
     .option("disable-log-colors", {

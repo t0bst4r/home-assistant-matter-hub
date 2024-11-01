@@ -14,7 +14,7 @@ function formatPrint(colorize?: boolean): Format {
       ((str: string) => str);
 
     return color(
-      `[ ${info.timestamp} ] [ ${info.level.toUpperCase().padEnd(5, " ")} ] [ ${(info.loggerName ?? "").padEnd(40, " ").substring(0, 40)} ]: ${info.message}`,
+      `[ ${info.timestamp} ] [ ${info.level.toUpperCase().padEnd(5, " ")} ] [ ${(info.loggerName ?? "").padEnd(50, " ").substring(0, 50)} ]: ${info.message}`,
     );
   });
 }
@@ -35,6 +35,7 @@ export function createLogger(level: string, disableColors: boolean): Logger {
 }
 
 const colorPerLevel: Record<string, (str: string) => string> = {
+  silly: (str) => chalk.green(str),
   debug: (str) => chalk.grey(str),
   info: (str) => str,
   warn: (str) => chalk.yellow(str),
