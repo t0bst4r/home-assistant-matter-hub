@@ -72,6 +72,10 @@ export namespace LevelControlServer {
       currentLevel: config.getValue(state),
       minLevel: config.getMinValue?.(state),
       maxLevel: config.getMaxValue?.(state),
+      managedTransitionTimeHandling: false,
+      onTransitionTime: 1,
+      offTransitionTime: 1,
+      onOffTransitionTime: 1,
     };
   }
 }
