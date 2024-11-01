@@ -38,7 +38,14 @@ export class ClimateDevice extends MatterDevice<typeof ClimateDeviceType> {
     const supportsHeating = heatingModes.some((mode) =>
       entity.attributes.hvac_modes.includes(mode),
     );
-    const thermostat = ThermostatServer(supportsCooling, supportsHeating);
+    const supportsAuto = entity.attributes.hvac_modes.includes(
+      ClimateHvacMode.auto,
+    );
+    const thermostat = ThermostatServer(
+      supportsCooling,
+      supportsHeating,
+      supportsAuto,
+    );
     const type = ClimateDeviceType.with(thermostat);
     const options: Endpoint.Options<typeof type> = {
       bridgedDeviceBasicInformation: BasicInformationServer.createState(

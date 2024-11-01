@@ -3,6 +3,7 @@ export enum ClimateHvacMode {
   cool = "cool",
   heat_cool = "heat_cool",
   off = "off",
+  auto = "auto",
 }
 
 export interface ClimateDeviceAttributes {

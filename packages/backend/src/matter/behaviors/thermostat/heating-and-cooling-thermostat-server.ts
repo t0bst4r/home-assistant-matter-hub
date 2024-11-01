@@ -7,12 +7,12 @@ import {
 import { Behavior } from "@project-chip/matter.js/behavior";
 import { Thermostat } from "@project-chip/matter.js/cluster";
 
-export class HeatingAndCoolingThermostatServer extends ThermostatBaseServer(
+class HeatingAndCoolingThermostatServerBase extends ThermostatBaseServer(
   Base.with("Heating", "Cooling"),
 ) {
   override initialize(options?: {}) {
     this.endpoint
-      .eventsOf(HeatingAndCoolingThermostatServer)
+      .eventsOf(HeatingAndCoolingThermostatServerBase)
       .occupiedHeatingSetpoint$Changed.on(
         this.targetTemperatureChanged.bind(this),
       );
@@ -26,11 +26,11 @@ export class HeatingAndCoolingThermostatServer extends ThermostatBaseServer(
       return;
     }
     const actualState = this.endpoint.stateOf(
-      HeatingAndCoolingThermostatServer,
+      HeatingAndCoolingThermostatServerBase,
     );
 
     const patch: Behavior.PatchStateOf<
-      typeof HeatingAndCoolingThermostatServer
+      typeof HeatingAndCoolingThermostatServerBase
     > = {};
     if (
       expectedState.targetTemperature !== actualState.occupiedHeatingSetpoint
@@ -66,26 +66,34 @@ export class HeatingAndCoolingThermostatServer extends ThermostatBaseServer(
     ) {
       patch.maxCoolSetpointLimit = expectedState.maxTemperature;
     }
-    await this.endpoint.setStateOf(HeatingAndCoolingThermostatServer, patch);
+    await this.endpoint.setStateOf(
+      HeatingAndCoolingThermostatServerBase,
+      patch,
+    );
   }
 }
 
-export namespace HeatingAndCoolingThermostatServer {
-  export function createState(
-    entity: HomeAssistantEntityState<ClimateDeviceAttributes>,
-  ): Behavior.Options<typeof HeatingAndCoolingThermostatServer> {
-    const state = ThermostatBaseServer.createState(entity);
-    return {
-      localTemperature: state.currentTemperature,
-      systemMode: state.systemMode,
-      occupiedHeatingSetpoint: state.targetTemperature,
-      occupiedCoolingSetpoint: state.targetTemperature,
-      minHeatSetpointLimit: state.minTemperature,
-      minCoolSetpointLimit: state.minTemperature,
-      maxHeatSetpointLimit: state.maxTemperature,
-      maxCoolSetpointLimit: state.maxTemperature,
-      controlSequenceOfOperation:
-        Thermostat.ControlSequenceOfOperation.CoolingAndHeating,
-    };
-  }
+export function HeatingAndCoolingThermostatServer(supportsAuto: boolean) {
+  const result = supportsAuto
+    ? HeatingAndCoolingThermostatServerBase.with("AutoMode")
+    : HeatingAndCoolingThermostatServerBase;
+  return Object.assign(result, {
+    createState(
+      entity: HomeAssistantEntityState<ClimateDeviceAttributes>,
+    ): Behavior.Options<typeof HeatingAndCoolingThermostatServerBase> {
+      const state = ThermostatBaseServer.createState(entity);
+      return {
+        localTemperature: state.currentTemperature,
+        systemMode: state.systemMode,
+        occupiedHeatingSetpoint: state.targetTemperature,
+        occupiedCoolingSetpoint: state.targetTemperature,
+        minHeatSetpointLimit: state.minTemperature,
+        minCoolSetpointLimit: state.minTemperature,
+        maxHeatSetpointLimit: state.maxTemperature,
+        maxCoolSetpointLimit: state.maxTemperature,
+        controlSequenceOfOperation:
+          Thermostat.ControlSequenceOfOperation.CoolingAndHeating,
+      };
+    },
+  });
 }
