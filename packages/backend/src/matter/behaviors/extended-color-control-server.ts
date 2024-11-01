@@ -24,8 +24,11 @@ export class ExtendedColorControlServer extends haMixin(
     const current = this.endpoint.stateOf(ExtendedColorControlServer);
     const color = this.getMatterColor(state);
     if (state.attributes.color_mode === LightDeviceColorMode.COLOR_TEMP) {
-      const kelvin = state.attributes.color_temp_kelvin;
+      let kelvin = state.attributes.color_temp_kelvin;
+      const minKelvin = state.attributes.min_color_temp_kelvin ?? 1500;
+      const maxKelvin = state.attributes.max_color_temp_kelvin ?? 8000;
       if (kelvin != null) {
+        kelvin = Math.max(Math.min(kelvin, maxKelvin), minKelvin);
         const mireds = ColorConverter.temperatureKelvinToMireds(kelvin);
         if (mireds != current.colorTemperatureMireds) {
           await this.endpoint.setStateOf(ExtendedColorControlServer, {
