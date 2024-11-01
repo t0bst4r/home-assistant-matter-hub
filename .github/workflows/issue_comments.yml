@@ -1,0 +1,14 @@
+name: Manage Issues
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  remove-waiting-label:
+    if: (!github.event.issue.pull_request) && (github.event.action == 'created')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Remove "waiting for feedback" label
+        run: gh issue edit ${{ github.event.issue.number }} --remove-label "waiting for feedback"
