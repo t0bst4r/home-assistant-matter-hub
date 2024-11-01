@@ -6,8 +6,11 @@ import { DefaultThermostatServer } from "./thermostat/default-thermostat-server.
 export function ThermostatServer(
   supportsCooling: boolean,
   supportsHeating: boolean,
+  supportsAuto: boolean,
 ) {
-  if (supportsCooling && supportsHeating) {
+  if (supportsAuto) {
+    return HeatingAndCoolingThermostatServer.with("AutoMode");
+  } else if (supportsCooling && supportsHeating) {
     return HeatingAndCoolingThermostatServer;
   } else if (supportsHeating) {
     return HeatingThermostatServer;
