@@ -36,6 +36,20 @@ export function LevelControlServer(config: LevelControlConfig) {
         ...request,
         transitionTime: request.transitionTime ?? 1,
       });
+      await this.handleMoveToLevel(request);
+    }
+
+    override async moveToLevelWithOnOff(
+      request: LevelControl.MoveToLevelRequest,
+    ) {
+      await super.moveToLevelWithOnOff({
+        ...request,
+        transitionTime: request.transitionTime ?? 1,
+      });
+      await this.handleMoveToLevel(request);
+    }
+
+    private async handleMoveToLevel(request: LevelControl.MoveToLevelRequest) {
       const [domain, action] = config.moveToLevel.action.split(".");
       await this.callAction(
         domain,
