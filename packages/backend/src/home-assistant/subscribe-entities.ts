@@ -7,6 +7,7 @@ import {
 } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store.js";
 import { atLeastHaVersion } from "home-assistant-js-websocket/dist/util.js";
+import crypto from "node:crypto";
 
 // COPIED FROM home-assistant-js-websocket/lib/entities.ts
 
@@ -130,7 +131,7 @@ function processEvent(store: Store<HassEntities>, updates: StatesUpdates) {
 const subscribeUpdates = (
   conn: Connection,
   store: Store<HassEntities>,
-  entityIds?: string[],
+  entityIds: string[],
 ) => {
   if (entityIds && entityIds.length === 0) {
     return Promise.resolve(async () => {});
@@ -141,11 +142,19 @@ const subscribeUpdates = (
   });
 };
 
-export const entitiesColl = (conn: Connection, entityIds?: string[]) => {
+function createEntitiesHash(entityIds: string[]): string {
+  return crypto
+    .createHash("sha256")
+    .update(entityIds.join(","))
+    .digest("hex")
+    .substring(0, 16);
+}
+
+export const entitiesColl = (conn: Connection, entityIds: string[]) => {
   if (atLeastHaVersion(conn.haVersion, 2022, 4, 0)) {
     return getCollection(
       conn,
-      "_ent",
+      "_ent_" + createEntitiesHash(entityIds),
       undefined,
       (conn: Connection, store: Store<HassEntities>) =>
         subscribeUpdates(conn, store, entityIds),
@@ -160,5 +169,5 @@ export const entitiesColl = (conn: Connection, entityIds?: string[]) => {
 export const subscribeEntities = (
   conn: Connection,
   onChange: (state: HassEntities) => void,
-  entityIds?: string[],
+  entityIds: string[],
 ): UnsubscribeFunc => entitiesColl(conn, entityIds).subscribe(onChange);

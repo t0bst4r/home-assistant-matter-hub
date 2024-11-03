@@ -43,5 +43,5 @@ function patternToRegex(pattern: string): RegExp {
     .split("*")
     .map((part) => escapeRegExp(part))
     .join(".*");
-  return new RegExp(regex);
+  return new RegExp("^" + regex + "$");
 }
