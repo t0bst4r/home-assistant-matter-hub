@@ -75,7 +75,11 @@ class HeatingAndCoolingThermostatServerBase extends ThermostatBaseServer(
 
 export function HeatingAndCoolingThermostatServer(supportsAuto: boolean) {
   const result = supportsAuto
-    ? HeatingAndCoolingThermostatServerBase.with("AutoMode")
+    ? HeatingAndCoolingThermostatServerBase.with(
+        "AutoMode",
+        "Cooling",
+        "Heating",
+      )
     : HeatingAndCoolingThermostatServerBase;
   return Object.assign(result, {
     createState(
