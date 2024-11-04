@@ -1,11 +1,11 @@
 import {
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityRegistry,
   HomeAssistantFilter,
   HomeAssistantMatcher,
 } from "@home-assistant-matter-hub/common";
 
 export function matchEntityFilter(
-  entity: HomeAssistantEntityRegistryWithInitialState,
+  entity: HomeAssistantEntityRegistry,
   filter: HomeAssistantFilter,
 ): boolean {
   const included =
@@ -18,7 +18,7 @@ export function matchEntityFilter(
 }
 
 export function testMatcher(
-  entity: HomeAssistantEntityRegistryWithInitialState,
+  entity: HomeAssistantEntityRegistry,
   matcher: HomeAssistantMatcher,
 ): boolean {
   switch (matcher.type) {

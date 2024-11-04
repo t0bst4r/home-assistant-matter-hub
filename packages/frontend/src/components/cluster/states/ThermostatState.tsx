@@ -46,7 +46,7 @@ export const ThermostatState = ({ state }: ThermostatStateProps) => {
       <Icon fontSize="medium" />
       <span>{Labels[state.systemMode ?? ThermostatSystemMode.Off]}</span>
       {state.localTemperature != null && (
-        <span>{state.localTemperature / 100} °C</span>
+        <span>, {state.localTemperature / 100} °C</span>
       )}
     </>
   );

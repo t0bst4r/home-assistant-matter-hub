@@ -1,47 +1,33 @@
-import {
-  HomeAssistantEntityRegistryWithInitialState,
-  HomeAssistantEntityState,
-} from "@home-assistant-matter-hub/common";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
-import { EndpointType } from "@project-chip/matter.js/endpoint/type";
-import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
-import { Observable, Subject } from "rxjs";
-import { Logger } from "winston";
-
-export interface MatterDeviceProps<TDeviceConfig = unknown> {
-  logger: Logger;
-  actions: HomeAssistantActions;
-  entity: HomeAssistantEntityRegistryWithInitialState;
-  deviceConfig?: TDeviceConfig;
-}
+import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
+import { Endpoint, EndpointType } from "@project-chip/matter.js/endpoint";
+import { HomeAssistantBehavior } from "./custom-behaviors/home-assistant-behavior.js";
+import { Behavior } from "@project-chip/matter.js/behavior";
 
 export class MatterDevice<
   T extends EndpointType = EndpointType.Empty,
-> extends Endpoint<T> {
-  private readonly state$ = new Subject<HomeAssistantEntityState>();
-  get entityState(): Observable<HomeAssistantEntityState> {
-    return this.state$.asObservable();
-  }
+> extends Endpoint {
+  public readonly entityId: string;
 
-  readonly logger: Logger;
-  readonly actions: HomeAssistantActions;
-  readonly entity: HomeAssistantEntityRegistryWithInitialState;
+  constructor(type: T, homeAssistant: HomeAssistantBehavior.State) {
+    const entityId = homeAssistant.registry.entity_id;
+    if (!(HomeAssistantBehavior.id in type.behaviors)) {
+      throw new Error(
+        `${type.name} does not utilize HomeAssistantBehavior (${entityId})`,
+      );
+    }
 
-  constructor(type: T, options: Endpoint.Options<T>, props: MatterDeviceProps) {
-    super(type, {
-      id: props.entity.entity_id.replace(/\./g, "_"),
-      ...options,
-    });
-    this.logger = props.logger;
-    this.actions = props.actions;
-    this.entity = props.entity;
+    const newOptions: {
+      id: string;
+      homeAssistant: Behavior.StateOf<typeof HomeAssistantBehavior>;
+    } = {
+      id: entityId.replace(/\./g, "_"),
+      homeAssistant,
+    };
+    super(type, newOptions);
+    this.entityId = entityId;
   }
 
   async update(state: HomeAssistantEntityState) {
-    this.logger.silly(
-      "Update from HomeAssistant:\n%s",
-      JSON.stringify(state, null, 2),
-    );
-    this.state$.next(state);
+    await this.setStateOf(HomeAssistantBehavior, { entity: state });
   }
 }

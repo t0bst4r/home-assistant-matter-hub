@@ -1,27 +1,31 @@
-import { ThermostatServer as Base } from "@project-chip/matter.js/behavior/definitions/thermostat";
+import { ThermostatServer as Base } from "@project-chip/matter.js/behaviors/thermostat";
 import { ThermostatBaseServer } from "./thermostat-base-server.js";
-import {
-  ClimateDeviceAttributes,
-  HomeAssistantEntityState,
-} from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 import { Behavior } from "@project-chip/matter.js/behavior";
 import { Thermostat } from "@project-chip/matter.js/cluster";
 
 export class CoolingThermostatServer extends ThermostatBaseServer(
   Base.with("Cooling"),
 ) {
-  override initialize(options?: {}) {
+  override async initialize() {
+    await super.initialize();
+    this.state.localTemperature = this.internal.currentTemperature;
+    this.state.systemMode = this.internal.systemMode;
+    this.state.occupiedCoolingSetpoint = this.internal.targetTemperature;
+    this.state.minCoolSetpointLimit = this.internal.minTemperature;
+    this.state.maxCoolSetpointLimit = this.internal.maxTemperature;
+    this.state.controlSequenceOfOperation =
+      Thermostat.ControlSequenceOfOperation.CoolingOnly;
     this.endpoint
       .eventsOf(CoolingThermostatServer)
       .occupiedCoolingSetpoint$Changed.on(
         this.targetTemperatureChanged.bind(this),
       );
-    return super.initialize(options);
   }
 
   protected override async update(state: HomeAssistantEntityState) {
     await super.update(state);
-    const expectedState = this.currentState;
+    const expectedState = this.internal;
     if (!expectedState) {
       return;
     }
@@ -47,22 +51,5 @@ export class CoolingThermostatServer extends ThermostatBaseServer(
     }
 
     await this.endpoint.setStateOf(CoolingThermostatServer, patch);
-  }
-}
-
-export namespace CoolingThermostatServer {
-  export function createState(
-    entity: HomeAssistantEntityState<ClimateDeviceAttributes>,
-  ): Behavior.Options<typeof CoolingThermostatServer> {
-    const state = ThermostatBaseServer.createState(entity);
-    return {
-      localTemperature: state.currentTemperature,
-      systemMode: state.systemMode,
-      occupiedCoolingSetpoint: state.targetTemperature,
-      minCoolSetpointLimit: state.minTemperature,
-      maxCoolSetpointLimit: state.maxTemperature,
-      controlSequenceOfOperation:
-        Thermostat.ControlSequenceOfOperation.CoolingOnly,
-    };
   }
 }

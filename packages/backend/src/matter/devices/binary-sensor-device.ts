@@ -1,20 +1,12 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
+import { MatterDevice } from "../matter-device.js";
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  BridgeBasicInformation,
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { EndpointType } from "@project-chip/matter.js/endpoint/type";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
-import {
-  contactSensorOptions,
-  ContactSensorType,
-} from "./binary-sensor/contact-sensor.js";
-import {
-  occupancySensorOptions,
-  OccupancySensorType,
-} from "./binary-sensor/occupancy-sensor.js";
+import { ContactSensorType } from "./binary-sensor/contact-sensor.js";
+import { OccupancySensorType } from "./binary-sensor/occupancy-sensor.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 const contactTypes: Array<BinarySensorDeviceClass | undefined> = [
   BinarySensorDeviceClass.Door,
@@ -30,28 +22,19 @@ const occupancyTypes: Array<BinarySensorDeviceClass | undefined> = [
 ];
 
 const defaultDeviceType = ContactSensorType;
-const defaultDeviceOptions = contactSensorOptions;
 
 export class BinarySensorDevice extends MatterDevice {
-  constructor(
-    basicInformation: BridgeBasicInformation,
-    props: MatterDeviceProps,
-  ) {
+  constructor(homeAssistant: HomeAssistantBehavior.State) {
     const entity =
-      props.entity as HomeAssistantEntityRegistryWithInitialState<BinarySensorDeviceAttributes>;
-    const deviceClass = entity.initialState.attributes.device_class;
+      homeAssistant.entity as HomeAssistantEntityState<BinarySensorDeviceAttributes>;
+    const deviceClass = entity.attributes.device_class;
 
-    let type: EndpointType, options: Endpoint.Options;
-    if (contactTypes.includes(deviceClass)) {
-      type = ContactSensorType;
-      options = contactSensorOptions(basicInformation, props);
-    } else if (occupancyTypes.includes(deviceClass)) {
-      type = OccupancySensorType;
-      options = occupancySensorOptions(basicInformation, props);
-    } else {
-      type = defaultDeviceType;
-      options = defaultDeviceOptions(basicInformation, props);
-    }
-    super(type, options, props);
+    const type = contactTypes.includes(deviceClass)
+      ? ContactSensorType
+      : occupancyTypes.includes(deviceClass)
+        ? OccupancySensorType
+        : defaultDeviceType;
+
+    super(type, homeAssistant);
   }
 }

@@ -1,5 +1,3 @@
-import { HomeAssistantEntityState } from "./home-assistant-entity-state.js";
-
 export interface HomeAssistantEntityRegistry {
   area_id?: string;
   categories: Record<string, unknown>;
@@ -23,10 +21,4 @@ export interface HomeAssistantEntityRegistry {
   platform: string;
   translation_key?: unknown;
   unique_id: string;
-}
-
-export interface HomeAssistantEntityRegistryWithInitialState<
-  T extends object = {},
-> extends HomeAssistantEntityRegistry {
-  initialState: HomeAssistantEntityState<T>;
 }

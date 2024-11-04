@@ -1,21 +1,41 @@
-import { haMixin } from "../mixins/ha-mixin.js";
 import {
+  ColorConverter,
   HomeAssistantEntityState,
   LightDeviceAttributes,
   LightDeviceColorMode,
 } from "@home-assistant-matter-hub/common";
-import { ColorConverter } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@project-chip/matter.js/behaviors/color-control";
 import { ColorControl } from "@project-chip/matter.js/cluster";
-import { Behavior } from "@project-chip/matter.js/behavior";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
-export class ExtendedColorControlServer extends haMixin(
-  "ColorControl",
-  Base.with("ColorTemperature", "HueSaturation"),
+export class ExtendedColorControlServer extends Base.with(
+  "ColorTemperature",
+  "HueSaturation",
 ) {
-  override initialize() {
-    super.initialize();
-    this.endpoint.entityState.subscribe(this.update.bind(this));
+  override async initialize() {
+    await super.initialize();
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const state = homeAssistant.state
+      .entity as HomeAssistantEntityState<LightDeviceAttributes>;
+    const minKelvin = state.attributes.min_color_temp_kelvin ?? 1500;
+    const maxKelvin = state.attributes.max_color_temp_kelvin ?? 8000;
+    this.state.coupleColorTempToLevelMinMireds =
+      ColorConverter.temperatureKelvinToMireds(maxKelvin);
+    this.state.colorTempPhysicalMinMireds =
+      ColorConverter.temperatureKelvinToMireds(maxKelvin);
+    this.state.colorTempPhysicalMaxMireds =
+      ColorConverter.temperatureKelvinToMireds(minKelvin);
+    this.state.startUpColorTemperatureMireds =
+      ColorConverter.temperatureKelvinToMireds(
+        state.attributes.color_temp_kelvin ?? maxKelvin,
+      );
+    if (state.attributes.color_temp_kelvin) {
+      this.state.colorTemperatureMireds =
+        ColorConverter.temperatureKelvinToMireds(
+          state.attributes.color_temp_kelvin,
+        );
+    }
+    homeAssistant.onUpdate((s) => this.update(s));
   }
 
   protected async update(
@@ -55,6 +75,7 @@ export class ExtendedColorControlServer extends haMixin(
   override async moveToColorTemperature(
     request: ColorControl.MoveToColorTemperatureRequest,
   ) {
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(
       request.colorTemperatureMireds,
     );
@@ -62,14 +83,14 @@ export class ExtendedColorControlServer extends haMixin(
       ...request,
       transitionTime: request.transitionTime ?? 1,
     });
-    await this.callAction(
+    await homeAssistant.callAction(
       "light",
       "turn_on",
       {
         color_temp_kelvin: targetKelvin,
       },
       {
-        entity_id: this.entity.entity_id,
+        entity_id: homeAssistant.state.entity.entity_id,
       },
     );
   }
@@ -77,20 +98,21 @@ export class ExtendedColorControlServer extends haMixin(
   override async moveToHueAndSaturation(
     request: ColorControl.MoveToHueAndSaturationRequest,
   ) {
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await super.moveToHueAndSaturation({
       ...request,
       transitionTime: request.transitionTime ?? 1,
     });
     const color = ColorConverter.fromMatterHS(request.hue, request.saturation);
     const [hue, saturation] = ColorConverter.toHomeAssistantHS(color);
-    await this.callAction(
+    await homeAssistant.callAction(
       "light",
       "turn_on",
       {
         hs_color: [hue, saturation],
       },
       {
-        entity_id: this.entity.entity_id,
+        entity_id: homeAssistant.state.entity.entity_id,
       },
     );
   }
@@ -115,30 +137,5 @@ export class ExtendedColorControlServer extends haMixin(
       return ColorConverter.toMatterHS(ColorConverter.fromXY(x, y));
     }
     return undefined;
-  }
-}
-
-export namespace ExtendedColorControlServer {
-  export function createState(
-    state: HomeAssistantEntityState<LightDeviceAttributes>,
-  ): Behavior.Options<typeof ExtendedColorControlServer> {
-    const minKelvin = state.attributes.min_color_temp_kelvin ?? 1500;
-    const maxKelvin = state.attributes.max_color_temp_kelvin ?? 8000;
-    return {
-      coupleColorTempToLevelMinMireds:
-        ColorConverter.temperatureKelvinToMireds(maxKelvin),
-      colorTempPhysicalMinMireds:
-        ColorConverter.temperatureKelvinToMireds(maxKelvin),
-      colorTempPhysicalMaxMireds:
-        ColorConverter.temperatureKelvinToMireds(minKelvin),
-      startUpColorTemperatureMireds: ColorConverter.temperatureKelvinToMireds(
-        state.attributes.color_temp_kelvin ?? maxKelvin,
-      ),
-      colorTemperatureMireds: state.attributes.color_temp_kelvin
-        ? ColorConverter.temperatureKelvinToMireds(
-            state.attributes.color_temp_kelvin,
-          )
-        : undefined,
-    };
   }
 }

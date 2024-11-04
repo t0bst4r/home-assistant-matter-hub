@@ -1,4 +1,4 @@
-import { describe, expect, it, Mocked, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
@@ -9,22 +9,22 @@ import {
   CoverDeviceAttributes,
   FanDeviceAttributes,
   HomeAssistantDomain,
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityRegistry,
+  HomeAssistantEntityState,
   LightDeviceAttributes,
   LightDeviceColorMode,
   SensorDeviceAttributes,
   SensorDeviceClass,
 } from "@home-assistant-matter-hub/common";
 import { createDevice } from "./create-device.js";
-import { Logger } from "winston";
-import { HomeAssistantClient } from "../home-assistant/home-assistant-client.js";
 import { MatterDevice } from "./matter-device.js";
 import { deviceToJson } from "../utils/json/device-to-json.js";
 import _ from "lodash";
+import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
 
 const testEntities: Record<
   HomeAssistantDomain,
-  HomeAssistantEntityRegistryWithInitialState[]
+  [HomeAssistantEntityRegistry, HomeAssistantEntityState][]
 > = {
   [HomeAssistantDomain.binary_sensor]: [
     createEntity<BinarySensorDeviceAttributes>("binary_sensor.bs1", "on", {
@@ -109,25 +109,15 @@ const basicInformation: BridgeBasicInformation = {
   hardwareVersion: 4,
 };
 
-const MockLogger = vi.fn(
-  () =>
-    ({
-      child: vi.fn(() => new MockLogger()),
-      defaultMeta: [],
-    }) as unknown as Mocked<Logger>,
-);
-
-const MockHomeAssistantClient = vi.fn(
-  () => ({}) as unknown as Mocked<HomeAssistantClient>,
-);
+const mockedActions: HomeAssistantActions = {
+  callAction: vi.fn(),
+};
 
 describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
-    const logger = new MockLogger();
-    const homeAssistant = new MockHomeAssistantClient();
     const entities = Object.values(testEntities).flat();
-    const devices = entities.map((entity) =>
-      createDevice(basicInformation, entity, logger, homeAssistant),
+    const devices = entities.map(([registry, entity]) =>
+      createDevice(mockedActions, basicInformation, registry, entity),
     );
     const actual = _.uniq(
       devices
@@ -144,8 +134,8 @@ function createEntity<T extends {} = {}>(
   entityId: string,
   state: string,
   attributes?: T,
-): HomeAssistantEntityRegistryWithInitialState {
-  return {
+): [HomeAssistantEntityRegistry, HomeAssistantEntityState] {
+  const registry = {
     categories: {},
     entity_id: entityId,
     has_entity_name: false,
@@ -153,13 +143,14 @@ function createEntity<T extends {} = {}>(
     original_name: entityId,
     platform: "test",
     unique_id: entityId,
-    initialState: {
-      entity_id: entityId,
-      state,
-      context: { id: "context" },
-      last_changed: "any-change",
-      last_updated: "any-update",
-      attributes: attributes ?? {},
-    },
   };
+  const entity = {
+    entity_id: entityId,
+    state,
+    context: { id: "context" },
+    last_changed: "any-change",
+    last_updated: "any-update",
+    attributes: attributes ?? {},
+  };
+  return [registry, entity];
 }

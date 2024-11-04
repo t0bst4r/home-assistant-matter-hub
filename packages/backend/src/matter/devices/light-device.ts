@@ -1,28 +1,14 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
+import { MatterDevice } from "../matter-device.js";
 import {
-  BridgeBasicInformation,
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityState,
   LightDeviceAttributes,
   LightDeviceColorMode,
 } from "@home-assistant-matter-hub/common";
-import {
-  extendedColorLightOptions,
-  ExtendedColorLightType,
-} from "./light/extended-color-light.js";
-import { EndpointType } from "@project-chip/matter.js/endpoint/type";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
-import {
-  colorTemperatureLightOptions,
-  ColorTemperatureLightType,
-} from "./light/color-temperature-light.js";
-import {
-  dimmableLightOptions,
-  DimmableLightType,
-} from "./light/dimmable-light.js";
-import {
-  onOffLightOptions,
-  OnOffLightType,
-} from "./light/on-off-light-device.js";
+import { ExtendedColorLightType } from "./light/extended-color-light.js";
+import { ColorTemperatureLightType } from "./light/color-temperature-light.js";
+import { DimmableLightType } from "./light/dimmable-light.js";
+import { OnOffLightType } from "./light/on-off-light-device.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 const brightnessModes: LightDeviceColorMode[] = Object.values(
   LightDeviceColorMode,
@@ -39,14 +25,11 @@ const colorModes: LightDeviceColorMode[] = [
 ];
 
 export class LightDevice extends MatterDevice {
-  constructor(
-    basicInformation: BridgeBasicInformation,
-    props: MatterDeviceProps,
-  ) {
+  constructor(homeAssistant: HomeAssistantBehavior.State) {
     const entity =
-      props.entity as HomeAssistantEntityRegistryWithInitialState<LightDeviceAttributes>;
+      homeAssistant.entity as HomeAssistantEntityState<LightDeviceAttributes>;
     const supportedColorModes: LightDeviceColorMode[] =
-      entity.initialState.attributes.supported_color_modes ?? [];
+      entity.attributes.supported_color_modes ?? [];
     const supportsBrightness = supportedColorModes.some((mode) =>
       brightnessModes.includes(mode),
     );
@@ -57,21 +40,14 @@ export class LightDevice extends MatterDevice {
       LightDeviceColorMode.COLOR_TEMP,
     );
 
-    let type: EndpointType;
-    let options: Endpoint.Options;
-    if (supportsColorControl) {
-      type = ExtendedColorLightType;
-      options = extendedColorLightOptions(basicInformation, props);
-    } else if (supportsColorTemperature) {
-      type = ColorTemperatureLightType;
-      options = colorTemperatureLightOptions(basicInformation, props);
-    } else if (supportsBrightness) {
-      type = DimmableLightType;
-      options = dimmableLightOptions(basicInformation, props);
-    } else {
-      type = OnOffLightType;
-      options = onOffLightOptions(basicInformation, props);
-    }
-    super(type, options, props);
+    const type = supportsColorControl
+      ? ExtendedColorLightType
+      : supportsColorTemperature
+        ? ColorTemperatureLightType
+        : supportsBrightness
+          ? DimmableLightType
+          : OnOffLightType;
+
+    super(type, homeAssistant);
   }
 }

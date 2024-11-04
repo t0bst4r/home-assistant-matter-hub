@@ -84,23 +84,32 @@ export class Bridge extends ServiceBase {
 
     await this.createDevices(aggregator);
 
-    this.unsubscribeEntities = this.homeAssistant.states(
+    this.unsubscribeEntities = this.homeAssistant.subscribeStates(
       this.filter,
       this.updateDevices.bind(this),
     );
   }
 
   private async createDevices(aggregator: Endpoint) {
-    for (const entity of this.homeAssistant.registry(this.filter)) {
+    const registryItems = this.homeAssistant.registry(this.filter);
+    const initialStates = this.homeAssistant.initialStates(
+      _.keys(registryItems),
+    );
+
+    const validItems = _.pickBy(
+      registryItems,
+      (r) => initialStates[r.entity_id],
+    );
+    for (const registry of _.values(validItems)) {
       const device = createDevice(
-        this.basicInformation,
-        entity,
-        this.log,
         this.homeAssistant,
+        this.basicInformation,
+        registry,
+        initialStates[registry.entity_id],
       );
       if (device) {
         await aggregator.add(device);
-        this.matterDevices[entity.entity_id] = device;
+        this.matterDevices[registry.entity_id] = device;
       }
     }
   }

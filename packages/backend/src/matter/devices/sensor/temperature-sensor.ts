@@ -2,27 +2,11 @@ import { TemperatureSensorDevice } from "@project-chip/matter.js/devices/Tempera
 import { BasicInformationServer } from "../../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../../behaviors/identify-server.js";
 import { TemperatureMeasurementServer } from "../../behaviors/temperature-measurement-server.js";
-import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
-import { MatterDeviceProps } from "../../matter-device.js";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
+import { HomeAssistantBehavior } from "../../custom-behaviors/home-assistant-behavior.js";
 
 export const TemperatureSensorType = TemperatureSensorDevice.with(
   BasicInformationServer,
   IdentifyServer,
+  HomeAssistantBehavior,
   TemperatureMeasurementServer,
 );
-
-export function temperatureSensorOptions(
-  basicInformation: BridgeBasicInformation,
-  props: MatterDeviceProps,
-): Endpoint.Options<typeof TemperatureSensorType> {
-  return {
-    bridgedDeviceBasicInformation: BasicInformationServer.createState(
-      basicInformation,
-      props.entity.initialState,
-    ),
-    temperatureMeasurement: TemperatureMeasurementServer.createState(
-      props.entity.initialState,
-    ),
-  };
-}

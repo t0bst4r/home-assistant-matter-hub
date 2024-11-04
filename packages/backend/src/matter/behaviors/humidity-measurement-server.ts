@@ -3,16 +3,14 @@ import {
   HomeAssistantEntityState,
   SensorDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
-import { haMixin } from "../mixins/ha-mixin.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
-export class HumidityMeasurementServer extends haMixin(
-  "HumidityMeasurement",
-  Base,
-) {
-  override initialize(options?: {}) {
-    this.endpoint.entityState.subscribe(this.update.bind(this));
-    return super.initialize(options);
+export class HumidityMeasurementServer extends Base {
+  override async initialize() {
+    await super.initialize();
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    this.state.measuredValue = getHumidity(homeAssistant.state.entity);
+    homeAssistant.onUpdate((s) => this.update(s));
   }
 
   private async update(state: HomeAssistantEntityState) {
@@ -23,16 +21,6 @@ export class HumidityMeasurementServer extends haMixin(
         measuredValue: humidity,
       });
     }
-  }
-}
-
-export namespace HumidityMeasurementServer {
-  export function createState(
-    state: HomeAssistantEntityState<SensorDeviceAttributes>,
-  ): Behavior.Options<typeof HumidityMeasurementServer> {
-    return {
-      measuredValue: getHumidity(state),
-    };
   }
 }
 

@@ -1,41 +1,28 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
+import { MatterDevice } from "../matter-device.js";
 import {
-  BridgeBasicInformation,
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityState,
   SensorDeviceAttributes,
   SensorDeviceClass,
 } from "@home-assistant-matter-hub/common";
-import { EndpointType } from "@project-chip/matter.js/endpoint/type";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
-import {
-  temperatureSensorOptions,
-  TemperatureSensorType,
-} from "./sensor/temperature-sensor.js";
-import {
-  humiditySensorOptions,
-  HumiditySensorType,
-} from "./sensor/humidity-sensor.js";
+import { TemperatureSensorType } from "./sensor/temperature-sensor.js";
+import { HumiditySensorType } from "./sensor/humidity-sensor.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 export function SensorDevice(
-  basicInformation: BridgeBasicInformation,
-  props: MatterDeviceProps,
+  homeAssistant: HomeAssistantBehavior.State,
 ): MatterDevice | undefined {
   const entity =
-    props.entity as HomeAssistantEntityRegistryWithInitialState<SensorDeviceAttributes>;
-  const deviceClass = entity.initialState.attributes.device_class;
+    homeAssistant.entity as HomeAssistantEntityState<SensorDeviceAttributes>;
+  const deviceClass = entity.attributes.device_class;
 
-  let type: EndpointType | undefined;
-  let options: Endpoint.Options | undefined;
-  if (deviceClass === SensorDeviceClass.temperature) {
-    type = TemperatureSensorType;
-    options = temperatureSensorOptions(basicInformation, props);
-  } else if (deviceClass === SensorDeviceClass.humidity) {
-    type = HumiditySensorType;
-    options = humiditySensorOptions(basicInformation, props);
-  }
-  if (type && options) {
-    return new MatterDevice(type, options, props);
-  } else {
-    return undefined;
-  }
+  const type =
+    deviceClass === SensorDeviceClass.temperature
+      ? TemperatureSensorType
+      : deviceClass === SensorDeviceClass.humidity
+        ? HumiditySensorType
+        : undefined;
+
+  if (!type) return undefined;
+
+  return new MatterDevice(type, homeAssistant);
 }

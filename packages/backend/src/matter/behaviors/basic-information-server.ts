@@ -1,31 +1,35 @@
-import { BridgedDeviceBasicInformationServer as Base } from "@project-chip/matter.js/behavior/definitions/bridged-device-basic-information";
-import {
-  BridgeBasicInformation,
-  HomeAssistantEntityState,
-} from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
+import { BridgedDeviceBasicInformationServer as Base } from "@project-chip/matter.js/behaviors/bridged-device-basic-information";
 import crypto from "node:crypto";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { VendorId } from "@project-chip/matter.js/datatype";
 
-export class BasicInformationServer extends Base {}
-
-export namespace BasicInformationServer {
-  export function createState(
-    basicInformation: BridgeBasicInformation,
-    state: HomeAssistantEntityState,
-  ): Behavior.Options<typeof BasicInformationServer> {
-    return {
-      vendorId: basicInformation.vendorId,
-      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
-      productName: maxLengthOrHash(basicInformation.productName, 32),
-      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
-      hardwareVersion: basicInformation.hardwareVersion,
-      softwareVersion: basicInformation.softwareVersion,
-      nodeLabel: maxLengthOrHash(
-        state.attributes.friendly_name ?? "Unknown Entity",
-        32,
-      ),
-      reachable: true,
-    };
+export class BasicInformationServer extends Base {
+  override async initialize(): Promise<void> {
+    await super.initialize();
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistantInfo = homeAssistant.state;
+    this.state.vendorId = VendorId(homeAssistantInfo.basicInformation.vendorId);
+    this.state.vendorName = maxLengthOrHash(
+      homeAssistantInfo.basicInformation.vendorName,
+      32,
+    );
+    this.state.productName = maxLengthOrHash(
+      homeAssistantInfo.basicInformation.productName,
+      32,
+    );
+    this.state.productLabel = maxLengthOrHash(
+      homeAssistantInfo.basicInformation.productLabel,
+      64,
+    );
+    this.state.hardwareVersion =
+      homeAssistantInfo.basicInformation.hardwareVersion;
+    this.state.softwareVersion =
+      homeAssistantInfo.basicInformation.softwareVersion;
+    this.state.nodeLabel = maxLengthOrHash(
+      homeAssistantInfo.entity.attributes.friendly_name ?? "Unknown Entity",
+      32,
+    );
+    this.state.reachable = true;
   }
 }
 

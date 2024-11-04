@@ -3,10 +3,11 @@ import {
   Connection,
   createConnection,
   createLongLivedTokenAuth,
+  getStates,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import {
-  HomeAssistantEntityRegistryWithInitialState,
+  HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
   HomeAssistantFilter,
 } from "@home-assistant-matter-hub/common";
@@ -15,11 +16,12 @@ import { ServiceBase } from "../utils/service.js";
 import _, { Dictionary } from "lodash";
 import { Subject } from "rxjs";
 import crypto from "node:crypto";
-import { subscribeEntities } from "./subscribe-entities.js";
+import { subscribeEntities } from "./api/subscribe-entities.js";
 import { matchEntityFilter } from "./match-entity-filter.js";
 import { getRegistry } from "./api/get-registry.js";
 import { HomeAssistantActions } from "./home-assistant-actions.js";
 import { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
+import { isValidEntity } from "./is-valid-entity.js";
 
 export interface HomeAssistantClientProps {
   readonly url: string;
@@ -38,7 +40,9 @@ export class HomeAssistantClient
     Dictionary<HomeAssistantEntityState>
   >();
   private connection?: Connection;
-  private _registry?: Dictionary<HomeAssistantEntityRegistryWithInitialState>;
+
+  private _initialStates?: Dictionary<HomeAssistantEntityState>;
+  private _registry?: Dictionary<HomeAssistantEntityRegistry>;
 
   private subscriptions: Record<string, HomeAssistantFilter> = {};
   private unsubscribeState?: UnsubscribeFunc;
@@ -55,37 +59,14 @@ export class HomeAssistantClient
     this.connection = await createConnection({
       auth: createLongLivedTokenAuth(this.url, this.accessToken),
     });
-    const registry = await getRegistry(this.connection);
-    this._registry = _.fromPairs(
-      _.toPairs(registry)
-        .filter(([, item]) => {
-          const isHidden = item.hidden_by != undefined;
-          const isDisabled = item.disabled_by != undefined;
-          if (isHidden) {
-            this.log.debug(
-              "%s is hidden by %s",
-              item.entity_id,
-              item.hidden_by,
-            );
-          }
-          if (isDisabled) {
-            this.log.debug(
-              "%s is disabled by %s",
-              item.entity_id,
-              item.disabled_by,
-            );
-          }
-          return !isHidden && !isDisabled;
-        })
-        .filter(([, item]) => {
-          const hasState = !!item.initialState;
-          if (!hasState) {
-            this.log.warn("%s does not have an initial-state", item.entity_id);
-          }
-          return hasState;
-        }),
+    this._initialStates = _.keyBy(
+      await getStates(this.connection),
+      (e) => e.entity_id,
     );
-
+    this._registry = _.keyBy(
+      await getRegistry(this.connection),
+      (r) => r.entity_id,
+    );
     this.subscriptions = {};
   }
 
@@ -98,18 +79,28 @@ export class HomeAssistantClient
     this.connection = undefined;
 
     this._registry = undefined;
+    this._initialStates = undefined;
   }
 
   registry(
     filter: HomeAssistantFilter,
-  ): HomeAssistantEntityRegistryWithInitialState[] {
+  ): Dictionary<HomeAssistantEntityRegistry> {
     if (!this._registry) {
       throw new Error("Home Assistant Client is not yet initialized");
     }
-    return _.filter(this._registry, (r) => matchEntityFilter(r, filter));
+    return _.pickBy(
+      this._registry,
+      (r) => isValidEntity(r) && matchEntityFilter(r, filter),
+    );
   }
 
-  states(
+  initialStates(entityIds: string[]): Dictionary<HomeAssistantEntityState> {
+    return _.pickBy(this._initialStates, (e) =>
+      entityIds.includes(e.entity_id),
+    );
+  }
+
+  subscribeStates(
     filter: HomeAssistantFilter,
     cb: (entities: Dictionary<HomeAssistantEntityState>) => Promise<void>,
   ): () => void {

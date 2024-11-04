@@ -1,19 +1,19 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
+import { MatterDevice } from "../matter-device.js";
 import { ThermostatDevice } from "@project-chip/matter.js/devices/ThermostatDevice";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import {
-  BridgeBasicInformation,
   ClimateDeviceAttributes,
   ClimateHvacMode,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 const ClimateDeviceType = ThermostatDevice.with(
   BasicInformationServer,
   IdentifyServer,
+  HomeAssistantBehavior,
 );
 
 const coolingModes: ClimateHvacMode[] = [
@@ -25,35 +25,21 @@ const heatingModes: ClimateHvacMode[] = [
   ClimateHvacMode.heat,
 ];
 
-export class ClimateDevice extends MatterDevice<typeof ClimateDeviceType> {
-  constructor(
-    basicInformation: BridgeBasicInformation,
-    props: MatterDeviceProps,
-  ) {
-    const entity = props.entity
-      .initialState as HomeAssistantEntityState<ClimateDeviceAttributes>;
-    const supportsCooling = coolingModes.some((mode) =>
-      entity.attributes.hvac_modes.includes(mode),
-    );
-    const supportsHeating = heatingModes.some((mode) =>
-      entity.attributes.hvac_modes.includes(mode),
-    );
-    const supportsAuto = entity.attributes.hvac_modes.includes(
-      ClimateHvacMode.auto,
-    );
-    const thermostat = ThermostatServer(
-      supportsCooling,
-      supportsHeating,
-      supportsAuto,
-    );
-    const type = ClimateDeviceType.with(thermostat);
-    const options: Endpoint.Options<typeof type> = {
-      bridgedDeviceBasicInformation: BasicInformationServer.createState(
-        basicInformation,
-        entity,
-      ),
-      thermostat: thermostat.createState(entity),
-    };
-    super(type, options, props);
+export function ClimateDevice(
+  homeAssistant: HomeAssistantBehavior.State,
+): MatterDevice | undefined {
+  const entity =
+    homeAssistant.entity as HomeAssistantEntityState<ClimateDeviceAttributes>;
+  const supportsCooling = coolingModes.some((mode) =>
+    entity.attributes.hvac_modes.includes(mode),
+  );
+  const supportsHeating = heatingModes.some((mode) =>
+    entity.attributes.hvac_modes.includes(mode),
+  );
+  const thermostat = ThermostatServer(supportsCooling, supportsHeating);
+  if (!thermostat) {
+    return undefined;
   }
+  const type = ClimateDeviceType.with(thermostat);
+  return new MatterDevice(type, homeAssistant);
 }

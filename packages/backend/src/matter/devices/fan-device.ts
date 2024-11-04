@@ -1,6 +1,5 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
+import { MatterDevice } from "../matter-device.js";
 import {
-  BridgeBasicInformation,
   FanDeviceAttributes,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
@@ -12,6 +11,7 @@ import {
   LevelControlConfig,
   LevelControlServer,
 } from "../behaviors/level-control-server.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 const fanLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<FanDeviceAttributes>) => {
@@ -32,28 +32,12 @@ const FanDeviceType = OnOffPlugInUnitDevice.with(
   IdentifyServer,
   BasicInformationServer,
   OnOffServer,
+  HomeAssistantBehavior,
   LevelControlServer(fanLevelConfig),
 );
 
 export class FanDevice extends MatterDevice<typeof FanDeviceType> {
-  constructor(
-    basicInformation: BridgeBasicInformation,
-    props: MatterDeviceProps,
-  ) {
-    super(
-      FanDeviceType,
-      {
-        onOff: OnOffServer.createState(props.entity.initialState),
-        levelControl: LevelControlServer.createState(
-          fanLevelConfig,
-          props.entity.initialState,
-        ),
-        bridgedDeviceBasicInformation: BasicInformationServer.createState(
-          basicInformation,
-          props.entity.initialState,
-        ),
-      },
-      props,
-    );
+  constructor(homeAssistant: HomeAssistantBehavior.State) {
+    super(FanDeviceType, homeAssistant);
   }
 }

@@ -1,31 +1,19 @@
-import { MatterDevice, MatterDeviceProps } from "../matter-device.js";
-import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
+import { MatterDevice } from "../matter-device.js";
 import { OnOffPlugInUnitDevice } from "@project-chip/matter.js/devices/OnOffPlugInUnitDevice";
 import { OnOffServer } from "../behaviors/on-off-server.js";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 const SwitchEndpointType = OnOffPlugInUnitDevice.with(
-  IdentifyServer,
   BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantBehavior,
   OnOffServer,
 );
 
 export class SwitchDevice extends MatterDevice<typeof SwitchEndpointType> {
-  constructor(
-    basicInformation: BridgeBasicInformation,
-    props: MatterDeviceProps,
-  ) {
-    super(
-      SwitchEndpointType,
-      {
-        onOff: OnOffServer.createState(props.entity.initialState),
-        bridgedDeviceBasicInformation: BasicInformationServer.createState(
-          basicInformation,
-          props.entity.initialState,
-        ),
-      },
-      props,
-    );
+  constructor(homeAssistant: HomeAssistantBehavior.State) {
+    super(SwitchEndpointType, homeAssistant);
   }
 }

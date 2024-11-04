@@ -1,13 +1,10 @@
-import { WindowCoveringServer as MBase } from "@project-chip/matter.js/behavior/definitions/window-covering";
-import { haMixin } from "../mixins/ha-mixin.js";
+import { WindowCoveringServer as Base } from "@project-chip/matter.js/behaviors/window-covering";
 import {
   CoverDeviceAttributes,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
 import { WindowCovering } from "@project-chip/matter.js/cluster";
-
-const Base = MBase.with("Lift", "PositionAwareLift", "AbsolutePosition");
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 export interface WindowCoveringServerConfig {
   lift?: {
@@ -19,39 +16,71 @@ export interface WindowCoveringServerConfig {
 }
 
 export function WindowCoveringServer(config?: WindowCoveringServerConfig) {
-  return class ThisType extends haMixin("WindowCovering", Base) {
-    override initialize(options?: {}) {
-      this.endpoint.entityState.subscribe(this.update.bind(this));
-      return super.initialize(options);
+  return class ThisType extends Base.with(
+    "Lift",
+    "PositionAwareLift",
+    "AbsolutePosition",
+  ) {
+    override async initialize() {
+      await super.initialize();
+
+      const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+      const initialPercentage = convertLiftValue(
+        (homeAssistant.state.entity.attributes as CoverDeviceAttributes)
+          .current_position,
+        config?.lift,
+      );
+      const initialValue = initialPercentage ? initialPercentage * 100 : null;
+      this.state.type = WindowCovering.WindowCoveringType.Rollershade;
+      this.state.configStatus = {
+        operational: true,
+        onlineReserved: true,
+        liftPositionAware: true,
+        liftMovementReversed: false,
+      };
+      this.state.targetPositionLiftPercent100ths = initialValue;
+      this.state.currentPositionLiftPercent100ths = initialValue;
+      this.state.installedOpenLimitLift = 0;
+      this.state.installedClosedLimitLift = 10000;
+      this.state.operationalStatus = {
+        global: WindowCovering.MovementStatus.Stopped,
+        lift: WindowCovering.MovementStatus.Stopped,
+      };
+      this.state.endProductType = WindowCovering.EndProductType.RollerShade;
+      this.state.mode = {};
+      homeAssistant.onUpdate((s) => this.update(s));
     }
 
     override async upOrOpen() {
       await super.upOrOpen();
-      await this.callAction(
+      const homeAssistant = this.agent.get(HomeAssistantBehavior);
+      await homeAssistant.callAction(
         "cover",
         "open_cover",
         {},
-        { entity_id: this.entity.entity_id },
+        { entity_id: homeAssistant.state.entity.entity_id },
       );
     }
 
     override async downOrClose() {
       await super.downOrClose();
-      await this.callAction(
+      const homeAssistant = this.agent.get(HomeAssistantBehavior);
+      await homeAssistant.callAction(
         "cover",
         "close_cover",
         {},
-        { entity_id: this.entity.entity_id },
+        { entity_id: homeAssistant.state.entity.entity_id },
       );
     }
 
     override async stopMotion() {
       super.stopMotion();
-      await this.callAction(
+      const homeAssistant = this.agent.get(HomeAssistantBehavior);
+      await homeAssistant.callAction(
         "cover",
         "stop_cover",
         {},
-        { entity_id: this.entity.entity_id },
+        { entity_id: homeAssistant.state.entity.entity_id },
       );
     }
 
@@ -61,14 +90,15 @@ export function WindowCoveringServer(config?: WindowCoveringServerConfig) {
       super.goToLiftPercentage(request);
       const position = this.state.currentPositionLiftPercent100ths!;
       const targetPosition = convertLiftValue(position / 100, config?.lift);
-      await this.callAction(
+      const homeAssistant = this.agent.get(HomeAssistantBehavior);
+      await homeAssistant.callAction(
         "cover",
         "set_cover_position",
         {
           position: targetPosition,
         },
         {
-          entity_id: this.entity.entity_id,
+          entity_id: homeAssistant.state.entity.entity_id,
         },
       );
     }
@@ -135,36 +165,4 @@ function convertLiftValue(
     }
   }
   return result;
-}
-
-export namespace WindowCoveringServer {
-  export function createState(
-    state: HomeAssistantEntityState<CoverDeviceAttributes>,
-    config: WindowCoveringServerConfig | undefined,
-  ): Behavior.Options<typeof Base> {
-    const initialPercentage = convertLiftValue(
-      state.attributes.current_position,
-      config?.lift,
-    );
-    const initialValue = initialPercentage ? initialPercentage * 100 : null;
-    return {
-      type: WindowCovering.WindowCoveringType.Rollershade,
-      configStatus: {
-        operational: true,
-        onlineReserved: true,
-        liftPositionAware: true,
-        liftMovementReversed: false,
-      },
-      targetPositionLiftPercent100ths: initialValue,
-      currentPositionLiftPercent100ths: initialValue,
-      installedOpenLimitLift: 0,
-      installedClosedLimitLift: 10000,
-      operationalStatus: {
-        global: WindowCovering.MovementStatus.Stopped,
-        lift: WindowCovering.MovementStatus.Stopped,
-      },
-      endProductType: WindowCovering.EndProductType.RollerShade,
-      mode: {},
-    };
-  }
 }

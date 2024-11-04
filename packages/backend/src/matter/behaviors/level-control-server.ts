@@ -1,11 +1,10 @@
 import { LevelControlServer as Base } from "@project-chip/matter.js/behaviors/level-control";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { haMixin } from "../mixins/ha-mixin.js";
 import { LevelControl } from "@project-chip/matter.js/cluster";
-import { Behavior } from "@project-chip/matter.js/behavior";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 export interface LevelControlConfig {
-  getValue: (state: HomeAssistantEntityState) => number | null | undefined;
+  getValue: (state: HomeAssistantEntityState) => number | null;
   getMinValue?: (state: HomeAssistantEntityState) => number | undefined;
   getMaxValue?: (state: HomeAssistantEntityState) => number | undefined;
   moveToLevel: {
@@ -15,10 +14,19 @@ export interface LevelControlConfig {
 }
 
 export function LevelControlServer(config: LevelControlConfig) {
-  return class ThisType extends haMixin("LevelControl", Base) {
-    override initialize() {
+  return class ThisType extends Base {
+    override async initialize() {
       super.initialize();
-      this.endpoint.entityState.subscribe(this.update.bind(this));
+      const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+      const state = homeAssistant.state.entity;
+      this.state.currentLevel = config.getValue(state);
+      this.state.minLevel = config.getMinValue?.(state);
+      this.state.maxLevel = config.getMaxValue?.(state);
+      this.state.managedTransitionTimeHandling = false;
+      this.state.onTransitionTime = 1;
+      this.state.offTransitionTime = 1;
+      this.state.onOffTransitionTime = 1;
+      homeAssistant.onUpdate((s) => this.update(s));
     }
 
     protected async update(state: HomeAssistantEntityState) {
@@ -50,32 +58,16 @@ export function LevelControlServer(config: LevelControlConfig) {
     }
 
     private async handleMoveToLevel(request: LevelControl.MoveToLevelRequest) {
+      const homeAssistant = this.agent.get(HomeAssistantBehavior);
       const [domain, action] = config.moveToLevel.action.split(".");
-      await this.callAction(
+      await homeAssistant.callAction(
         domain,
         action,
         config.moveToLevel.data(request.level),
         {
-          entity_id: this.entity.entity_id,
+          entity_id: homeAssistant.state.entity.entity_id,
         },
       );
     }
   };
-}
-
-export namespace LevelControlServer {
-  export function createState(
-    config: LevelControlConfig,
-    state: HomeAssistantEntityState,
-  ): Behavior.Options<typeof Base> {
-    return {
-      currentLevel: config.getValue(state),
-      minLevel: config.getMinValue?.(state),
-      maxLevel: config.getMaxValue?.(state),
-      managedTransitionTimeHandling: false,
-      onTransitionTime: 1,
-      offTransitionTime: 1,
-      onOffTransitionTime: 1,
-    };
-  }
 }

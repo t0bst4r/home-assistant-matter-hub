@@ -1,13 +1,17 @@
-import { haMixin } from "../mixins/ha-mixin.js";
 import { BooleanStateServer as Base } from "@project-chip/matter.js/behaviors/boolean-state";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 export function BooleanStateServer(inverted: boolean) {
-  return class Type extends haMixin("BooleanState", Base) {
-    override initialize(options?: {}) {
-      this.endpoint.entityState.subscribe(this.update.bind(this));
-      return super.initialize(options);
+  return class Type extends Base {
+    override async initialize() {
+      super.initialize();
+      const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+      this.state.stateValue = getStateValue(
+        inverted,
+        homeAssistant.state.entity,
+      );
+      homeAssistant.onUpdate((s) => this.update(s));
     }
 
     private async update(state: HomeAssistantEntityState) {
@@ -28,15 +32,4 @@ function getStateValue(
 ): boolean {
   const isOn = state.state !== "off";
   return inverted ? !isOn : isOn;
-}
-
-export namespace BooleanStateServer {
-  export function createState(
-    inverted: boolean,
-    state: HomeAssistantEntityState,
-  ): Behavior.Options<typeof Base> {
-    return {
-      stateValue: getStateValue(inverted, state),
-    };
-  }
 }

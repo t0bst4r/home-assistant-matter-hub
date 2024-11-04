@@ -5,6 +5,7 @@
   "type": "module",
   "destination": "./dist",
   "scripts": {
+    "cleanup": "rimraf dist",
     "dev": "vite",
     "serve": "vite",
     "build": "tsc -b && vite build",

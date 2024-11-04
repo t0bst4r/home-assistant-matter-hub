@@ -1,26 +1,12 @@
 import { OnOffLightDevice as Device } from "@project-chip/matter.js/devices/OnOffLightDevice";
-import { MatterDeviceProps } from "../../matter-device.js";
 import { IdentifyServer } from "../../behaviors/identify-server.js";
 import { BasicInformationServer } from "../../behaviors/basic-information-server.js";
 import { OnOffServer } from "../../behaviors/on-off-server.js";
-import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
-import { Endpoint } from "@project-chip/matter.js/endpoint";
+import { HomeAssistantBehavior } from "../../custom-behaviors/home-assistant-behavior.js";
 
 export const OnOffLightType = Device.with(
   IdentifyServer,
   BasicInformationServer,
+  HomeAssistantBehavior,
   OnOffServer,
 );
-
-export function onOffLightOptions(
-  basicInformation: BridgeBasicInformation,
-  props: MatterDeviceProps,
-): Endpoint.Options<typeof OnOffLightType> {
-  return {
-    onOff: OnOffServer.createState(props.entity.initialState),
-    bridgedDeviceBasicInformation: BasicInformationServer.createState(
-      basicInformation,
-      props.entity.initialState,
-    ),
-  };
-}

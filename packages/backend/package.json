@@ -5,15 +5,16 @@
   "type": "module",
   "destination": "./dist",
   "scripts": {
+    "cleanup": "rimraf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc && node bundle.js",
-    "serve": "tsx watch --env-file=.env --clear-screen=false src/cli.ts start"
+    "serve": "tsx watch --env-file=../../.env --env-file=.env.development --clear-screen=false src/cli.ts start"
   },
   "dependencies": {
     "@home-assistant-matter-hub/common": "*",
-    "@project-chip/matter.js": "~0.10.6",
-    "@project-chip/matter-node.js": "~0.10.6",
+    "@project-chip/matter.js": "~0.11.2",
+    "@project-chip/matter-node.js": "~0.11.2",
     "ajv": "^8.17.1",
     "chalk": "^5.3.0",
     "express": "^4.21.1",

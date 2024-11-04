@@ -1,15 +1,16 @@
 import { OnOffServer as Base } from "@project-chip/matter.js/behaviors/on-off";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { haMixin } from "../mixins/ha-mixin.js";
-import { Behavior } from "@project-chip/matter.js/behavior";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
-export class OnOffServer extends haMixin("OnOff", Base) {
-  override initialize() {
+export class OnOffServer extends Base {
+  override async initialize() {
     super.initialize();
-    this.endpoint.entityState.subscribe(this.update.bind(this));
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    this.state.onOff = homeAssistant.state.entity.state !== "off";
+    homeAssistant.onUpdate((s) => this.update(s));
   }
 
-  protected async update(state: HomeAssistantEntityState) {
+  private async update(state: HomeAssistantEntityState) {
     const current = this.endpoint.stateOf(OnOffServer);
     const isOn = state.state !== "off";
     if (isOn !== current.onOff) {
@@ -19,25 +20,17 @@ export class OnOffServer extends haMixin("OnOff", Base) {
 
   override async on() {
     await super.on();
-    await this.callAction("homeassistant", "turn_on", undefined, {
-      entity_id: this.entity.entity_id,
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    await homeAssistant.callAction("homeassistant", "turn_on", undefined, {
+      entity_id: homeAssistant.state.entity.entity_id,
     });
   }
 
   override async off() {
     await super.off();
-    await this.callAction("homeassistant", "turn_off", undefined, {
-      entity_id: this.entity.entity_id,
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    await homeAssistant.callAction("homeassistant", "turn_off", undefined, {
+      entity_id: homeAssistant.state.entity.entity_id,
     });
-  }
-}
-
-export namespace OnOffServer {
-  export function createState(
-    state: HomeAssistantEntityState,
-  ): Behavior.Options<typeof OnOffServer> {
-    return {
-      onOff: state.state !== "off",
-    };
   }
 }

@@ -3,16 +3,14 @@ import {
   HomeAssistantEntityState,
   SensorDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
-import { haMixin } from "../mixins/ha-mixin.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
-export class TemperatureMeasurementServer extends haMixin(
-  "TemperatureMeasurement",
-  Base,
-) {
-  override initialize(options?: {}) {
-    this.endpoint.entityState.subscribe(this.update.bind(this));
-    return super.initialize(options);
+export class TemperatureMeasurementServer extends Base {
+  override async initialize() {
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    this.state.measuredValue = getTemperature(homeAssistant.state.entity);
+    homeAssistant.onUpdate((s) => this.update(s));
+    await super.initialize();
   }
 
   private async update(state: HomeAssistantEntityState) {
@@ -23,16 +21,6 @@ export class TemperatureMeasurementServer extends haMixin(
         measuredValue: temperature,
       });
     }
-  }
-}
-
-export namespace TemperatureMeasurementServer {
-  export function createState(
-    state: HomeAssistantEntityState<SensorDeviceAttributes>,
-  ): Behavior.Options<typeof TemperatureMeasurementServer> {
-    return {
-      measuredValue: getTemperature(state),
-    };
   }
 }
 

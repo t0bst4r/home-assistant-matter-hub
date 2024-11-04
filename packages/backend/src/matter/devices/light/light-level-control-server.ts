@@ -20,11 +20,6 @@ const lightLevelControlConfig: LevelControlConfig = {
     data: (brightness) => ({ brightness: (brightness / 254) * 255 }),
   },
 };
-export const LightLevelControlServer = Object.assign(
-  LevelControlServer(lightLevelControlConfig),
-  {
-    createState(state: HomeAssistantEntityState<LightDeviceAttributes>) {
-      return LevelControlServer.createState(lightLevelControlConfig, state);
-    },
-  },
+export const LightLevelControlServer = LevelControlServer(
+  lightLevelControlConfig,
 );

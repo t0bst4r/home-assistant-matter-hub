@@ -1,13 +1,21 @@
-import { haMixin } from "../mixins/ha-mixin.js";
 import { OccupancySensingServer as Base } from "@project-chip/matter.js/behaviors/occupancy-sensing";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { Behavior } from "@project-chip/matter.js/behavior";
 import { OccupancySensing } from "@project-chip/matter.js/cluster";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
-export class OccupancySensingServer extends haMixin("OccupancySensing", Base) {
-  override initialize(options?: {}) {
-    this.endpoint.entityState.subscribe(this.update.bind(this));
-    return super.initialize(options);
+export class OccupancySensingServer extends Base {
+  override async initialize() {
+    await super.initialize();
+    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    this.state.occupancy = { occupied: isOccupied(homeAssistant.state.entity) };
+    this.state.occupancySensorType =
+      OccupancySensing.OccupancySensorType.PhysicalContact;
+    this.state.occupancySensorTypeBitmap = {
+      pir: false,
+      physicalContact: true,
+      ultrasonic: false,
+    };
+    homeAssistant.onUpdate((s) => this.update(s));
   }
 
   private async update(state: HomeAssistantEntityState) {
@@ -23,20 +31,4 @@ export class OccupancySensingServer extends haMixin("OccupancySensing", Base) {
 
 function isOccupied(state: HomeAssistantEntityState): boolean {
   return state.state !== "off";
-}
-
-export namespace OccupancySensingServer {
-  export function createState(
-    state: HomeAssistantEntityState,
-  ): Behavior.Options<typeof OccupancySensingServer> {
-    return {
-      occupancy: { occupied: isOccupied(state) },
-      occupancySensorType: OccupancySensing.OccupancySensorType.PhysicalContact,
-      occupancySensorTypeBitmap: {
-        pir: false,
-        physicalContact: true,
-        ultrasonic: false,
-      },
-    };
-  }
 }
