@@ -12,8 +12,6 @@ const SwitchEndpointType = OnOffPlugInUnitDevice.with(
   OnOffServer,
 );
 
-export class SwitchDevice extends MatterDevice<typeof SwitchEndpointType> {
-  constructor(homeAssistant: HomeAssistantBehavior.State) {
-    super(SwitchEndpointType, homeAssistant);
-  }
+export function SwitchDevice(homeAssistant: HomeAssistantBehavior.State) {
+  return new MatterDevice(SwitchEndpointType, homeAssistant);
 }

@@ -24,30 +24,28 @@ const colorModes: LightDeviceColorMode[] = [
   // TODO: ColorMode.RGBWW, not yet supported
 ];
 
-export class LightDevice extends MatterDevice {
-  constructor(homeAssistant: HomeAssistantBehavior.State) {
-    const entity =
-      homeAssistant.entity as HomeAssistantEntityState<LightDeviceAttributes>;
-    const supportedColorModes: LightDeviceColorMode[] =
-      entity.attributes.supported_color_modes ?? [];
-    const supportsBrightness = supportedColorModes.some((mode) =>
-      brightnessModes.includes(mode),
-    );
-    const supportsColorControl = supportedColorModes.some((mode) =>
-      colorModes.includes(mode),
-    );
-    const supportsColorTemperature = supportedColorModes.includes(
-      LightDeviceColorMode.COLOR_TEMP,
-    );
+export function LightDevice(homeAssistant: HomeAssistantBehavior.State) {
+  const entity =
+    homeAssistant.entity as HomeAssistantEntityState<LightDeviceAttributes>;
+  const supportedColorModes: LightDeviceColorMode[] =
+    entity.attributes.supported_color_modes ?? [];
+  const supportsBrightness = supportedColorModes.some((mode) =>
+    brightnessModes.includes(mode),
+  );
+  const supportsColorControl = supportedColorModes.some((mode) =>
+    colorModes.includes(mode),
+  );
+  const supportsColorTemperature = supportedColorModes.includes(
+    LightDeviceColorMode.COLOR_TEMP,
+  );
 
-    const type = supportsColorControl
-      ? ExtendedColorLightType
-      : supportsColorTemperature
-        ? ColorTemperatureLightType
-        : supportsBrightness
-          ? DimmableLightType
-          : OnOffLightType;
+  const type = supportsColorControl
+    ? ExtendedColorLightType
+    : supportsColorTemperature
+      ? ColorTemperatureLightType
+      : supportsBrightness
+        ? DimmableLightType
+        : OnOffLightType;
 
-    super(type, homeAssistant);
-  }
+  return new MatterDevice(type, homeAssistant);
 }

@@ -12,8 +12,6 @@ const LockDeviceType = DoorLockDevice.with(
   LockServer,
 );
 
-export class LockDevice extends MatterDevice<typeof LockDeviceType> {
-  constructor(homeAssistant: HomeAssistantBehavior.State) {
-    super(LockDeviceType, homeAssistant);
-  }
+export function LockDevice(homeAssistant: HomeAssistantBehavior.State) {
+  return new MatterDevice(LockDeviceType, homeAssistant);
 }

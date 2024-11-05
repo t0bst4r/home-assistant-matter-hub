@@ -16,9 +16,7 @@ const CoverDeviceType = WindowCoveringDevice.with(
 
 export interface CoverDeviceConfig extends WindowCoveringServerConfig {}
 
-export class CoverDevice extends MatterDevice<typeof CoverDeviceType> {
-  constructor(homeAssistant: HomeAssistantBehavior.State) {
-    const type = CoverDeviceType.with(WindowCoveringServer());
-    super(type, homeAssistant);
-  }
+export function CoverDevice(homeAssistant: HomeAssistantBehavior.State) {
+  const type = CoverDeviceType.with(WindowCoveringServer());
+  return new MatterDevice(type, homeAssistant);
 }

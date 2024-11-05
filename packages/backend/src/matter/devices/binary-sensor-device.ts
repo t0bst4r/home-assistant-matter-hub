@@ -23,18 +23,16 @@ const occupancyTypes: Array<BinarySensorDeviceClass | undefined> = [
 
 const defaultDeviceType = ContactSensorType;
 
-export class BinarySensorDevice extends MatterDevice {
-  constructor(homeAssistant: HomeAssistantBehavior.State) {
-    const entity =
-      homeAssistant.entity as HomeAssistantEntityState<BinarySensorDeviceAttributes>;
-    const deviceClass = entity.attributes.device_class;
+export function BinarySensorDevice(homeAssistant: HomeAssistantBehavior.State) {
+  const entity =
+    homeAssistant.entity as HomeAssistantEntityState<BinarySensorDeviceAttributes>;
+  const deviceClass = entity.attributes.device_class;
 
-    const type = contactTypes.includes(deviceClass)
-      ? ContactSensorType
-      : occupancyTypes.includes(deviceClass)
-        ? OccupancySensorType
-        : defaultDeviceType;
+  const type = contactTypes.includes(deviceClass)
+    ? ContactSensorType
+    : occupancyTypes.includes(deviceClass)
+      ? OccupancySensorType
+      : defaultDeviceType;
 
-    super(type, homeAssistant);
-  }
+  return new MatterDevice(type, homeAssistant);
 }
