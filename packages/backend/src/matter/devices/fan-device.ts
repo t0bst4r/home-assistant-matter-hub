@@ -33,9 +33,11 @@ const FanDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   OnOffServer,
   HomeAssistantBehavior,
-  LevelControlServer(fanLevelConfig),
+  LevelControlServer,
 );
 
 export function FanDevice(homeAssistant: HomeAssistantBehavior.State) {
-  return new MatterDevice(FanDeviceType, homeAssistant);
+  return new MatterDevice(FanDeviceType, homeAssistant, {
+    levelControl: { config: fanLevelConfig },
+  });
 }

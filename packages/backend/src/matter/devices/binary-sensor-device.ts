@@ -4,9 +4,27 @@ import {
   BinarySensorDeviceClass,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { ContactSensorType } from "./binary-sensor/contact-sensor.js";
-import { OccupancySensorType } from "./binary-sensor/occupancy-sensor.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { ContactSensorDevice } from "@project-chip/matter.js/devices/ContactSensorDevice";
+import { BasicInformationServer } from "../behaviors/basic-information-server.js";
+import { IdentifyServer } from "../behaviors/identify-server.js";
+import { BooleanStateServer } from "../behaviors/boolean-state-server.js";
+import { OccupancySensorDevice } from "@project-chip/matter.js/devices/OccupancySensorDevice";
+import { OccupancySensingServer } from "../behaviors/occupancy-sensing-server.js";
+
+const ContactSensorType = ContactSensorDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantBehavior,
+  BooleanStateServer,
+);
+
+const OccupancySensorType = OccupancySensorDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantBehavior,
+  OccupancySensingServer,
+);
 
 const contactTypes: Array<BinarySensorDeviceClass | undefined> = [
   BinarySensorDeviceClass.Door,
@@ -28,11 +46,15 @@ export function BinarySensorDevice(homeAssistant: HomeAssistantBehavior.State) {
     homeAssistant.entity as HomeAssistantEntityState<BinarySensorDeviceAttributes>;
   const deviceClass = entity.attributes.device_class;
 
-  const type = contactTypes.includes(deviceClass)
-    ? ContactSensorType
-    : occupancyTypes.includes(deviceClass)
-      ? OccupancySensorType
-      : defaultDeviceType;
-
-  return new MatterDevice(type, homeAssistant);
+  if (contactTypes.includes(deviceClass)) {
+    return new MatterDevice(ContactSensorType, homeAssistant, {
+      booleanState: { inverted: true },
+    });
+  } else if (occupancyTypes.includes(deviceClass)) {
+    return new MatterDevice(OccupancySensorType, homeAssistant);
+  } else {
+    return new MatterDevice(defaultDeviceType, homeAssistant, {
+      booleanState: { inverted: true },
+    });
+  }
 }

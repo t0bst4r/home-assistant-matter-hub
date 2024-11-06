@@ -8,7 +8,11 @@ export class MatterDevice<
 > extends Endpoint {
   public readonly entityId: string;
 
-  constructor(type: T, homeAssistant: HomeAssistantBehavior.State) {
+  constructor(
+    type: T,
+    homeAssistant: HomeAssistantBehavior.State,
+    options?: Endpoint.Options<T>,
+  ) {
     const entityId = homeAssistant.registry.entity_id;
     if (!(HomeAssistantBehavior.id in type.behaviors)) {
       throw new Error(
@@ -22,6 +26,7 @@ export class MatterDevice<
     } = {
       id: entityId.replace(/\./g, "_"),
       homeAssistant,
+      ...options,
     };
     super(type, newOptions);
     this.entityId = entityId;

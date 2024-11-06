@@ -12,11 +12,20 @@ const CoverDeviceType = WindowCoveringDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantBehavior,
+  WindowCoveringServer,
 );
 
 export interface CoverDeviceConfig extends WindowCoveringServerConfig {}
 
 export function CoverDevice(homeAssistant: HomeAssistantBehavior.State) {
-  const type = CoverDeviceType.with(WindowCoveringServer());
-  return new MatterDevice(type, homeAssistant);
+  return new MatterDevice(CoverDeviceType, homeAssistant, {
+    windowCovering: {
+      config: {
+        lift: {
+          invertPercentage: true,
+          swapOpenAndClosePercentage: false,
+        },
+      },
+    },
+  });
 }
