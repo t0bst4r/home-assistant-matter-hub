@@ -88,10 +88,18 @@ export class HomeAssistantClient
     if (!this._registry) {
       throw new Error("Home Assistant Client is not yet initialized");
     }
-    return _.pickBy(
-      this._registry,
-      (r) => isValidEntity(r) && matchEntityFilter(r, filter),
-    );
+    return _.pickBy(this._registry, (r) => {
+      const isValid = isValidEntity(r);
+      if (!isValid) {
+        this.log.silly(
+          "Entity '%s' is excluded. Disabled by: %s, hidden by: %s",
+          r.entity_id,
+          r.disabled_by,
+          r.hidden_by,
+        );
+      }
+      return isValid && matchEntityFilter(r, filter);
+    });
   }
 
   initialStates(entityIds: string[]): Dictionary<HomeAssistantEntityState> {
