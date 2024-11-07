@@ -9,6 +9,15 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import {
+  ClusterComposer,
+  ClusterType,
+  Thermostat,
+} from "@project-chip/matter.js/cluster";
+
+type clusterType = ClusterType.Of<typeof Thermostat.Base>;
+type FeatureSelection<T extends ClusterType> =
+  ClusterComposer.FeatureSelection<T> extends readonly (infer R)[] ? R : never;
 
 const ClimateDeviceType = ThermostatDevice.with(
   BasicInformationServer,
@@ -36,10 +45,23 @@ export function ClimateDevice(
   const supportsHeating = heatingModes.some((mode) =>
     entity.attributes.hvac_modes.includes(mode),
   );
-  const thermostat = ThermostatServer(supportsCooling, supportsHeating);
-  if (!thermostat) {
-    return undefined;
+  const supportsAuto = entity.attributes.hvac_modes.includes(
+    ClimateHvacMode.auto,
+  );
+
+  const featureSelection: FeatureSelection<clusterType>[] = [];
+  if (supportsCooling || supportsAuto) {
+    featureSelection.push("Cooling");
   }
-  const type = ClimateDeviceType.with(thermostat);
+  if (supportsHeating || supportsAuto) {
+    featureSelection.push("Heating");
+  }
+  if (supportsAuto) {
+    featureSelection.push("AutoMode");
+  }
+
+  const type = ClimateDeviceType.with(
+    ThermostatServer.with(...featureSelection),
+  );
   return new MatterDevice(type, homeAssistant);
 }

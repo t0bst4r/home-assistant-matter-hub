@@ -111,7 +111,7 @@ export const EditBridgePage = () => {
           (usedPorts[port] == undefined || usedPorts[port] === bridge?.id),
       );
     }
-  }, [usedPorts, port]);
+  }, [bridge, usedPorts, port]);
 
   return (
     <Container>
