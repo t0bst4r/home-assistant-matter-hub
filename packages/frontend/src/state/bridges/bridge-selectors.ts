@@ -1,0 +1,34 @@
+import { createAppSelector, AppState } from "../types";
+import { AsyncState } from "../utils/async";
+import { BridgeData } from "@home-assistant-matter-hub/common";
+
+export const selectBridgeState = (state: AppState) => state.bridges;
+
+export const selectBridges = createAppSelector(
+  [selectBridgeState],
+  (bridgeState) => bridgeState.items,
+);
+
+export const selectBridge = (bridgeId: string | undefined) =>
+  createAppSelector([selectBridges], (bridges) => {
+    const result: AsyncState<BridgeData> = {
+      isInitialized: bridges.isInitialized,
+      isLoading: bridges.isLoading,
+      error: bridges.error,
+      content: bridges.content?.find((b) => b.id === bridgeId),
+    };
+    return result;
+  });
+
+export const selectUsedPorts = createAppSelector([selectBridges], (bridges) => {
+  if (!bridges.isInitialized) {
+    return undefined;
+  }
+  const result: Record<number, string> = {};
+  const pairs =
+    bridges.content?.map((b) => [b.port, b.id] as [number, string]) ?? [];
+  pairs.forEach(([key, value]) => {
+    result[key] = value;
+  });
+  return result;
+});

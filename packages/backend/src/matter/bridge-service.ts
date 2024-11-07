@@ -5,6 +5,7 @@ import {
   BridgeBasicInformation,
   BridgeData,
   CreateBridgeRequest,
+  UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
 import { Environment } from "@project-chip/matter.js/environment";
@@ -71,7 +72,7 @@ export class BridgeService extends ServiceBase {
   }
 
   async create(request: CreateBridgeRequest): Promise<Bridge> {
-    if (request.port != null && this.portUsed(request.port)) {
+    if (this.portUsed(request.port)) {
       throw new PortAlreadyInUseError(request.port);
     }
     const bridge = await this.addBridge({
@@ -83,6 +84,21 @@ export class BridgeService extends ServiceBase {
       deviceCount: 0,
     });
     await this.bridgeStorage.add(bridgeToJson(bridge));
+    await bridge.start();
+    return bridge;
+  }
+
+  async update(request: UpdateBridgeRequest): Promise<Bridge | undefined> {
+    if (this.portUsed(request.port, [request.id])) {
+      throw new PortAlreadyInUseError(request.port);
+    }
+    const bridge = this.get(request.id);
+    if (!bridge) {
+      return;
+    }
+    await bridge.update(request);
+    await this.bridgeStorage.add(bridgeToJson(bridge));
+    await bridge.close();
     await bridge.start();
     return bridge;
   }
@@ -108,8 +124,10 @@ export class BridgeService extends ServiceBase {
     return bridge;
   }
 
-  private portUsed(port: number): boolean {
-    return this.bridges.some((bridge) => bridge.port === port);
+  private portUsed(port: number, notId?: string[]): boolean {
+    return this.bridges
+      .filter((bridge) => notId == null || !notId.includes(bridge.id))
+      .some((bridge) => bridge.port === port);
   }
 }
 
@@ -137,7 +155,12 @@ class BridgeStorage implements Service {
   }
 
   async add(bridge: BridgeData): Promise<void> {
-    this._bridges.push(bridge);
+    const idx = this._bridges.findIndex((b) => b.id === bridge.id);
+    if (idx != -1) {
+      this._bridges[idx] = bridge;
+    } else {
+      this._bridges.push(bridge);
+    }
     await this.storage.set(bridge.id, JSON.stringify(bridge));
     await this.persistIds();
   }

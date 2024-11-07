@@ -122,7 +122,7 @@ export class WindowCoveringServer extends FeaturedBase {
     const actualPosition = current.currentPositionLiftPercent100ths;
     const expectedPosition = this.convertLiftValue(
       state.attributes.current_position,
-      this.state.config?.lift,
+      current.config?.lift,
     );
     const expectedPosition100ths =
       expectedPosition != null ? expectedPosition * 100 : actualPosition;

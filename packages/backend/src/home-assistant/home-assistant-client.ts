@@ -14,7 +14,7 @@ import {
 import { Logger } from "winston";
 import { ServiceBase } from "../utils/service.js";
 import _, { Dictionary } from "lodash";
-import { Subject } from "rxjs";
+import { map, pairwise, startWith, Subject } from "rxjs";
 import crypto from "node:crypto";
 import { subscribeEntities } from "./api/subscribe-entities.js";
 import { matchEntityFilter } from "./match-entity-filter.js";
@@ -116,7 +116,19 @@ export class HomeAssistantClient
     this.subscriptions[handle] = filter;
     this.refreshSubscription();
 
-    const sub = this.states$.subscribe(cb);
+    const sub = this.states$
+      .pipe(
+        startWith(null),
+        pairwise(),
+        map(([oldValue, newValue]) => {
+          return _.pickBy(newValue ?? {}, (state, key) => {
+            return (
+              JSON.stringify((oldValue ?? {})[key]) !== JSON.stringify(state)
+            );
+          });
+        }),
+      )
+      .subscribe(cb);
 
     return () => {
       sub.unsubscribe();

@@ -2,6 +2,8 @@ import express from "express";
 import {
   createBridgeRequestSchema,
   CreateBridgeRequest,
+  updateBridgeRequestSchema,
+  UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
 import { BridgeService } from "../matter/bridge-service.js";
@@ -46,6 +48,31 @@ export function matterApi(matterServer: BridgeService): express.Router {
       res.status(200).json(bridgeToJson(bridge));
     } else {
       res.status(404).send("Not Found");
+    }
+  });
+
+  router.put("/bridges/:bridgeId", async (req, res) => {
+    const bridgeId = req.params.bridgeId;
+    const body = req.body as UpdateBridgeRequest;
+    const isValid = ajv.validate(updateBridgeRequestSchema, body);
+    if (!isValid) {
+      res.status(400).json(ajv.errors);
+    } else if (bridgeId !== body.id) {
+      res.status(400).send("Path variable `bridgeId` does not match `body.id`");
+    } else {
+      try {
+        const bridge = await matterServer.update(body);
+        if (!bridge) {
+          res.status(404).send("Not Found");
+        } else {
+          res.status(200).json(bridgeToJson(bridge));
+        }
+      } catch (error: unknown) {
+        if (error instanceof PortAlreadyInUseError) {
+          res.status(400).json({ error: error.message });
+        }
+        throw error;
+      }
     }
   });
 

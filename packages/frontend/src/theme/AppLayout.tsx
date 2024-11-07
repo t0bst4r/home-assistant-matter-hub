@@ -13,19 +13,31 @@ import {
   Navigation,
   Router,
 } from "@toolpad/core";
-import { routes } from "../routes.tsx";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useAppInfo } from "../hooks/app-info.ts";
 import { capitalize, useMediaQuery } from "@mui/material";
+import { AppBreadcrumbs } from "./AppBreadcrumbs.tsx";
+import { Coffee, Help, Polyline } from "@mui/icons-material";
 
-const navigation: Navigation = routes
-  .filter((route) => !!route.title)
-  .map((route) => ({
-    segment: route.segment,
-    title: route.title,
-    icon: route.icon,
-  }));
+const navigation: Navigation = [
+  {
+    segment: "bridges",
+    title: "Bridges",
+    icon: <Polyline />,
+  },
+
+  {
+    segment: "funding",
+    title: "Buy me a coffee",
+    icon: <Coffee />,
+  },
+  {
+    segment: "about",
+    title: "About this project",
+    icon: <Help />,
+  },
+];
 
 export const AppLayout: FC = () => {
   const navigate = useNavigate();
@@ -70,6 +82,7 @@ export const AppLayout: FC = () => {
     >
       <DashboardLayout>
         <Box padding={2}>
+          <AppBreadcrumbs />
           <Outlet />
         </Box>
       </DashboardLayout>

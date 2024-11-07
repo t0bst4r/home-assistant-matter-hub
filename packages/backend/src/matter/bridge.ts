@@ -1,5 +1,6 @@
 import {
   BridgeBasicInformation,
+  BridgeConfig,
   BridgeData,
   HomeAssistantEntityState,
   HomeAssistantFilter,
@@ -30,8 +31,7 @@ export class Bridge extends ServiceBase {
   private server?: ServerNode;
   private unsubscribeEntities?: () => void;
 
-  private initialData: BridgeData;
-  private data: Omit<BridgeData, "commissioning" | "deviceCount">;
+  private data: BridgeData;
   private matterDevices: Record<string, MatterDevice | undefined> = {};
 
   get id(): string {
@@ -68,14 +68,21 @@ export class Bridge extends ServiceBase {
     super(props.data.id, props.logger);
     this.environment = props.environment;
     this.homeAssistant = props.homeAssistant;
-    this.initialData = this.data = props.data;
+    this.data = props.data;
+  }
+
+  async update(data: BridgeConfig): Promise<void> {
+    this.data = {
+      ...this.data,
+      ...data,
+    };
   }
 
   async start() {
     await this.close();
 
     const server = await ServerNode.create(
-      bridgeFromJson(this.environment, this.initialData),
+      bridgeFromJson(this.environment, this.data),
     );
     const aggregator = new Endpoint(AggregatorEndpoint, { id: "aggregator" });
     await server.add(aggregator);

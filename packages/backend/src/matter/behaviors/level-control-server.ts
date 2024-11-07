@@ -32,7 +32,7 @@ export class LevelControlServer extends Base {
 
   protected async update(state: HomeAssistantEntityState) {
     const current = this.endpoint.stateOf(LevelControlServer);
-    const level = this.state.config.getValue(state);
+    const level = current.config.getValue(state);
     if (level != null && !isNaN(level) && level != current.currentLevel) {
       await this.endpoint.setStateOf(LevelControlServer, {
         currentLevel: level,

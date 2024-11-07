@@ -5,96 +5,58 @@ import QRCode from "react-qr-code";
 import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useDevices } from "../../hooks/data/devices.ts";
-import { DeviceList } from "../device/DeviceList.tsx";
-import { useNotifications } from "@toolpad/core";
-import { useCallback, useEffect, useState } from "react";
 import { FabricList } from "../fabric/FabricList.tsx";
-import { useTimer } from "../../hooks/timer.ts";
 
 export interface BridgeDetailsProps {
   readonly bridge: BridgeData;
 }
 
 export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
-  const notifications = useNotifications();
-
-  const [seed, setSeed] = useState<number>(0);
-  const [timer, setTimer] = useState(0);
-  const [devices, _, error] = useDevices(bridge, seed);
-  const { refreshNow, reset: resetTimer } = useTimer({
-    sleepSeconds: 10,
-    startImmediate: true,
-    callback: useCallback(() => setSeed(Date.now()), [setSeed]),
-    onTick: setTimer,
-  });
-
-  useEffect(() => {
-    if (error) {
-      notifications.show(error.message, { severity: "error" });
-    }
-  }, [notifications, error]);
-
-  useEffect(() => {
-    resetTimer();
-  }, [bridge, resetTimer]);
-
   return (
-    <Stack spacing={4}>
-      <Box pl={1} pb={1}>
-        <Typography variant="h4">{bridge.name}</Typography>
-        <Typography variant="caption">{bridge.id}</Typography>
-      </Box>
-
-      <Paper sx={{ padding: 2 }}>
-        <Stack spacing={2}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: "auto" }}>
-              <Pairing bridge={bridge} />
-            </Grid>
-            <Grid size={{ xs: 12, md: "grow" }}>
-              <BasicInfo bridge={bridge} />
-            </Grid>
-            <Grid size={{ xs: 12, md: "grow" }}>
-              <CommissioningInfo bridge={bridge} />
-            </Grid>
+    <Paper sx={{ padding: 2 }}>
+      <Stack spacing={2}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: "auto" }}>
+            <Pairing bridge={bridge} />
           </Grid>
+          <Grid size={{ xs: 12, md: "grow" }}>
+            <BasicInfo bridge={bridge} />
+          </Grid>
+          <Grid size={{ xs: 12, md: "grow" }}>
+            <CommissioningInfo bridge={bridge} />
+          </Grid>
+        </Grid>
 
-          <Stack direction="row" spacing={1}>
-            {bridge.filter.include.map((filter, idx) => (
-              <Chip
-                key={idx}
-                size="small"
-                icon={<AddIcon />}
-                label={
-                  <span>
-                    <strong>{filter.type}</strong>: {filter.value}
-                  </span>
-                }
-                color="success"
-              />
-            ))}
-            {bridge.filter.exclude.map((filter, idx) => (
-              <Chip
-                key={idx}
-                size="small"
-                icon={<RemoveIcon />}
-                label={
-                  <span>
-                    <strong>{filter.type}</strong>: {filter.value}
-                  </span>
-                }
-                color="error"
-              />
-            ))}
-          </Stack>
+        <Stack direction="row" spacing={1}>
+          {bridge.filter.include.map((filter, idx) => (
+            <Chip
+              key={idx}
+              size="small"
+              icon={<AddIcon />}
+              label={
+                <span>
+                  <strong>{filter.type}</strong>: {filter.value}
+                </span>
+              }
+              color="success"
+            />
+          ))}
+          {bridge.filter.exclude.map((filter, idx) => (
+            <Chip
+              key={idx}
+              size="small"
+              icon={<RemoveIcon />}
+              label={
+                <span>
+                  <strong>{filter.type}</strong>: {filter.value}
+                </span>
+              }
+              color="error"
+            />
+          ))}
         </Stack>
-      </Paper>
-
-      {devices && (
-        <DeviceList devices={devices} timer={timer} onRefresh={refreshNow} />
-      )}
-    </Stack>
+      </Stack>
+    </Paper>
   );
 };
 

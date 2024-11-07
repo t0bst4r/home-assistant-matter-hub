@@ -1,41 +1,28 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import { BridgesPage } from "./pages/bridges/BridgesPage.tsx";
-import { ReactElement } from "react";
-import { Coffee, Help, Home, Polyline } from "@mui/icons-material";
 import { FundingPage } from "./pages/funding/FundingPage.tsx";
 import { AboutPage } from "./pages/about/AboutPage.tsx";
+import { BridgeDetailsPage } from "./pages/bridge-details/BridgeDetailsPage.tsx";
+import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
 
-export interface Route {
-  readonly segment: string;
-  readonly title?: string;
-  readonly element: ReactElement;
-  readonly icon: ReactElement;
-  readonly children?: Omit<Route, "icon" | "title">[];
-}
-
-export const routes: Route[] = [
+export const routes: RouteObject[] = [
   {
-    segment: "",
+    path: "",
     element: <Navigate to="/bridges" />,
-    icon: <Home />,
   },
   {
-    segment: "bridges",
-    title: "Bridges",
+    path: "bridges",
     element: <BridgesPage />,
-    icon: <Polyline />,
-    children: [{ segment: ":bridgeId", element: <BridgesPage /> }],
   },
+  { path: "bridges/create", element: <EditBridgePage /> },
+  { path: "bridges/:bridgeId", element: <BridgeDetailsPage /> },
+  { path: "bridges/:bridgeId/edit", element: <EditBridgePage /> },
   {
-    segment: "funding",
-    title: "Buy me a coffee",
+    path: "funding",
     element: <FundingPage />,
-    icon: <Coffee />,
   },
   {
-    segment: "about",
-    title: "About this project",
+    path: "about",
     element: <AboutPage />,
-    icon: <Help />,
   },
 ];
