@@ -30,11 +30,7 @@ const Breadcrumb = ({ to }: { to: string }) => {
         return pattern.test(to);
       }
     })?.[1] ?? fallback;
-  return (
-    <LinkRouter key={to} to={to}>
-      {name}
-    </LinkRouter>
-  );
+  return <LinkRouter to={to}>{name}</LinkRouter>;
 };
 
 export const AppBreadcrumbs = () => {
@@ -45,7 +41,7 @@ export const AppBreadcrumbs = () => {
     <Breadcrumbs sx={{ mb: 4 }}>
       {pathnames.map((_, index) => {
         const to = `${pathnames.slice(0, index + 1).join("/")}`;
-        return <Breadcrumb to={to} />;
+        return <Breadcrumb key={to} to={to} />;
       })}
     </Breadcrumbs>
   );

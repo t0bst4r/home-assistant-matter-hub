@@ -95,14 +95,10 @@ export const EditBridgePage = () => {
       setPort(bridge.port);
       setName(bridge.name);
       setCurrentConfig({ filter: bridge.filter });
-    }
-  }, [bridge]);
-
-  useEffect(() => {
-    if (usedPorts != undefined) {
+    } else if (usedPorts) {
       setPort(nextFreePort(usedPorts));
     }
-  }, [usedPorts]);
+  }, [bridge, usedPorts]);
 
   useEffect(() => {
     setNameIsValid(name.length > 0);
@@ -110,7 +106,10 @@ export const EditBridgePage = () => {
 
   useEffect(() => {
     if (usedPorts != undefined) {
-      setPortIsValid(port != undefined && usedPorts[port] == undefined);
+      setPortIsValid(
+        port != undefined &&
+          (usedPorts[port] == undefined || usedPorts[port] === bridge?.id),
+      );
     }
   }, [usedPorts, port]);
 
