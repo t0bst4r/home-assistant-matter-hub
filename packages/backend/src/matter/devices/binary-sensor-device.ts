@@ -50,13 +50,13 @@ export function BinarySensorDevice(homeAssistant: HomeAssistantBehavior.State) {
 
   if (contactTypes.includes(deviceClass)) {
     return new MatterDevice(ContactSensorType, homeAssistant, {
-      booleanState: { inverted: true },
+      booleanState: { config: { inverted: true } },
     });
   } else if (occupancyTypes.includes(deviceClass)) {
     return new MatterDevice(OccupancySensorType, homeAssistant);
   } else {
     return new MatterDevice(defaultDeviceType, homeAssistant, {
-      booleanState: { inverted: true },
+      booleanState: { config: { inverted: true } },
     });
   }
 }
