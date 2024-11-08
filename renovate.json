@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major {{manager}} dependencies"
+    },
+    {
+      "matchPackageNames": ["@project-chip/**", "@matter/**"],
+      "groupName": "matter.js"
+    }
+  ]
+}
