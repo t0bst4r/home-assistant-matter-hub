@@ -44,29 +44,60 @@ jobs:
           key: ${{ runner.os }}-nx
 
       - run: npm ci
-      - run: npx nx release version
-      - name: Extract new Version
+
+      - name: Bumb version
+        id: version
         run: |
-          PACKAGE_VERSION=$(node -p "require('home-assistant-matter-hub/package.json').version")
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
-      - run: |
+          PREV_PACKAGE_VERSION=$(node -p "require('home-assistant-matter-hub/package.json').version")
+
+          npx nx release version
+
+          NEXT_PACKAGE_VERSION=$(node -p "require('home-assistant-matter-hub/package.json').version")
+          echo "package-version=$NEXT_PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+          if [ "$PREV_PACKAGE_VERSION" == "$NEXT_PACKAGE_VERSION" ]; then
+            echo "release-required='no'" >> "$GITHUB_OUTPUT"
+          else
+            echo "release-required='yes'" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Changelog
+        id: changelog
+        if: steps.version.outputs.release-required == 'yes'
+        env:
+          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
+        run: |
           npx nx release changelog --version $PACKAGE_VERSION
           CHANGELOG=$(git diff HEAD CHANGELOG.md | sed -n '/^\+/s///p' | sed '1d')
-          echo "CHANGELOG<<EOF" >> "$GITHUB_ENV"
-          echo "$CHANGELOG" >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
-      - run: npm run pull-request
+          echo "changelog<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGELOG" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        if: steps.version.outputs.release-required == 'yes'
+        run: npm run pull-request
+
       - name: Commit, tag and push
+        if: steps.version.outputs.release-required == 'yes'
+        env:
+          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
         run: |
           git commit -m "chore: release v$PACKAGE_VERSION"
           git tag -a v$PACKAGE_VERSION -m "Release v$PACKAGE_VERSION" -m "[skip ci]"
           git push --follow-tags
-      - env:
+
+      - name: Publish
+        if: steps.version.outputs.release-required == 'yes'
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: false
         run: npx nx release publish
-      - env:
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.release-required == 'yes'
+        env:
           GH_TOKEN: ${{ github.token }}
+          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
+          CHANGELOG: ${{steps.changelog.outputs.changelog}}
         run: |
           gh release create v$PACKAGE_VERSION \
             --latest \

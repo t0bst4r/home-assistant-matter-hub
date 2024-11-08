@@ -12,4 +12,11 @@ describe("home-assistant-matter-hub", () => {
     );
     expect(own.dependencies).toEqual(expected);
   });
+
+  it.skip("should pin all dependencies", () => {
+    const expected = _.mapValues(own.dependencies, (value) =>
+      value.replace(/^\D+/, ""),
+    );
+    expect(own.dependencies).toEqual(expected);
+  });
 });
