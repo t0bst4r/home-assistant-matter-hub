@@ -4,8 +4,14 @@ import {
   SensorDeviceAttributes,
   SensorDeviceClass,
 } from "@home-assistant-matter-hub/common";
-import { TemperatureSensorType } from "./sensor/temperature-sensor.js";
-import { HumiditySensorType } from "./sensor/humidity-sensor.js";
+import {
+  temperatureSensorConfig,
+  TemperatureSensorType,
+} from "./sensor/temperature-sensor.js";
+import {
+  humiditySensorConfig,
+  HumiditySensorType,
+} from "./sensor/humidity-sensor.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 
 export function SensorDevice(
@@ -15,14 +21,16 @@ export function SensorDevice(
     homeAssistant.entity as HomeAssistantEntityState<SensorDeviceAttributes>;
   const deviceClass = entity.attributes.device_class;
 
-  const type =
-    deviceClass === SensorDeviceClass.temperature
-      ? TemperatureSensorType
-      : deviceClass === SensorDeviceClass.humidity
-        ? HumiditySensorType
-        : undefined;
-
-  if (!type) return undefined;
-
-  return new MatterDevice(type, homeAssistant);
+  if (deviceClass === SensorDeviceClass.temperature) {
+    return new MatterDevice(TemperatureSensorType, homeAssistant, {
+      temperatureMeasurement: { config: temperatureSensorConfig },
+    });
+  } else if (deviceClass === SensorDeviceClass.humidity) {
+    return new MatterDevice(HumiditySensorType, homeAssistant, {
+      relativeHumidityMeasurement: {
+        config: humiditySensorConfig,
+      },
+    });
+  }
+  return undefined;
 }
