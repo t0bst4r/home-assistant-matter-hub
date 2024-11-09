@@ -26,7 +26,7 @@ export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
             <CommissioningInfo bridge={bridge} />
           </Grid>
         </Grid>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }} useFlexGap>
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
           {bridge.filter.include.map((filter, idx) => (
             <Chip
               key={idx}
