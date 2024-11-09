@@ -1,6 +1,6 @@
 {
   "name": "@home-assistant-matter-hub/common",
-  "version": "3.0.0-alpha.22",
+  "version": "3.0.0-alpha.24",
   "private": true,
   "type": "module",
   "main": "dist/index.js",

@@ -1,3 +1,28 @@
+## 3.0.0-alpha.24 (2024-11-09)
+
+### 🚀 Features
+
+- **climate:** add thermostatRunningMode only for autoMode ([c928ca5](https://github.com/t0bst4r/home-assistant-matter-hub/commit/c928ca5))
+
+### ❤️  Thank You
+
+- t0bst4r @t0bst4r
+
+## 3.0.0-alpha.23 (2024-11-09)
+
+### 🚀 Features
+
+- **climate:** add temperature measurement and humidity sensor ([3b44979](https://github.com/t0bst4r/home-assistant-matter-hub/commit/3b44979))
+
+### 🩹 Fixes
+
+- refactor thermostat server to a single behavior with feature flags ([a939600](https://github.com/t0bst4r/home-assistant-matter-hub/commit/a939600))
+- **light:** round values after converting kelvin and mireds ([e4ad137](https://github.com/t0bst4r/home-assistant-matter-hub/commit/e4ad137))
+
+### ❤️  Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.22 (2024-11-08)
 
 ### 🩹 Fixes
