@@ -31,7 +31,6 @@ export class ThermostatServerBase extends FeaturedBase {
     const updatedState: Partial<ThermostatServerBase.State> = {
       localTemperature: this.internal.currentTemperature,
       systemMode: this.internal.systemMode,
-      // thermostatRunningMode: this.internal.runningMode,
       ...(this.features.heating
         ? {
             occupiedHeatingSetpoint: this.internal.targetTemperature,
@@ -44,6 +43,12 @@ export class ThermostatServerBase extends FeaturedBase {
             occupiedCoolingSetpoint: this.internal.targetTemperature,
             minCoolSetpointLimit: this.internal.minTemperature,
             maxCoolSetpointLimit: this.internal.maxTemperature,
+          }
+        : {}),
+      ...(this.features.autoMode
+        ? {
+            thermostatRunningMode: this.internal.runningMode,
+            minSetpointDeadBand: 0,
           }
         : {}),
 
@@ -91,10 +96,6 @@ export class ThermostatServerBase extends FeaturedBase {
       patch.systemMode = this.internal.systemMode;
     }
 
-    /* if (this.internal.runningMode !== actualState.thermostatRunningMode) {
-      patch.thermostatRunningMode = this.internal.runningMode;
-    } */
-
     if (this.features.heating) {
       if (
         this.internal.targetTemperature !== actualState.occupiedHeatingSetpoint
@@ -108,6 +109,12 @@ export class ThermostatServerBase extends FeaturedBase {
         this.internal.targetTemperature !== actualState.occupiedCoolingSetpoint
       ) {
         patch.occupiedCoolingSetpoint = this.internal.targetTemperature;
+      }
+    }
+
+    if (this.features.autoMode) {
+      if (this.internal.runningMode !== actualState.thermostatRunningMode) {
+        patch.thermostatRunningMode = this.internal.runningMode;
       }
     }
 
