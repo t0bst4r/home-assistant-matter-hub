@@ -4,6 +4,7 @@ import {
   BinarySensorDeviceClass,
   BridgeBasicInformation,
   ClimateDeviceAttributes,
+  ClimateHvacAction,
   ClimateHvacMode,
   ClusterId,
   CoverDeviceAttributes,
@@ -37,15 +38,23 @@ const testEntities: Record<
   [HomeAssistantDomain.climate]: [
     createEntity<ClimateDeviceAttributes>("climate.cl1", "on", {
       hvac_modes: [ClimateHvacMode.heat],
+      hvac_mode: ClimateHvacMode.off,
+      hvac_action: ClimateHvacAction.off,
     }),
     createEntity<ClimateDeviceAttributes>("climate.cl2", "on", {
       hvac_modes: [ClimateHvacMode.cool],
+      hvac_mode: ClimateHvacMode.off,
+      hvac_action: ClimateHvacAction.off,
     }),
     createEntity<ClimateDeviceAttributes>("climate.cl3", "on", {
       hvac_modes: [ClimateHvacMode.heat_cool],
+      hvac_mode: ClimateHvacMode.off,
+      hvac_action: ClimateHvacAction.off,
     }),
     createEntity<ClimateDeviceAttributes>("climate.cl4", "on", {
       hvac_modes: [ClimateHvacMode.heat, ClimateHvacMode.cool],
+      hvac_mode: ClimateHvacMode.off,
+      hvac_action: ClimateHvacAction.off,
     }),
   ],
   [HomeAssistantDomain.cover]: [
