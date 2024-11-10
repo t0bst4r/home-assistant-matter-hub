@@ -41,18 +41,16 @@ export class TemperatureMeasurementServer extends Base {
     if (value == null) {
       return null;
     }
-    const temperature = value * 100;
     switch (unitOfMeasurement) {
-      case "°C":
-        return temperature;
       case "°F":
-        return (temperature - 32) * (5 / 9);
+        return (value - 32) * (5 / 9) * 100;
       case "K":
-        return temperature - 273.15;
+        return (value - 273.15) * 100;
+      case "°C":
       case "":
       case null:
       case undefined:
-        return temperature;
+        return value * 100;
       default:
         return null;
     }
