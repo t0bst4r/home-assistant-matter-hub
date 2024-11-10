@@ -137,7 +137,7 @@ export abstract class ColorConverter {
    * @return Temperature in Kelvin
    */
   public static temperatureMiredsToKelvin(temperatureMireds: number): number {
-    return Math.round(1_000_000 / temperatureMireds);
+    return 1_000_000 / temperatureMireds;
   }
 
   /**
@@ -146,7 +146,7 @@ export abstract class ColorConverter {
    * @return Temperature in Mireds
    */
   public static temperatureKelvinToMireds(temperatureKelvin: number): number {
-    return Math.round(1_000_000 / temperatureKelvin);
+    return 1_000_000 / temperatureKelvin;
   }
 
   public static temperatureKelvinToColor(temperatureKelvin: number): Color {

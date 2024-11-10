@@ -19,12 +19,15 @@ export class ExtendedColorControlServer extends Base.with(
       .entity as HomeAssistantEntityState<LightDeviceAttributes>;
     const minKelvin = state.attributes.min_color_temp_kelvin ?? 1500;
     const maxKelvin = state.attributes.max_color_temp_kelvin ?? 8000;
-    this.state.coupleColorTempToLevelMinMireds =
-      ColorConverter.temperatureKelvinToMireds(maxKelvin);
-    this.state.colorTempPhysicalMinMireds =
-      ColorConverter.temperatureKelvinToMireds(maxKelvin);
-    this.state.colorTempPhysicalMaxMireds =
-      ColorConverter.temperatureKelvinToMireds(minKelvin);
+    this.state.coupleColorTempToLevelMinMireds = Math.floor(
+      ColorConverter.temperatureKelvinToMireds(maxKelvin),
+    );
+    this.state.colorTempPhysicalMinMireds = Math.floor(
+      ColorConverter.temperatureKelvinToMireds(maxKelvin),
+    );
+    this.state.colorTempPhysicalMaxMireds = Math.ceil(
+      ColorConverter.temperatureKelvinToMireds(minKelvin),
+    );
     this.state.startUpColorTemperatureMireds =
       ColorConverter.temperatureKelvinToMireds(
         state.attributes.color_temp_kelvin ?? maxKelvin,
