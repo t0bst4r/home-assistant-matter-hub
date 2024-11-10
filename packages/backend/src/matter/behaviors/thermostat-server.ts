@@ -83,7 +83,10 @@ export class ThermostatServerBase extends FeaturedBase {
     const homeAssistant = this.endpoint.stateOf(HomeAssistantBehavior);
     const currentAttributes = homeAssistant.entity
       .attributes as ClimateDeviceAttributes;
-    const current = this.getSystemMode(currentAttributes.hvac_mode);
+    const current = this.getSystemMode(
+      currentAttributes.hvac_mode,
+      homeAssistant.entity.state,
+    );
     if (systemMode === current) {
       return;
     }
@@ -96,30 +99,42 @@ export class ThermostatServerBase extends FeaturedBase {
   }
 
   private buildPatchState(
-    state: HomeAssistantEntityState,
+    entity: HomeAssistantEntityState,
   ): Partial<ThermostatServerBase.State> {
-    const attributes = state.attributes as ClimateDeviceAttributes;
-    return {
-      localTemperature: this.toTemp(attributes.current_temperature),
-      systemMode: this.getSystemMode(attributes.hvac_mode),
-      thermostatRunningState: this.getRunningState(attributes.hvac_action),
+    const attributes = entity.attributes as ClimateDeviceAttributes;
+    const currentTemperature = this.toTemp(attributes.current_temperature);
+    const targetTemperature = this.toTemp(attributes.temperature);
+    const patch: Partial<ThermostatServerBase.State> = {
+      localTemperature: currentTemperature ?? null,
+      systemMode: this.getSystemMode(attributes.hvac_mode, entity.state),
+      thermostatRunningState: this.getRunningState(
+        attributes.hvac_action,
+        entity.state,
+        currentTemperature,
+        targetTemperature,
+      ),
       ...(this.features.heating
         ? {
-            occupiedHeatingSetpoint: this.toTemp(attributes.temperature),
+            occupiedHeatingSetpoint: targetTemperature,
             minHeatSetpointLimit: this.toTemp(attributes.min_temp),
             maxHeatSetpointLimit: this.toTemp(attributes.max_temp),
           }
         : {}),
       ...(this.features.cooling
         ? {
-            occupiedCoolingSetpoint: this.toTemp(attributes.temperature),
+            occupiedCoolingSetpoint: targetTemperature,
             minCoolSetpointLimit: this.toTemp(attributes.min_temp),
             maxCoolSetpointLimit: this.toTemp(attributes.max_temp),
           }
         : {}),
       ...(this.features.autoMode
         ? {
-            thermostatRunningMode: this.getRunningMode(attributes.hvac_action),
+            thermostatRunningMode: this.getRunningMode(
+              attributes.hvac_action,
+              entity.state,
+              currentTemperature,
+              targetTemperature,
+            ),
             minSetpointDeadBand: 0,
           }
         : {}),
@@ -130,12 +145,15 @@ export class ThermostatServerBase extends FeaturedBase {
             ? Thermostat.ControlSequenceOfOperation.CoolingOnly
             : Thermostat.ControlSequenceOfOperation.HeatingOnly,
     };
+    console.log(JSON.stringify(patch, null, 2));
+    return patch;
   }
 
   private getSystemMode(
     hvacMode: ClimateHvacMode | undefined,
+    state: string | ClimateHvacMode,
   ): Thermostat.SystemMode {
-    switch (hvacMode) {
+    switch (hvacMode ?? state) {
       case ClimateHvacMode.heat:
         return Thermostat.SystemMode.Heat;
       case ClimateHvacMode.cool:
@@ -148,49 +166,86 @@ export class ThermostatServerBase extends FeaturedBase {
       case ClimateHvacMode.fan_only:
         return Thermostat.SystemMode.FanOnly;
       case ClimateHvacMode.off:
-      case undefined:
         return Thermostat.SystemMode.Off;
     }
+    if (state === "unavailable") {
+      return Thermostat.SystemMode.Sleep;
+    }
+    return Thermostat.SystemMode.Off;
   }
 
   private getRunningMode(
     hvacAction: ClimateHvacAction | undefined,
+    state: string | ClimateHvacMode,
+    currentTemperature: number | undefined,
+    targetTemperature: number | undefined,
   ): Thermostat.ThermostatRunningMode {
-    switch (hvacAction) {
+    switch (hvacAction ?? state) {
       case ClimateHvacAction.preheating:
       case ClimateHvacAction.defrosting:
       case ClimateHvacAction.heating:
       case ClimateHvacAction.drying:
+      case ClimateHvacMode.heat:
+      case ClimateHvacMode.dry:
         return Thermostat.ThermostatRunningMode.Heat;
       case ClimateHvacAction.cooling:
+      case ClimateHvacMode.cool:
         return Thermostat.ThermostatRunningMode.Cool;
       case ClimateHvacAction.fan:
       case ClimateHvacAction.idle:
       case ClimateHvacAction.off:
-      case undefined:
+      case ClimateHvacMode.fan_only:
+      case ClimateHvacMode.off:
         return Thermostat.ThermostatRunningMode.Off;
+      case ClimateHvacMode.heat_cool:
+      case ClimateHvacMode.auto:
+        return currentTemperature == undefined ||
+          targetTemperature == undefined ||
+          currentTemperature === targetTemperature
+          ? Thermostat.ThermostatRunningMode.Off
+          : currentTemperature < targetTemperature
+            ? Thermostat.ThermostatRunningMode.Heat
+            : Thermostat.ThermostatRunningMode.Cool;
     }
+    return Thermostat.ThermostatRunningMode.Off;
   }
 
   private getRunningState(
     hvacAction: ClimateHvacAction | undefined,
+    state: string | ClimateHvacMode,
+    currentTemperature: number | undefined,
+    targetTemperature: number | undefined,
   ): ThermostatRunningState {
-    switch (hvacAction) {
+    switch (hvacAction ?? state) {
       case ClimateHvacAction.preheating:
       case ClimateHvacAction.defrosting:
       case ClimateHvacAction.heating:
+      case ClimateHvacMode.heat:
         return { heat: true };
       case ClimateHvacAction.cooling:
+      case ClimateHvacMode.cool:
         return { cool: true };
       case ClimateHvacAction.drying:
+      case ClimateHvacMode.dry:
         return { heat: true, fan: true };
+      case ClimateHvacMode.fan_only:
       case ClimateHvacAction.fan:
         return { fan: true };
       case ClimateHvacAction.idle:
       case ClimateHvacAction.off:
-      case undefined:
+      case ClimateHvacMode.off:
         return {};
+      case ClimateHvacMode.heat_cool:
+      case ClimateHvacMode.auto:
+        return currentTemperature == undefined ||
+          targetTemperature == undefined ||
+          currentTemperature === targetTemperature
+          ? {}
+          : currentTemperature < targetTemperature
+            ? { heat: true }
+            : { cool: true };
     }
+    return {};
   }
 
   private getHvacMode(systemMode: Thermostat.SystemMode): ClimateHvacMode {

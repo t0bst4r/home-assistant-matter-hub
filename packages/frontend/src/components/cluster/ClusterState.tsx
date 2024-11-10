@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { OnOffState } from "./states/OnOffState.tsx";
-import { FC, useEffect } from "react";
-import { Tooltip } from "@mui/material";
+import { FC, useEffect, useState } from "react";
+import { Checkbox, Tooltip } from "@mui/material";
 import { ColorControlState } from "./states/ColorControlState.tsx";
 import { LevelControlState } from "./states/LevelControlState.tsx";
 import { DoorLockState } from "./states/DoorLockState.tsx";
@@ -79,6 +79,27 @@ const ErrorRenderer = (props: { clusterId: string; state: unknown }) => {
   return undefined;
 };
 
+const TooltipContent = ({ clusterId, state }: ClusterStateProps) => {
+  const [showDetails, setShowDetails] = useState(false);
+  return (
+    <>
+      <Box>
+        <span>{clusterId}</span>
+        <span>, show details:</span>
+        <Checkbox
+          value={showDetails}
+          onClick={() => setShowDetails(!showDetails)}
+        />
+      </Box>
+      {showDetails && (
+        <Box maxHeight="300px" sx={{ overflowY: "auto" }}>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </Box>
+      )}
+    </>
+  );
+};
+
 export const ClusterState = ({ clusterId, state }: ClusterStateProps) => {
   const Component = renderer[clusterId as ClusterId];
   if (Component === undefined) {
@@ -87,7 +108,10 @@ export const ClusterState = ({ clusterId, state }: ClusterStateProps) => {
     return <></>;
   } else {
     return (
-      <Tooltip title={clusterId} arrow>
+      <Tooltip
+        title={<TooltipContent clusterId={clusterId} state={state} />}
+        arrow
+      >
         <Box display="flex" alignItems="center">
           <Component state={state} />
         </Box>
