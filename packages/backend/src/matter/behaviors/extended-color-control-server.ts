@@ -38,13 +38,12 @@ export class ExtendedColorControlServer extends Base.with(
           state.attributes.color_temp_kelvin,
         );
     }
-    homeAssistant.onUpdate((s) => this.update(s));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   protected async update(
     state: HomeAssistantEntityState<LightDeviceAttributes>,
   ) {
-    const current = this.endpoint.stateOf(ExtendedColorControlServer);
     const color = this.getMatterColor(state);
     if (state.attributes.color_mode === LightDeviceColorMode.COLOR_TEMP) {
       let kelvin = state.attributes.color_temp_kelvin;
@@ -53,20 +52,18 @@ export class ExtendedColorControlServer extends Base.with(
       if (kelvin != null) {
         kelvin = Math.max(Math.min(kelvin, maxKelvin), minKelvin);
         const mireds = ColorConverter.temperatureKelvinToMireds(kelvin);
-        if (mireds != current.colorTemperatureMireds) {
-          await this.endpoint.setStateOf(ExtendedColorControlServer, {
-            colorTemperatureMireds: mireds,
-          });
+        if (mireds != this.state.colorTemperatureMireds) {
+          this.state.colorTemperatureMireds = mireds;
         }
       }
     } else {
       if (color != null) {
         const [hue, saturation] = color;
         if (
-          current.currentHue !== hue ||
-          current.currentSaturation !== saturation
+          this.state.currentHue !== hue ||
+          this.state.currentSaturation !== saturation
         ) {
-          await this.endpoint.setStateOf(ExtendedColorControlServer, {
+          Object.assign(this.state, {
             currentHue: hue,
             currentSaturation: saturation,
           });
@@ -93,7 +90,7 @@ export class ExtendedColorControlServer extends Base.with(
         color_temp_kelvin: targetKelvin,
       },
       {
-        entity_id: homeAssistant.state.entity.entity_id,
+        entity_id: homeAssistant.entityId,
       },
     );
   }
@@ -115,7 +112,7 @@ export class ExtendedColorControlServer extends Base.with(
         hs_color: [hue, saturation],
       },
       {
-        entity_id: homeAssistant.state.entity.entity_id,
+        entity_id: homeAssistant.entityId,
       },
     );
   }

@@ -7,26 +7,18 @@ export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    const homeAssistantInfo = homeAssistant.state;
-    this.state.vendorId = VendorId(homeAssistantInfo.basicInformation.vendorId);
-    this.state.vendorName = maxLengthOrHash(
-      homeAssistantInfo.basicInformation.vendorName,
-      32,
-    );
-    this.state.productName = maxLengthOrHash(
-      homeAssistantInfo.basicInformation.productName,
-      32,
-    );
+    const { basicInformation, entity } = homeAssistant.state;
+    this.state.vendorId = VendorId(basicInformation.vendorId);
+    this.state.vendorName = maxLengthOrHash(basicInformation.vendorName, 32);
+    this.state.productName = maxLengthOrHash(basicInformation.productName, 32);
     this.state.productLabel = maxLengthOrHash(
-      homeAssistantInfo.basicInformation.productLabel,
+      basicInformation.productLabel,
       64,
     );
-    this.state.hardwareVersion =
-      homeAssistantInfo.basicInformation.hardwareVersion;
-    this.state.softwareVersion =
-      homeAssistantInfo.basicInformation.softwareVersion;
+    this.state.hardwareVersion = basicInformation.hardwareVersion;
+    this.state.softwareVersion = basicInformation.softwareVersion;
     this.state.nodeLabel = maxLengthOrHash(
-      homeAssistantInfo.entity.attributes.friendly_name ?? "Unknown Entity",
+      entity.attributes.friendly_name ?? "Unknown Entity",
       32,
     );
     this.state.reachable = true;

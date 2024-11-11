@@ -29,25 +29,28 @@ export class WindowCoveringServer extends FeaturedBase {
         .current_position,
       this.state.config?.lift,
     );
-    const initialValue = initialPercentage ? initialPercentage * 100 : null;
-    this.state.type = WindowCovering.WindowCoveringType.Rollershade;
-    this.state.configStatus = {
-      operational: true,
-      onlineReserved: true,
-      liftPositionAware: true,
-      liftMovementReversed: false,
-    };
-    this.state.targetPositionLiftPercent100ths = initialValue;
-    this.state.currentPositionLiftPercent100ths = initialValue;
-    this.state.installedOpenLimitLift = 0;
-    this.state.installedClosedLimitLift = 10000;
-    this.state.operationalStatus = {
-      global: WindowCovering.MovementStatus.Stopped,
-      lift: WindowCovering.MovementStatus.Stopped,
-    };
-    this.state.endProductType = WindowCovering.EndProductType.RollerShade;
-    this.state.mode = {};
-    homeAssistant.onUpdate((s) => this.update(s));
+    const initialValue =
+      initialPercentage != null ? initialPercentage * 100 : null;
+    Object.assign(this.state, {
+      type: WindowCovering.WindowCoveringType.Rollershade,
+      configStatus: {
+        operational: true,
+        onlineReserved: true,
+        liftPositionAware: true,
+        liftMovementReversed: false,
+      },
+      targetPositionLiftPercent100ths: initialValue,
+      currentPositionLiftPercent100ths: initialValue,
+      installedOpenLimitLift: 0,
+      installedClosedLimitLift: 10000,
+      operationalStatus: {
+        global: WindowCovering.MovementStatus.Stopped,
+        lift: WindowCovering.MovementStatus.Stopped,
+      },
+      endProductType: WindowCovering.EndProductType.RollerShade,
+      mode: {},
+    });
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   override async upOrOpen() {
@@ -57,7 +60,7 @@ export class WindowCoveringServer extends FeaturedBase {
       "cover",
       "open_cover",
       {},
-      { entity_id: homeAssistant.state.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
@@ -68,7 +71,7 @@ export class WindowCoveringServer extends FeaturedBase {
       "cover",
       "close_cover",
       {},
-      { entity_id: homeAssistant.state.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
@@ -79,7 +82,7 @@ export class WindowCoveringServer extends FeaturedBase {
       "cover",
       "stop_cover",
       {},
-      { entity_id: homeAssistant.state.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
@@ -100,15 +103,15 @@ export class WindowCoveringServer extends FeaturedBase {
         position: targetPosition,
       },
       {
-        entity_id: homeAssistant.state.entity.entity_id,
+        entity_id: homeAssistant.entityId,
       },
     );
   }
 
   private async update(state: HomeAssistantEntityState<CoverDeviceAttributes>) {
-    const current = this.endpoint.stateOf(WindowCoveringServer);
     const actualLiftMovement =
-      current.operationalStatus.lift ?? WindowCovering.MovementStatus.Stopped;
+      this.state.operationalStatus.lift ??
+      WindowCovering.MovementStatus.Stopped;
     let expectedLiftMovement: WindowCovering.MovementStatus | undefined =
       actualLiftMovement;
     if (state.state === "open" || state.state === "closed") {
@@ -119,10 +122,10 @@ export class WindowCoveringServer extends FeaturedBase {
       expectedLiftMovement = WindowCovering.MovementStatus.Closing;
     }
 
-    const actualPosition = current.currentPositionLiftPercent100ths;
+    const actualPosition = this.state.currentPositionLiftPercent100ths;
     const expectedPosition = this.convertLiftValue(
       state.attributes.current_position,
-      current.config?.lift,
+      this.state.config?.lift,
     );
     const expectedPosition100ths =
       expectedPosition != null ? expectedPosition * 100 : actualPosition;
@@ -131,7 +134,7 @@ export class WindowCoveringServer extends FeaturedBase {
       expectedLiftMovement !== actualLiftMovement ||
       actualPosition !== expectedPosition100ths
     ) {
-      await this.endpoint.setStateOf(WindowCoveringServer, {
+      Object.assign(this.state, {
         currentPositionLiftPercent100ths:
           expectedPosition100ths != null ? expectedPosition100ths : undefined,
         operationalStatus: {

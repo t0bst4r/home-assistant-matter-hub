@@ -7,26 +7,22 @@ export class OccupancySensingServer extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    this.state.occupancy = {
-      occupied: this.isOccupied(homeAssistant.state.entity),
-    };
-    this.state.occupancySensorType =
-      OccupancySensing.OccupancySensorType.PhysicalContact;
-    this.state.occupancySensorTypeBitmap = {
-      pir: false,
-      physicalContact: true,
-      ultrasonic: false,
-    };
-    homeAssistant.onUpdate((s) => this.update(s));
+    Object.assign(this.state, {
+      occupancy: { occupied: this.isOccupied(homeAssistant.state.entity) },
+      occupancySensorType: OccupancySensing.OccupancySensorType.PhysicalContact,
+      occupancySensorTypeBitmap: {
+        pir: false,
+        physicalContact: true,
+        ultrasonic: false,
+      },
+    });
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(OccupancySensingServer);
     const occupied = this.isOccupied(state);
-    if (current.occupancy.occupied !== occupied) {
-      await this.endpoint.setStateOf(OccupancySensingServer, {
-        occupancy: { occupied },
-      });
+    if (this.state.occupancy.occupied !== occupied) {
+      this.state.occupancy = { occupied };
     }
   }
 

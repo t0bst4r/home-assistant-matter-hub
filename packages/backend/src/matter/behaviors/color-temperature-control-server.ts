@@ -39,13 +39,12 @@ export class ColorTemperatureControlServer extends Base.with(
           state.attributes.color_temp_kelvin,
         );
     }
-    homeAssistant.onUpdate((s) => this.update(s));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   protected async update(
     state: HomeAssistantEntityState<LightDeviceAttributes>,
   ) {
-    const current = this.endpoint.stateOf(ColorTemperatureControlServer);
     if (state.attributes.color_mode === LightDeviceColorMode.COLOR_TEMP) {
       let kelvin = state.attributes.color_temp_kelvin;
       const minKelvin = state.attributes.min_color_temp_kelvin ?? 1500;
@@ -53,10 +52,8 @@ export class ColorTemperatureControlServer extends Base.with(
       if (kelvin != null) {
         kelvin = Math.max(Math.min(kelvin, maxKelvin), minKelvin);
         const mireds = ColorConverter.temperatureKelvinToMireds(kelvin);
-        if (mireds != current.colorTemperatureMireds) {
-          await this.endpoint.setStateOf(ColorTemperatureControlServer, {
-            colorTemperatureMireds: mireds,
-          });
+        if (mireds != this.state.colorTemperatureMireds) {
+          this.state.colorTemperatureMireds = mireds;
         }
       }
     }
@@ -80,7 +77,7 @@ export class ColorTemperatureControlServer extends Base.with(
         color_temp_kelvin: targetKelvin,
       },
       {
-        entity_id: homeAssistant.state.entity.entity_id,
+        entity_id: homeAssistant.entityId,
       },
     );
   }

@@ -18,30 +18,28 @@ export class ThermostatServerBase extends FeaturedBase {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
 
-    const updatedState = this.buildPatchState(homeAssistant.state.entity);
+    const updatedState = this.buildPatchState(homeAssistant.entity, this.state);
     Object.assign(this.state, updatedState);
 
     if (this.features.heating) {
-      this.events.occupiedHeatingSetpoint$Changed.on(
-        this.targetTemperatureChanged.bind(this),
+      this.reactTo(
+        this.events.occupiedHeatingSetpoint$Changed,
+        this.targetTemperatureChanged,
       );
     }
     if (this.features.cooling) {
-      this.events.occupiedCoolingSetpoint$Changed.on(
-        this.targetTemperatureChanged.bind(this),
+      this.reactTo(
+        this.events.occupiedCoolingSetpoint$Changed,
+        this.targetTemperatureChanged,
       );
     }
-    this.events.systemMode$Changed.on(this.systemModeChanged.bind(this));
-    homeAssistant.onUpdate((s) =>
-      this.update(s as HomeAssistantEntityState<ClimateDeviceAttributes>),
-    );
+    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(
-    state: HomeAssistantEntityState<ClimateDeviceAttributes>,
-  ) {
-    const patch = this.buildPatchState(state);
-    await this.endpoint.setStateOf(ThermostatServer, patch);
+  private async update(entity: HomeAssistantEntityState) {
+    const patch = this.buildPatchState(entity, this.state);
+    Object.assign(this.state, patch);
   }
 
   override async setpointRaiseLower(
@@ -59,28 +57,28 @@ export class ThermostatServerBase extends FeaturedBase {
       "climate",
       "set_temperature",
       { temperature },
-      { entity_id: homeAssistant.state.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
   private async targetTemperatureChanged(value: number) {
-    const homeAssistant = this.endpoint.stateOf(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
     const currentAttributes = homeAssistant.entity
       .attributes as ClimateDeviceAttributes;
     const current = this.toTemp(currentAttributes.current_temperature);
     if (value === current) {
       return;
     }
-    await homeAssistant.actions.callAction(
+    await homeAssistant.callAction(
       "climate",
       "set_temperature",
       { temperature: value / 100 },
-      { entity_id: homeAssistant.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
   private async systemModeChanged(systemMode: Thermostat.SystemMode) {
-    const homeAssistant = this.endpoint.stateOf(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
     const currentAttributes = homeAssistant.entity
       .attributes as ClimateDeviceAttributes;
     const current = this.getSystemMode(
@@ -90,16 +88,17 @@ export class ThermostatServerBase extends FeaturedBase {
     if (systemMode === current) {
       return;
     }
-    await homeAssistant.actions.callAction(
+    await homeAssistant.callAction(
       "climate",
       "set_hvac_mode",
       { hvac_mode: this.getHvacMode(systemMode) },
-      { entity_id: homeAssistant.entity.entity_id },
+      { entity_id: homeAssistant.entityId },
     );
   }
 
   private buildPatchState(
     entity: HomeAssistantEntityState,
+    currentState: ThermostatServerBase.State,
   ): Partial<ThermostatServerBase.State> {
     const attributes = entity.attributes as ClimateDeviceAttributes;
     const currentTemperature = this.toTemp(attributes.current_temperature);
@@ -113,6 +112,12 @@ export class ThermostatServerBase extends FeaturedBase {
         currentTemperature,
         targetTemperature,
       ),
+      controlSequenceOfOperation:
+        this.features.cooling && this.features.heating
+          ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
+          : this.features.cooling
+            ? Thermostat.ControlSequenceOfOperation.CoolingOnly
+            : Thermostat.ControlSequenceOfOperation.HeatingOnly,
       ...(this.features.heating
         ? {
             occupiedHeatingSetpoint: targetTemperature,
@@ -138,14 +143,15 @@ export class ThermostatServerBase extends FeaturedBase {
             minSetpointDeadBand: 0,
           }
         : {}),
-      controlSequenceOfOperation:
-        this.features.cooling && this.features.heating
-          ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
-          : this.features.cooling
-            ? Thermostat.ControlSequenceOfOperation.CoolingOnly
-            : Thermostat.ControlSequenceOfOperation.HeatingOnly,
     };
-    console.log(JSON.stringify(patch, null, 2));
+    const keys = Object.keys(patch) as Array<keyof ThermostatServerBase.State>;
+    for (const key of keys) {
+      const current = currentState[key];
+      const patchValue = patch[key];
+      if (current == patchValue) {
+        delete patch[key];
+      }
+    }
     return patch;
   }
 

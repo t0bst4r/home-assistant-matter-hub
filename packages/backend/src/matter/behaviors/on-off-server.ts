@@ -7,14 +7,13 @@ export class OnOffServer extends Base {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
     this.state.onOff = homeAssistant.state.entity.state !== "off";
-    homeAssistant.onUpdate((s) => this.update(s));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(OnOffServer);
     const isOn = state.state !== "off";
-    if (isOn !== current.onOff) {
-      await this.endpoint.setStateOf(OnOffServer, { onOff: isOn });
+    if (isOn !== this.state.onOff) {
+      this.state.onOff = isOn;
     }
   }
 
@@ -22,7 +21,7 @@ export class OnOffServer extends Base {
     await super.on();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("homeassistant", "turn_on", undefined, {
-      entity_id: homeAssistant.state.entity.entity_id,
+      entity_id: homeAssistant.entityId,
     });
   }
 
@@ -30,7 +29,7 @@ export class OnOffServer extends Base {
     await super.off();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("homeassistant", "turn_off", undefined, {
-      entity_id: homeAssistant.state.entity.entity_id,
+      entity_id: homeAssistant.entityId,
     });
   }
 }

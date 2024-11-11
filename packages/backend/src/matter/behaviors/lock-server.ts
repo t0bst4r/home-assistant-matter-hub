@@ -7,27 +7,26 @@ export class LockServer extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    this.state.lockState = getMatterLockState(homeAssistant.state.entity);
-    this.state.lockType = DoorLock.LockType.DeadBolt;
-    this.state.operatingMode = DoorLock.OperatingMode.Normal;
-    this.state.actuatorEnabled = true;
-    this.state.supportedOperatingModes = {
-      noRemoteLockUnlock: false,
-      normal: true,
-      passage: false,
-      privacy: false,
-      vacation: false,
-    };
-    homeAssistant.onUpdate((s) => this.update(s));
+    Object.assign(this.state, {
+      lockState: this.getMatterLockState(homeAssistant.entity),
+      lockType: DoorLock.LockType.DeadBolt,
+      operatingMode: DoorLock.OperatingMode.Normal,
+      actuatorEnabled: true,
+      supportedOperatingModes: {
+        noRemoteLockUnlock: false,
+        normal: true,
+        passage: false,
+        privacy: false,
+        vacation: false,
+      },
+    });
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(LockServer);
-    const newState = getMatterLockState(state);
-    if (current.lockState !== newState) {
-      await this.endpoint.setStateOf(LockServer, {
-        lockState: newState,
-      });
+    const newState = this.getMatterLockState(state);
+    if (this.state.lockState !== newState) {
+      this.state.lockState = newState;
     }
   }
 
@@ -35,7 +34,7 @@ export class LockServer extends Base {
     super.lockDoor();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("lock", "lock", undefined, {
-      entity_id: homeAssistant.state.entity.entity_id,
+      entity_id: homeAssistant.entityId,
     });
   }
 
@@ -43,13 +42,13 @@ export class LockServer extends Base {
     super.unlockDoor();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("lock", "unlock", undefined, {
-      entity_id: homeAssistant.state.entity.entity_id,
+      entity_id: homeAssistant.entityId,
     });
   }
-}
 
-function getMatterLockState(state: HomeAssistantEntityState) {
-  return mapHAState[state.state] ?? DoorLock.LockState.NotFullyLocked;
+  private getMatterLockState(state: HomeAssistantEntityState) {
+    return mapHAState[state.state] ?? DoorLock.LockState.NotFullyLocked;
+  }
 }
 
 const mapHAState: Record<string, DoorLock.LockState> = {

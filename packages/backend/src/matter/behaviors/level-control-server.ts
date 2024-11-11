@@ -19,42 +19,31 @@ export class LevelControlServer extends Base {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    const state = homeAssistant.state.entity;
-    this.state.currentLevel = this.state.config.getValue(state);
-    this.state.minLevel = this.state.config.getMinValue?.(state);
-    this.state.maxLevel = this.state.config.getMaxValue?.(state);
-    this.state.managedTransitionTimeHandling = false;
-    this.state.onTransitionTime = 1;
-    this.state.offTransitionTime = 1;
-    this.state.onOffTransitionTime = 1;
-    homeAssistant.onUpdate((s) => this.update(s));
+    const state = homeAssistant.entity;
+    Object.assign(this.state, {
+      currentLevel: this.state.config.getValue(state),
+      minLevel: this.state.config.getMinValue?.(state),
+      maxLevel: this.state.config.getMaxValue?.(state),
+    });
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   protected async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(LevelControlServer);
-    const level = current.config.getValue(state);
-    if (level != null && !isNaN(level) && level != current.currentLevel) {
-      await this.endpoint.setStateOf(LevelControlServer, {
-        currentLevel: level,
-      });
+    const level = this.state.config.getValue(state);
+    if (level != null && !isNaN(level) && level != this.state.currentLevel) {
+      this.state.currentLevel = level;
     }
   }
 
   override async moveToLevel(request: LevelControl.MoveToLevelRequest) {
-    await super.moveToLevel({
-      ...request,
-      transitionTime: request.transitionTime ?? 1,
-    });
+    await super.moveToLevel(request);
     await this.handleMoveToLevel(request);
   }
 
   override async moveToLevelWithOnOff(
     request: LevelControl.MoveToLevelRequest,
   ) {
-    await super.moveToLevelWithOnOff({
-      ...request,
-      transitionTime: request.transitionTime ?? 1,
-    });
+    await super.moveToLevelWithOnOff(request);
     await this.handleMoveToLevel(request);
   }
 
@@ -66,7 +55,7 @@ export class LevelControlServer extends Base {
       action,
       this.state.config.moveToLevel.data(request.level),
       {
-        entity_id: homeAssistant.state.entity.entity_id,
+        entity_id: homeAssistant.entityId,
       },
     );
   }

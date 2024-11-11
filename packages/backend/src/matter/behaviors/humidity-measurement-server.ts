@@ -16,16 +16,13 @@ export class HumidityMeasurementServer extends Base {
       this.state.config,
       homeAssistant.state.entity,
     );
-    homeAssistant.events.entity$Changed.on((s) => this.update(s));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(HumidityMeasurementServer);
-    const humidity = this.getHumidity(current.config, state);
-    if (current.measuredValue !== humidity) {
-      await this.endpoint.setStateOf(HumidityMeasurementServer, {
-        measuredValue: humidity,
-      });
+    const humidity = this.getHumidity(this.state.config, state);
+    if (this.state.measuredValue !== humidity) {
+      this.state.measuredValue = humidity;
     }
   }
 

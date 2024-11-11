@@ -1,11 +1,10 @@
-import { Behavior } from "@matter/main";
+import { Behavior, EventEmitter } from "@matter/main";
 import {
   BridgeBasicInformation,
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
-import { EventEmitter, MaybePromise } from "@matter/main";
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
 
@@ -14,14 +13,16 @@ export class HomeAssistantBehavior extends Behavior {
   declare state: HomeAssistantBehavior.State;
   declare events: HomeAssistantBehavior.Events;
 
+  get entityId(): string {
+    return this.entity.entity_id;
+  }
+
   get entity(): HomeAssistantEntityState {
     return this.state.entity;
   }
 
-  public onUpdate(
-    callback: (entity: HomeAssistantEntityState) => MaybePromise<void>,
-  ) {
-    this.events.entity$Changed.on(callback);
+  get onChange(): HomeAssistantBehavior.Events["entity$Changed"] {
+    return this.events.entity$Changed;
   }
 
   async callAction<T = void>(

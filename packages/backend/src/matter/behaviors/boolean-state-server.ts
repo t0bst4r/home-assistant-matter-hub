@@ -14,18 +14,15 @@ export class BooleanStateServer extends Base {
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
     this.state.stateValue = this.getStateValue(
       this.state.config,
-      homeAssistant.state.entity,
+      homeAssistant.entity,
     );
-    homeAssistant.onUpdate((s) => this.update(s));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(state: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(BooleanStateServer);
-    const newState = this.getStateValue(current.config, state);
-    if (current.stateValue != newState) {
-      await this.endpoint.setStateOf(BooleanStateServer, {
-        stateValue: newState,
-      });
+    const newState = this.getStateValue(this.state.config, state);
+    if (this.state.stateValue != newState) {
+      this.state.stateValue = newState;
     }
   }
 

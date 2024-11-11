@@ -13,22 +13,19 @@ export class TemperatureMeasurementServer extends Base {
   declare state: TemperatureMeasurementServer.State;
 
   override async initialize() {
+    await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
     this.state.measuredValue = this.getTemperature(
       this.state.config,
       homeAssistant.entity,
     );
-    homeAssistant.onUpdate((s) => this.update(s));
-    await super.initialize();
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
   private async update(entity: HomeAssistantEntityState) {
-    const current = this.endpoint.stateOf(TemperatureMeasurementServer);
-    const temperature = this.getTemperature(current.config, entity);
-    if (current.measuredValue !== temperature) {
-      await this.endpoint.setStateOf(TemperatureMeasurementServer, {
-        measuredValue: temperature,
-      });
+    const temperature = this.getTemperature(this.state.config, entity);
+    if (this.state.measuredValue !== temperature) {
+      this.state.measuredValue = temperature;
     }
   }
 
