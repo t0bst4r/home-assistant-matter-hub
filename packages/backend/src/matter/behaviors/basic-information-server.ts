@@ -2,26 +2,41 @@ import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behavi
 import crypto from "node:crypto";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 import { VendorId } from "@matter/main";
+import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
     const { basicInformation, entity } = homeAssistant.state;
-    this.state.vendorId = VendorId(basicInformation.vendorId);
-    this.state.vendorName = maxLengthOrHash(basicInformation.vendorName, 32);
-    this.state.productName = maxLengthOrHash(basicInformation.productName, 32);
-    this.state.productLabel = maxLengthOrHash(
-      basicInformation.productLabel,
-      64,
-    );
-    this.state.hardwareVersion = basicInformation.hardwareVersion;
-    this.state.softwareVersion = basicInformation.softwareVersion;
-    this.state.nodeLabel = maxLengthOrHash(
+    Object.assign(this.state, {
+      vendorId: VendorId(basicInformation.vendorId),
+      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
+      productName: maxLengthOrHash(basicInformation.productName, 32),
+      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
+      hardwareVersion: basicInformation.hardwareVersion,
+      softwareVersion: basicInformation.softwareVersion,
+      nodeLabel: maxLengthOrHash(
+        entity.attributes.friendly_name ?? entity.entity_id,
+        32,
+      ),
+      reachable: entity.state !== "unavailable",
+    });
+    this.reactTo(homeAssistant.onChange, this.update);
+  }
+
+  private update(entity: HomeAssistantEntityState) {
+    const name = maxLengthOrHash(
       entity.attributes.friendly_name ?? entity.entity_id,
       32,
     );
-    this.state.reachable = true;
+    if (name !== this.state.nodeLabel) {
+      this.state.nodeLabel = name;
+    }
+    const reachable = entity.state !== "unavailable";
+    if (reachable !== this.state.reachable) {
+      this.state.reachable = reachable;
+    }
   }
 }
 
