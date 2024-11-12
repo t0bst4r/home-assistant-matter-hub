@@ -36,7 +36,7 @@ function maxLengthOrHash(value: string, maxLength: number): string {
       .createHash("md5")
       .update(value)
       .digest("hex")
-      .substring(0, 8);
-    return value.substring(0, maxLength - 8) + hash;
+      .substring(0, 4);
+    return value.substring(0, maxLength - 4) + hash;
   }
 }
