@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc && node bundle.js",
-    "serve": "tsx watch --env-file=../../.env --env-file=.env.development --clear-screen=false src/cli.ts start"
+    "serve": "tsx watch --env-file=../../.env --env-file=.env.development --clear-screen=false src/cli.ts start",
+    "help": "tsx src/cli.ts start --help"
   },
   "dependencies": {
     "@home-assistant-matter-hub/common": "*",

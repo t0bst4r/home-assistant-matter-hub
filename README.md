@@ -97,7 +97,8 @@ using the `--storage-location=/path/to/storage` option or `HAMH_STORAGE_STORAGE`
 ## 2. Configuration
 
 Due to its advanced configuration options it is not possible to simply configure everything with environment variables
-or command line parameters. The following parameters are available:
+or command line parameters. Therefore, bridges are configured within the application itself. General app configuration is
+done using the CI or environment variables. The following parameters are available:
 
 ```
 home-assistant-matter-hub start
@@ -106,6 +107,9 @@ start the application
 
 Options:
   --help                         Show help                                                             [boolean]
+
+  --config                       Provide the path to a configuration JSON file, which can include all of the
+                                 following options. You can use kebabcase ("log-level") or camelcase ("logLevel").
 
   --log-level                    Set the log level                                                      [string]
                                  choices: "silly", "debug", "info", "warn", "error"
@@ -127,6 +131,8 @@ Options:
 
 Each of those configuration options can be configured via environment variables, too. Simply prefix them with `HAMH_`
 and write them in capslock with underscores (e.g. `HAMH_MDNS_NETWORK_INTERFACE`).
+
+**Those configuration options are not needed for the Home Assistant Addon Installation type.**
 
 ## 3. Bridge Configuration
 

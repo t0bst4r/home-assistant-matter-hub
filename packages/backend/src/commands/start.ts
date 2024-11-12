@@ -19,6 +19,7 @@ import {
   StorageService,
   Logger as MatterLogger,
 } from "@matter/main";
+import fs from "node:fs";
 
 interface Options {
   "log-level": string;
@@ -43,6 +44,19 @@ const basicInformation: BridgeBasicInformation = {
 function builder(yargs: Argv): Argv<Options> {
   return yargs
     .version(false)
+    .config(
+      "config",
+      'Provide the path to a configuration JSON file, which can include all the other command options. You can use kebabcase ("log-level") or camelcase ("logLevel").',
+      (configPath) => {
+        if (configPath.trim() === "") {
+          return {};
+        }
+        if (!fs.existsSync(configPath)) {
+          throw new Error(`Config file '${configPath}' does not exist!`);
+        }
+        return JSON.parse(fs.readFileSync(configPath, "utf-8"));
+      },
+    )
     .option("log-level", {
       type: "string",
       choices: ["silly", "debug", "info", "warn", "error"],
