@@ -18,7 +18,7 @@ export class BasicInformationServer extends Base {
     this.state.hardwareVersion = basicInformation.hardwareVersion;
     this.state.softwareVersion = basicInformation.softwareVersion;
     this.state.nodeLabel = maxLengthOrHash(
-      entity.attributes.friendly_name ?? "Unknown Entity",
+      entity.attributes.friendly_name ?? entity.entity_id,
       32,
     );
     this.state.reachable = true;
