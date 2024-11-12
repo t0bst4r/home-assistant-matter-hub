@@ -25,7 +25,7 @@ export class LevelControlServer extends Base {
       minLevel: this.state.config.getMinValue?.(state),
       maxLevel: this.state.config.getMaxValue?.(state),
     });
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   protected async update(state: HomeAssistantEntityState) {

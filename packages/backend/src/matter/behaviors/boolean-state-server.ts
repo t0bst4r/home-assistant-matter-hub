@@ -16,7 +16,7 @@ export class BooleanStateServer extends Base {
       this.state.config,
       homeAssistant.entity,
     );
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(state: HomeAssistantEntityState) {

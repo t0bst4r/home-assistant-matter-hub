@@ -20,7 +20,7 @@ export class LockServer extends Base {
         vacation: false,
       },
     });
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(state: HomeAssistantEntityState) {

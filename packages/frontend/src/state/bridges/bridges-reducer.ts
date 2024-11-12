@@ -4,6 +4,7 @@ import {
   createBridge,
   deleteBridge,
   loadBridges,
+  resetBridge,
   updateBridge,
 } from "./bridge-actions.ts";
 
@@ -32,6 +33,13 @@ export const bridgesReducer = createReducer(initialState, (builder) => {
       state.items.content?.push(action.payload);
     })
     .addCase(updateBridge.fulfilled, (state, action) => {
+      const idx =
+        state.items.content?.findIndex((b) => b.id === action.payload.id) ?? -1;
+      if (idx != -1) {
+        state.items.content![idx] = action.payload;
+      }
+    })
+    .addCase(resetBridge.fulfilled, (state, action) => {
       const idx =
         state.items.content?.findIndex((b) => b.id === action.payload.id) ?? -1;
       if (idx != -1) {

@@ -16,7 +16,7 @@ export class HumidityMeasurementServer extends Base {
       this.state.config,
       homeAssistant.state.entity,
     );
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(state: HomeAssistantEntityState) {

@@ -22,6 +22,7 @@ export interface BridgeCardProps {
   active?: boolean;
   onClick: () => void;
   onDelete: () => void;
+  onReset: () => void;
 }
 
 export const BridgeCard = ({
@@ -29,6 +30,7 @@ export const BridgeCard = ({
   onClick,
   active,
   onDelete,
+  onReset,
 }: BridgeCardProps) => {
   const menuAnchorRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,6 +38,11 @@ export const BridgeCard = ({
   const deleteClick = () => {
     setMenuOpen(false);
     onDelete();
+  };
+
+  const resetClick = () => {
+    setMenuOpen(false);
+    onReset();
   };
 
   return (
@@ -91,6 +98,12 @@ export const BridgeCard = ({
         anchorEl={menuAnchorRef.current}
         onClose={() => setMenuOpen(false)}
       >
+        <MenuItem onClick={() => resetClick()}>
+          <ListItemIcon>
+            <Remove />
+          </ListItemIcon>
+          <ListItemText>Factory Reset</ListItemText>
+        </MenuItem>
         <MenuItem onClick={() => deleteClick()}>
           <ListItemIcon>
             <Remove />

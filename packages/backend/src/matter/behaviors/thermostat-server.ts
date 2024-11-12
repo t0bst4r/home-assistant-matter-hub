@@ -34,7 +34,7 @@ export class ThermostatServerBase extends FeaturedBase {
       );
     }
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(entity: HomeAssistantEntityState) {
@@ -120,16 +120,20 @@ export class ThermostatServerBase extends FeaturedBase {
             : Thermostat.ControlSequenceOfOperation.HeatingOnly,
       ...(this.features.heating
         ? {
-            occupiedHeatingSetpoint: targetTemperature,
+            occupiedHeatingSetpoint: targetTemperature ?? 20_00,
             minHeatSetpointLimit: this.toTemp(attributes.min_temp),
             maxHeatSetpointLimit: this.toTemp(attributes.max_temp),
+            absMinHeatSetpointLimit: this.toTemp(attributes.min_temp),
+            absMaxHeatSetpointLimit: this.toTemp(attributes.max_temp),
           }
         : {}),
       ...(this.features.cooling
         ? {
-            occupiedCoolingSetpoint: targetTemperature,
+            occupiedCoolingSetpoint: targetTemperature ?? 20_00,
             minCoolSetpointLimit: this.toTemp(attributes.min_temp),
             maxCoolSetpointLimit: this.toTemp(attributes.max_temp),
+            absMinCoolSetpointLimit: this.toTemp(attributes.min_temp),
+            absMaxCoolSetpointLimit: this.toTemp(attributes.max_temp),
           }
         : {}),
       ...(this.features.autoMode

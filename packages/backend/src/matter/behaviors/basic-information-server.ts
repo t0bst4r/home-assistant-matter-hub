@@ -22,7 +22,7 @@ export class BasicInformationServer extends Base {
       ),
       reachable: entity.state !== "unavailable",
     });
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private update(entity: HomeAssistantEntityState) {

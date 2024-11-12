@@ -14,6 +14,7 @@ import {
   createBridge,
   deleteBridge,
   requireBridges,
+  resetBridge,
   updateBridge,
 } from "../../state/bridges/bridge-actions.ts";
 import { useAppDispatch, useAppSelector } from "../../state/hooks.ts";
@@ -66,6 +67,21 @@ export function useUpdateBridge(): (
   return useCallback(
     async (req: UpdateBridgeRequest) => {
       const res = await dispatch(updateBridge(req));
+      if (res.meta.requestStatus === "rejected") {
+        throw (res as { error: AsyncError }).error;
+      } else {
+        return res.payload as BridgeData;
+      }
+    },
+    [dispatch],
+  );
+}
+
+export function useResetBridge(): (bridgeId: string) => Promise<BridgeData> {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    async (bridgeId: string) => {
+      const res = await dispatch(resetBridge(bridgeId));
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
       } else {

@@ -1,4 +1,8 @@
-import { useBridges, useDeleteBridge } from "../../hooks/data/bridges";
+import {
+  useBridges,
+  useDeleteBridge,
+  useResetBridge,
+} from "../../hooks/data/bridges";
 import { BridgeList } from "../../components/bridge/BridgeList";
 import { Backdrop, CircularProgress, IconButton, Stack } from "@mui/material";
 import { useEffect } from "react";
@@ -13,6 +17,8 @@ export const BridgesPage = () => {
   const navigate = useNavigate();
 
   const deleteBridge = useDeleteBridge();
+  const resetBridge = useResetBridge();
+
   const { content: bridges, isLoading, error: bridgeError } = useBridges();
 
   const setSelectedBridge = (bridge: BridgeData) => {
@@ -47,6 +53,7 @@ export const BridgesPage = () => {
               bridges={bridges}
               onSelect={setSelectedBridge}
               onDelete={(b) => deleteBridge(b.id)}
+              onReset={(b) => resetBridge(b.id)}
             />
           </Box>
         )}

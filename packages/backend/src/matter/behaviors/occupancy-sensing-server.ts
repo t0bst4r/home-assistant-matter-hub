@@ -16,7 +16,7 @@ export class OccupancySensingServer extends Base {
         ultrasonic: false,
       },
     });
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(state: HomeAssistantEntityState) {

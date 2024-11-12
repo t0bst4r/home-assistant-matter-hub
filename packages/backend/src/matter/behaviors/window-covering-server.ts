@@ -50,7 +50,7 @@ export class WindowCoveringServer extends FeaturedBase {
       endProductType: WindowCovering.EndProductType.RollerShade,
       mode: {},
     });
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   override async upOrOpen() {

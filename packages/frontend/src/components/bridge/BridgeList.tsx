@@ -7,11 +7,13 @@ export interface BridgeListProps {
   onSelect: (bridge: BridgeData) => void;
   selectedId?: string;
   onDelete: (bridge: BridgeData) => void;
+  onReset: (bridge: BridgeData) => void;
 }
 
 export const BridgeList = ({
   bridges,
   onDelete,
+  onReset,
   onSelect,
   selectedId,
 }: BridgeListProps) => {
@@ -24,6 +26,7 @@ export const BridgeList = ({
             active={bridge.id === selectedId}
             onClick={() => onSelect(bridge)}
             onDelete={() => onDelete(bridge)}
+            onReset={() => onReset(bridge)}
           />
         </Grid>
       ))}

@@ -35,3 +35,9 @@ export async function deleteBridge(bridgeId: string) {
     method: "DELETE",
   });
 }
+
+export async function resetBridge(bridgeId: string) {
+  return await fetch(`/api/matter/bridges/${bridgeId}/actions/factory-reset`, {
+    method: "GET",
+  }).then((res) => res.json() as Promise<BridgeData>);
+}

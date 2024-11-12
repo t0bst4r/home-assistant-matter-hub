@@ -77,6 +77,13 @@ export class Bridge extends ServiceBase {
     };
   }
 
+  async factoryReset() {
+    await this.close();
+    await this.server?.reset();
+    await this.server?.erase();
+    await this.start();
+  }
+
   async start() {
     await this.close();
 

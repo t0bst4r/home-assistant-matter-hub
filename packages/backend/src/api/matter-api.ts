@@ -82,6 +82,17 @@ export function matterApi(matterServer: BridgeService): express.Router {
     res.status(204).send();
   });
 
+  router.get("/bridges/:bridgeId/actions/factory-reset", async (req, res) => {
+    const bridgeId = req.params.bridgeId;
+    const bridge = matterServer.bridges.find((b) => b.id === bridgeId);
+    if (bridge) {
+      await bridge.factoryReset();
+      res.status(200).json(bridgeToJson(bridge));
+    } else {
+      res.status(404).send("Not Found");
+    }
+  });
+
   router.get("/bridges/:bridgeId/devices", async (req, res) => {
     const bridgeId = req.params.bridgeId;
     const bridge = matterServer.bridges.find((b) => b.id === bridgeId);

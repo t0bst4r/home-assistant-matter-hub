@@ -38,7 +38,7 @@ export class ExtendedColorControlServer extends Base.with(
           state.attributes.color_temp_kelvin,
         );
     }
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   protected async update(

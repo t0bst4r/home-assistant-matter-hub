@@ -7,7 +7,7 @@ export class OnOffServer extends Base {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
     this.state.onOff = homeAssistant.state.entity.state !== "off";
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(state: HomeAssistantEntityState) {

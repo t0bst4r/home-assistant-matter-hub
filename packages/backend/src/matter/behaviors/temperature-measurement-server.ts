@@ -19,7 +19,7 @@ export class TemperatureMeasurementServer extends Base {
       this.state.config,
       homeAssistant.entity,
     );
-    this.reactTo(homeAssistant.onChange, this.update);
+    homeAssistant.onChange.on(this.callback(this.update));
   }
 
   private async update(entity: HomeAssistantEntityState) {
