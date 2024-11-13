@@ -9,22 +9,33 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
-import { Thermostat } from "@matter/main/clusters";
-import { ClusterComposer, ClusterType } from "@matter/main/types";
 import { HumidityMeasurementServer } from "../behaviors/humidity-measurement-server.js";
 import { TemperatureMeasurementServer } from "../behaviors/temperature-measurement-server.js";
 
-type clusterType = ClusterType.Of<typeof Thermostat.Base>;
-type FeatureSelection<T extends ClusterType> =
-  ClusterComposer.FeatureSelection<T> extends readonly (infer R)[] ? R : never;
+const ClimateDeviceType = (
+  supportsCooling: boolean,
+  supportsHeating: boolean,
+  supportsAuto: boolean,
+) => {
+  const thermostatServer = supportsAuto
+    ? ThermostatServer.with("Cooling", "Heating", "AutoMode")
+    : supportsCooling && supportsHeating
+      ? ThermostatServer.with("Cooling", "Heating")
+      : supportsCooling
+        ? ThermostatServer.with("Cooling")
+        : supportsHeating
+          ? ThermostatServer.with("Heating")
+          : ThermostatServer;
 
-const ClimateDeviceType = ThermostatDevice.with(
-  BasicInformationServer,
-  IdentifyServer,
-  HomeAssistantBehavior,
-  HumidityMeasurementServer,
-  TemperatureMeasurementServer,
-);
+  return ThermostatDevice.with(
+    BasicInformationServer,
+    IdentifyServer,
+    HomeAssistantBehavior,
+    HumidityMeasurementServer,
+    TemperatureMeasurementServer,
+    thermostatServer,
+  );
+};
 
 const coolingModes: ClimateHvacMode[] = [
   ClimateHvacMode.heat_cool,
@@ -54,44 +65,34 @@ export function ClimateDevice(
     entity.attributes.hvac_modes.includes(mode),
   );
 
-  const featureSelection: FeatureSelection<clusterType>[] = [];
-  if (supportsCooling || supportsAuto) {
-    featureSelection.push("Cooling");
-  }
-  if (supportsHeating || supportsAuto) {
-    featureSelection.push("Heating");
-  }
-  if (supportsAuto) {
-    featureSelection.push("AutoMode");
-  }
-
-  const type = ClimateDeviceType.with(
-    ThermostatServer.with(...featureSelection),
+  return new MatterDevice(
+    ClimateDeviceType(supportsCooling, supportsHeating, supportsAuto),
+    homeAssistant,
+    {
+      relativeHumidityMeasurement: {
+        config: {
+          getValue(entity: HomeAssistantEntityState) {
+            const attributes = entity.attributes as ClimateDeviceAttributes;
+            const humidity = attributes.current_humidity;
+            if (humidity == null || isNaN(+humidity)) {
+              return null;
+            }
+            return +humidity;
+          },
+        },
+      },
+      temperatureMeasurement: {
+        config: {
+          getValue(entity: HomeAssistantEntityState) {
+            const attributes = entity.attributes as ClimateDeviceAttributes;
+            const temperature = attributes.current_temperature;
+            if (temperature == null || isNaN(+temperature)) {
+              return null;
+            }
+            return +temperature;
+          },
+        },
+      },
+    },
   );
-  return new MatterDevice(type, homeAssistant, {
-    relativeHumidityMeasurement: {
-      config: {
-        getValue(entity: HomeAssistantEntityState) {
-          const attributes = entity.attributes as ClimateDeviceAttributes;
-          const humidity = attributes.current_humidity;
-          if (humidity == null || isNaN(+humidity)) {
-            return null;
-          }
-          return +humidity;
-        },
-      },
-    },
-    temperatureMeasurement: {
-      config: {
-        getValue(entity: HomeAssistantEntityState) {
-          const attributes = entity.attributes as ClimateDeviceAttributes;
-          const temperature = attributes.current_temperature;
-          if (temperature == null || isNaN(+temperature)) {
-            return null;
-          }
-          return +temperature;
-        },
-      },
-    },
-  });
 }

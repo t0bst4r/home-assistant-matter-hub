@@ -8,6 +8,7 @@ import {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { ClusterType } from "@matter/main/types";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
@@ -17,10 +18,7 @@ export class ThermostatServerBase extends FeaturedBase {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-
-    const updatedState = this.buildPatchState(homeAssistant.entity, this.state);
-    Object.assign(this.state, updatedState);
-
+    this.update(homeAssistant.entity);
     if (this.features.heating) {
       this.reactTo(
         this.events.occupiedHeatingSetpoint$Changed,
@@ -34,18 +32,63 @@ export class ThermostatServerBase extends FeaturedBase {
       );
     }
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
-    homeAssistant.onChange.on(this.callback(this.update));
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityState) {
-    const patch = this.buildPatchState(entity, this.state);
-    Object.assign(this.state, patch);
+  private update(entity: HomeAssistantEntityState) {
+    const attributes = entity.attributes as ClimateDeviceAttributes;
+    const currentTemperature = this.toTemp(attributes.current_temperature);
+    const targetTemperature = this.toTemp(attributes.temperature);
+    applyPatchState(this.state, {
+      localTemperature: currentTemperature ?? null,
+      systemMode: this.getSystemMode(attributes.hvac_mode, entity.state),
+      thermostatRunningState: this.getRunningState(
+        attributes.hvac_action,
+        entity.state,
+        currentTemperature,
+        targetTemperature,
+      ),
+      controlSequenceOfOperation:
+        this.features.cooling && this.features.heating
+          ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
+          : this.features.cooling
+            ? Thermostat.ControlSequenceOfOperation.CoolingOnly
+            : Thermostat.ControlSequenceOfOperation.HeatingOnly,
+      ...(this.features.heating
+        ? {
+            occupiedHeatingSetpoint: targetTemperature ?? 20_00,
+            minHeatSetpointLimit: this.toTemp(attributes.min_temp),
+            maxHeatSetpointLimit: this.toTemp(attributes.max_temp),
+            absMinHeatSetpointLimit: this.toTemp(attributes.min_temp),
+            absMaxHeatSetpointLimit: this.toTemp(attributes.max_temp),
+          }
+        : {}),
+      ...(this.features.cooling
+        ? {
+            occupiedCoolingSetpoint: targetTemperature ?? 20_00,
+            minCoolSetpointLimit: this.toTemp(attributes.min_temp),
+            maxCoolSetpointLimit: this.toTemp(attributes.max_temp),
+            absMinCoolSetpointLimit: this.toTemp(attributes.min_temp),
+            absMaxCoolSetpointLimit: this.toTemp(attributes.max_temp),
+          }
+        : {}),
+      ...(this.features.autoMode
+        ? {
+            thermostatRunningMode: this.getRunningMode(
+              attributes.hvac_action,
+              entity.state,
+              currentTemperature,
+              targetTemperature,
+            ),
+            minSetpointDeadBand: 0,
+          }
+        : {}),
+    });
   }
 
   override async setpointRaiseLower(
     request: Thermostat.SetpointRaiseLowerRequest,
   ) {
-    await super.setpointRaiseLower(request);
     const targetTemperature: number | undefined =
       this.state.occupiedCoolingSetpoint ?? this.state.occupiedHeatingSetpoint;
     if (targetTemperature == undefined) {
@@ -94,69 +137,6 @@ export class ThermostatServerBase extends FeaturedBase {
       { hvac_mode: this.getHvacMode(systemMode) },
       { entity_id: homeAssistant.entityId },
     );
-  }
-
-  private buildPatchState(
-    entity: HomeAssistantEntityState,
-    currentState: ThermostatServerBase.State,
-  ): Partial<ThermostatServerBase.State> {
-    const attributes = entity.attributes as ClimateDeviceAttributes;
-    const currentTemperature = this.toTemp(attributes.current_temperature);
-    const targetTemperature = this.toTemp(attributes.temperature);
-    const patch: Partial<ThermostatServerBase.State> = {
-      localTemperature: currentTemperature ?? null,
-      systemMode: this.getSystemMode(attributes.hvac_mode, entity.state),
-      thermostatRunningState: this.getRunningState(
-        attributes.hvac_action,
-        entity.state,
-        currentTemperature,
-        targetTemperature,
-      ),
-      controlSequenceOfOperation:
-        this.features.cooling && this.features.heating
-          ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
-          : this.features.cooling
-            ? Thermostat.ControlSequenceOfOperation.CoolingOnly
-            : Thermostat.ControlSequenceOfOperation.HeatingOnly,
-      ...(this.features.heating
-        ? {
-            occupiedHeatingSetpoint: targetTemperature ?? 20_00,
-            minHeatSetpointLimit: this.toTemp(attributes.min_temp),
-            maxHeatSetpointLimit: this.toTemp(attributes.max_temp),
-            absMinHeatSetpointLimit: this.toTemp(attributes.min_temp),
-            absMaxHeatSetpointLimit: this.toTemp(attributes.max_temp),
-          }
-        : {}),
-      ...(this.features.cooling
-        ? {
-            occupiedCoolingSetpoint: targetTemperature ?? 20_00,
-            minCoolSetpointLimit: this.toTemp(attributes.min_temp),
-            maxCoolSetpointLimit: this.toTemp(attributes.max_temp),
-            absMinCoolSetpointLimit: this.toTemp(attributes.min_temp),
-            absMaxCoolSetpointLimit: this.toTemp(attributes.max_temp),
-          }
-        : {}),
-      ...(this.features.autoMode
-        ? {
-            thermostatRunningMode: this.getRunningMode(
-              attributes.hvac_action,
-              entity.state,
-              currentTemperature,
-              targetTemperature,
-            ),
-            minSetpointDeadBand: 0,
-          }
-        : {}),
-    };
-    const keys = Object.keys(patch) as Array<keyof ThermostatServerBase.State>;
-    for (const key of keys) {
-      const current = currentState[key];
-      const patchValue = patch[key];
-      if (current == patchValue) {
-        delete patch[key];
-      }
-    }
-    return patch;
   }
 
   private getSystemMode(

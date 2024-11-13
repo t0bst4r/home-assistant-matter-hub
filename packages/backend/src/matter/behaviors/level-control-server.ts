@@ -1,7 +1,7 @@
 import { LevelControlServer as Base } from "@matter/main/behaviors";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { LevelControl } from "@matter/main/clusters";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface LevelControlConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
@@ -19,45 +19,44 @@ export class LevelControlServer extends Base {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    const state = homeAssistant.entity;
-    Object.assign(this.state, {
-      currentLevel: this.state.config.getValue(state),
-      minLevel: this.state.config.getMinValue?.(state),
-      maxLevel: this.state.config.getMaxValue?.(state),
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
+  }
+
+  private update(state: HomeAssistantEntityState) {
+    applyPatchState(this.state, {
+      currentLevel: this.validValue(this.state.config.getValue(state)) ?? null,
+      minLevel:
+        this.validValue(this.state.config.getMinValue?.(state)) ?? undefined,
+      maxLevel:
+        this.validValue(this.state.config.getMaxValue?.(state)) ?? undefined,
     });
-    homeAssistant.onChange.on(this.callback(this.update));
   }
 
-  protected async update(state: HomeAssistantEntityState) {
-    const level = this.state.config.getValue(state);
-    if (level != null && !isNaN(level) && level != this.state.currentLevel) {
-      this.state.currentLevel = level;
-    }
-  }
-
-  override async moveToLevel(request: LevelControl.MoveToLevelRequest) {
-    await super.moveToLevel(request);
-    await this.handleMoveToLevel(request);
-  }
-
-  override async moveToLevelWithOnOff(
-    request: LevelControl.MoveToLevelRequest,
-  ) {
-    await super.moveToLevelWithOnOff(request);
-    await this.handleMoveToLevel(request);
-  }
-
-  private async handleMoveToLevel(request: LevelControl.MoveToLevelRequest) {
+  override async moveToLevelLogic(level: number) {
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const current = this.state.config.getValue(homeAssistant.entity);
+    if (level === current) {
+      return;
+    }
     const [domain, action] = this.state.config.moveToLevel.action.split(".");
     await homeAssistant.callAction(
       domain,
       action,
-      this.state.config.moveToLevel.data(request.level),
+      this.state.config.moveToLevel.data(level),
       {
         entity_id: homeAssistant.entityId,
       },
     );
+  }
+
+  private validValue(
+    number: number | null | undefined,
+  ): number | null | undefined {
+    if (number != null && isNaN(number)) {
+      return undefined;
+    }
+    return number;
   }
 }
 

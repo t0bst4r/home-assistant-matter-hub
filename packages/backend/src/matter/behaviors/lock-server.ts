@@ -2,13 +2,19 @@ import { DoorLockServer as Base } from "@matter/main/behaviors";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 import { DoorLock } from "@matter/main/clusters";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export class LockServer extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    Object.assign(this.state, {
-      lockState: this.getMatterLockState(homeAssistant.entity),
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
+  }
+
+  private update(entity: HomeAssistantEntityState) {
+    applyPatchState(this.state, {
+      lockState: this.getMatterLockState(entity),
       lockType: DoorLock.LockType.DeadBolt,
       operatingMode: DoorLock.OperatingMode.Normal,
       actuatorEnabled: true,
@@ -20,18 +26,9 @@ export class LockServer extends Base {
         vacation: false,
       },
     });
-    homeAssistant.onChange.on(this.callback(this.update));
-  }
-
-  private async update(state: HomeAssistantEntityState) {
-    const newState = this.getMatterLockState(state);
-    if (this.state.lockState !== newState) {
-      this.state.lockState = newState;
-    }
   }
 
   override async lockDoor() {
-    super.lockDoor();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("lock", "lock", undefined, {
       entity_id: homeAssistant.entityId,
@@ -39,7 +36,6 @@ export class LockServer extends Base {
   }
 
   override async unlockDoor() {
-    super.unlockDoor();
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction("lock", "unlock", undefined, {
       entity_id: homeAssistant.entityId,

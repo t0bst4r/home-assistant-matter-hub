@@ -1,6 +1,7 @@
 import { TemperatureMeasurementServer as Base } from "@matter/main/behaviors";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface TemperatureMeasurementConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
@@ -15,26 +16,19 @@ export class TemperatureMeasurementServer extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    this.state.measuredValue = this.getTemperature(
-      this.state.config,
-      homeAssistant.entity,
-    );
-    homeAssistant.onChange.on(this.callback(this.update));
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityState) {
-    const temperature = this.getTemperature(this.state.config, entity);
-    if (this.state.measuredValue !== temperature) {
-      this.state.measuredValue = temperature;
-    }
+  private update(entity: HomeAssistantEntityState) {
+    applyPatchState(this.state, {
+      measuredValue: this.getTemperature(entity),
+    });
   }
 
-  private getTemperature(
-    config: TemperatureMeasurementConfig,
-    entity: HomeAssistantEntityState,
-  ): number | null {
-    const value = config.getValue(entity);
-    const unitOfMeasurement = config.getUnitOfMeasurement?.(entity);
+  private getTemperature(entity: HomeAssistantEntityState): number | null {
+    const value = this.state.config.getValue(entity);
+    const unitOfMeasurement = this.state.config.getUnitOfMeasurement?.(entity);
     if (value == null) {
       return null;
     }

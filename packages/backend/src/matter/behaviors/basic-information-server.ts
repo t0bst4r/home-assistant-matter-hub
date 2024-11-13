@@ -3,13 +3,20 @@ import crypto from "node:crypto";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 import { VendorId } from "@matter/main";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
-    const { basicInformation, entity } = homeAssistant.state;
-    Object.assign(this.state, {
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
+  }
+
+  private update(entity: HomeAssistantEntityState) {
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const { basicInformation } = homeAssistant.state;
+    applyPatchState(this.state, {
       vendorId: VendorId(basicInformation.vendorId),
       vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
       productName: maxLengthOrHash(basicInformation.productName, 32),
@@ -22,21 +29,6 @@ export class BasicInformationServer extends Base {
       ),
       reachable: entity.state !== "unavailable",
     });
-    homeAssistant.onChange.on(this.callback(this.update));
-  }
-
-  private update(entity: HomeAssistantEntityState) {
-    const name = maxLengthOrHash(
-      entity.attributes.friendly_name ?? entity.entity_id,
-      32,
-    );
-    if (name !== this.state.nodeLabel) {
-      this.state.nodeLabel = name;
-    }
-    const reachable = entity.state !== "unavailable";
-    if (reachable !== this.state.reachable) {
-      this.state.reachable = reachable;
-    }
   }
 }
 

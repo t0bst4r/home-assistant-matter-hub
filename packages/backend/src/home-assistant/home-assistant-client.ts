@@ -147,6 +147,13 @@ export class HomeAssistantClient
     if (!this.connection) {
       throw new Error("Home Assistant Client is not yet initialized");
     }
+    this.log.debug(
+      "Calling action '%s.%s' for target %s with data %s",
+      domain,
+      action,
+      JSON.stringify(target),
+      JSON.stringify(data),
+    );
     const result = await callService(
       this.connection,
       domain,

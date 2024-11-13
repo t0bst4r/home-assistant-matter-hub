@@ -31,7 +31,8 @@ export class MatterDevice<
     this.entityId = entityId;
   }
 
-  async update(state: HomeAssistantEntityState) {
-    await this.setStateOf(HomeAssistantBehavior, { entity: state });
+  async update(entity: HomeAssistantEntityState) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.setStateOf(HomeAssistantBehavior, { entity: entity });
   }
 }

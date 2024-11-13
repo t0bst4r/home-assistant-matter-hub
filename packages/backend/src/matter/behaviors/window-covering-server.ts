@@ -1,19 +1,15 @@
-import { WindowCoveringServer as Base } from "@matter/main/behaviors";
+import {
+  MovementDirection,
+  MovementType,
+  WindowCoveringServer as Base,
+} from "@matter/main/behaviors";
 import {
   CoverDeviceAttributes,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { WindowCovering } from "@matter/main/clusters";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
-
-export interface WindowCoveringServerConfig {
-  lift?: {
-    /** @default true */
-    invertPercentage?: boolean;
-    /** @default false */
-    swapOpenAndClosePercentage?: boolean;
-  };
-}
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 const FeaturedBase = Base.with("Lift", "PositionAwareLift", "AbsolutePosition");
 
@@ -23,38 +19,66 @@ export class WindowCoveringServer extends FeaturedBase {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
+  }
 
-    const initialPercentage = this.convertLiftValue(
-      (homeAssistant.state.entity.attributes as CoverDeviceAttributes)
-        .current_position,
-      this.state.config?.lift,
+  private update(state: HomeAssistantEntityState<CoverDeviceAttributes>) {
+    const movementStatus: WindowCovering.MovementStatus | undefined =
+      state.state === "opening"
+        ? WindowCovering.MovementStatus.Opening
+        : state.state === "closing"
+          ? WindowCovering.MovementStatus.Closing
+          : WindowCovering.MovementStatus.Stopped;
+
+    let currentLift = this.convertLiftValue(
+      state.attributes.current_position,
+      this.state.configStatus.liftMovementReversed ?? false,
     );
-    const initialValue =
-      initialPercentage != null ? initialPercentage * 100 : null;
-    Object.assign(this.state, {
+    if (currentLift != null) {
+      currentLift *= 100;
+    }
+    applyPatchState(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
-      configStatus: {
-        operational: true,
-        onlineReserved: true,
-        liftPositionAware: true,
-        liftMovementReversed: false,
-      },
-      targetPositionLiftPercent100ths: initialValue,
-      currentPositionLiftPercent100ths: initialValue,
+      targetPositionLiftPercent100ths:
+        this.state.targetPositionLiftPercent100ths ?? currentLift,
+      currentPositionLiftPercent100ths: currentLift,
       installedOpenLimitLift: 0,
       installedClosedLimitLift: 10000,
       operationalStatus: {
-        global: WindowCovering.MovementStatus.Stopped,
-        lift: WindowCovering.MovementStatus.Stopped,
+        global: movementStatus,
+        lift: movementStatus,
       },
       endProductType: WindowCovering.EndProductType.RollerShade,
-      mode: {},
     });
-    homeAssistant.onChange.on(this.callback(this.update));
   }
 
-  override async upOrOpen() {
-    await super.upOrOpen();
+  override async handleMovement(
+    type: MovementType,
+    reversed: boolean,
+    direction: MovementDirection,
+    targetPercent100ths?: number,
+  ) {
+    if (type === MovementType.Lift) {
+      if (targetPercent100ths != null) {
+        await this.handleGoToPosition(targetPercent100ths, reversed);
+      } else if (direction === MovementDirection.Open) {
+        await this.handleOpen();
+      } else if (direction === MovementDirection.Close) {
+        await this.handleClose();
+      }
+    }
+  }
+  override async handleStopMovement() {
+    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    await homeAssistant.callAction(
+      "cover",
+      "stop_cover",
+      {},
+      { entity_id: homeAssistant.entityId },
+    );
+  }
+  private async handleOpen() {
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction(
       "cover",
@@ -63,9 +87,7 @@ export class WindowCoveringServer extends FeaturedBase {
       { entity_id: homeAssistant.entityId },
     );
   }
-
-  override async downOrClose() {
-    await super.downOrClose();
+  private async handleClose() {
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     await homeAssistant.callAction(
       "cover",
@@ -75,102 +97,44 @@ export class WindowCoveringServer extends FeaturedBase {
     );
   }
 
-  override async stopMotion() {
-    super.stopMotion();
+  private async handleGoToPosition(
+    targetPercent100ths: number,
+    reversed: boolean,
+  ) {
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const currentPosition = (
+      homeAssistant.entity as HomeAssistantEntityState<CoverDeviceAttributes>
+    ).attributes.current_position;
+    const targetPosition = this.convertLiftValue(
+      targetPercent100ths / 100,
+      reversed,
+    );
+    if (targetPosition == null || targetPosition === currentPosition) {
+      return;
+    }
     await homeAssistant.callAction(
       "cover",
-      "stop_cover",
-      {},
+      "set_cover_position",
+      { position: targetPosition },
       { entity_id: homeAssistant.entityId },
     );
   }
 
-  override async goToLiftPercentage(
-    request: WindowCovering.GoToLiftPercentageRequest,
-  ) {
-    super.goToLiftPercentage(request);
-    const position = this.state.currentPositionLiftPercent100ths!;
-    const targetPosition = this.convertLiftValue(
-      position / 100,
-      this.state.config?.lift,
-    );
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    await homeAssistant.callAction(
-      "cover",
-      "set_cover_position",
-      {
-        position: targetPosition,
-      },
-      {
-        entity_id: homeAssistant.entityId,
-      },
-    );
-  }
-
-  private async update(state: HomeAssistantEntityState<CoverDeviceAttributes>) {
-    const actualLiftMovement =
-      this.state.operationalStatus.lift ??
-      WindowCovering.MovementStatus.Stopped;
-    let expectedLiftMovement: WindowCovering.MovementStatus | undefined =
-      actualLiftMovement;
-    if (state.state === "open" || state.state === "closed") {
-      expectedLiftMovement = WindowCovering.MovementStatus.Stopped;
-    } else if (state.state === "opening") {
-      expectedLiftMovement = WindowCovering.MovementStatus.Opening;
-    } else if (state.state === "closing") {
-      expectedLiftMovement = WindowCovering.MovementStatus.Closing;
-    }
-
-    const actualPosition = this.state.currentPositionLiftPercent100ths;
-    const expectedPosition = this.convertLiftValue(
-      state.attributes.current_position,
-      this.state.config?.lift,
-    );
-    const expectedPosition100ths =
-      expectedPosition != null ? expectedPosition * 100 : actualPosition;
-
-    if (
-      expectedLiftMovement !== actualLiftMovement ||
-      actualPosition !== expectedPosition100ths
-    ) {
-      Object.assign(this.state, {
-        currentPositionLiftPercent100ths:
-          expectedPosition100ths != null ? expectedPosition100ths : undefined,
-        operationalStatus: {
-          global: expectedLiftMovement,
-          lift: expectedLiftMovement,
-        },
-      });
-    }
-  }
-
   private convertLiftValue(
     percentage: number | undefined | null,
-    config: WindowCoveringServerConfig["lift"] | undefined,
+    reversed: boolean,
   ): number | null {
     if (percentage == null) {
       return null;
     }
-    const invert = config?.invertPercentage ?? true;
     let result = percentage;
-    if (invert) {
+    if (reversed) {
       result = 100 - result;
-    }
-    const swap = config?.swapOpenAndClosePercentage ?? false;
-    if (swap) {
-      if (result >= 99.95) {
-        result = 0;
-      } else if (result <= 0.05) {
-        result = 100;
-      }
     }
     return result;
   }
 }
 
 export namespace WindowCoveringServer {
-  export class State extends FeaturedBase.State {
-    config?: WindowCoveringServerConfig;
-  }
+  export class State extends FeaturedBase.State {}
 }

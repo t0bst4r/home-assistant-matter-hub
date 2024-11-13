@@ -21,8 +21,8 @@ const colorModes: LightDeviceColorMode[] = [
   LightDeviceColorMode.HS,
   LightDeviceColorMode.RGB,
   LightDeviceColorMode.XY,
-  // TODO: ColorMode.RGBW, not yet supported
-  // TODO: ColorMode.RGBWW, not yet supported
+  // ColorMode.RGBW, not yet supported
+  // ColorMode.RGBWW, not yet supported
 ];
 
 const levelControlConfig: LevelControlConfig = {
@@ -55,9 +55,13 @@ export function LightDevice(homeAssistant: HomeAssistantBehavior.State) {
   );
 
   if (supportsColorControl) {
-    return new MatterDevice(ExtendedColorLightType, homeAssistant, {
-      levelControl: { config: levelControlConfig },
-    });
+    return new MatterDevice(
+      ExtendedColorLightType(supportsColorTemperature),
+      homeAssistant,
+      {
+        levelControl: { config: levelControlConfig },
+      },
+    );
   } else if (supportsColorTemperature) {
     return new MatterDevice(ColorTemperatureLightType, homeAssistant, {
       levelControl: { config: levelControlConfig },
