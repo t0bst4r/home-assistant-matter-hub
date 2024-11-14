@@ -114,7 +114,7 @@ describe("applyPatchState", () => {
     });
   });
 
-  it("should not mess with zero, null and undefined", () => {
+  it("should ignore undefined and not mess with zero and null", () => {
     const state: Record<
       "a" | "b" | "c" | "d",
       string | number | undefined | null
@@ -124,7 +124,7 @@ describe("applyPatchState", () => {
       c: 0,
       d: "",
     };
-    const patch = applyPatchState(state, { a: 0, b: 0, c: 0, d: 0 });
+    const patch = applyPatchState(state, { a: 0, b: 0, c: undefined, d: 0 });
     expect(patch).toEqual({ a: 0, b: 0, d: 0 });
     expect(state).toEqual({ a: 0, b: 0, c: 0, d: 0 });
   });

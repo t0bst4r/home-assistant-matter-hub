@@ -150,7 +150,7 @@ export class HomeAssistantClient
       domain,
       action,
       JSON.stringify(target),
-      JSON.stringify(data),
+      JSON.stringify(data ?? {}),
     );
     const result = await callService(
       this.connection,

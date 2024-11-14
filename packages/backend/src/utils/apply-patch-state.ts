@@ -8,7 +8,7 @@ export function applyPatchState<T extends {}>(
   const keys = Object.keys(patch) as Array<keyof T>;
   for (const key of keys) {
     const patchValue = patch[key];
-    if (!deepEqual(state[key], patchValue)) {
+    if (patchValue !== undefined && !deepEqual(state[key], patchValue)) {
       actualPatch[key] = patchValue!;
     }
   }

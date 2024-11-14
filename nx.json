@@ -5,6 +5,7 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"],
     "default": ["sharedGlobals"]
   },
+  "useDaemonProcess": false,
   "targetDefaults": {
     "lint": {
       "inputs": ["default"],

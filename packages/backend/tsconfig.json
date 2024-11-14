@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    // Compiler
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmit": true,
 
-    // Lint
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,5 +12,5 @@
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["./src/"]
+  "include": ["./src"]
 }

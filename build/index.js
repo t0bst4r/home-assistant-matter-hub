@@ -20,3 +20,27 @@ export function fileInPackage(pkgName, filePath) {
   );
   return path.join(path.dirname(packagePath), filePath);
 }
+
+/**
+ * @param {string} sourcesRoot
+ * @param {string[]} files
+ * @returns import("esbuild").Plugin
+ */
+export function doNotBundleFile(sourcesRoot, files) {
+  return {
+    name: "doNotBundleFile",
+    setup(build) {
+      build.onResolve({ filter: /^\..*$/ }, (args) => {
+        if (args.kind !== "import-statement" || !args.path.startsWith(".")) {
+          return;
+        }
+        const filePath = path.resolve(args.resolveDir, args.path);
+        const relativePath = path.relative(sourcesRoot, filePath);
+        if (!files.includes(relativePath)) {
+          return;
+        }
+        return { path: args.path, external: true };
+      });
+    },
+  };
+}
