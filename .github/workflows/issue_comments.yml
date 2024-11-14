@@ -13,10 +13,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Debug
-        run: echo ${{ toJson(github.event) }}
       - name: Remove "waiting for feedback" label
-        if: github.event.sender != 't0bst4r'
+        if: github.event.sender.login != 't0bst4r'
         run: gh issue edit ${{ github.event.issue.number }} --remove-label "waiting for feedback"
         env:
           GH_TOKEN: ${{ github.token }}

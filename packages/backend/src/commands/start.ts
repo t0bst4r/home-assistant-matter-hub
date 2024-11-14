@@ -9,17 +9,15 @@ import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
 import { Service } from "../utils/service.js";
 import { matterJsLogger } from "../logging/matter-js-logger.js";
 import _ from "lodash";
-import { createStorageService } from "../storage/create-storage-service.js";
-import { MdnsService } from "@matter/main/protocol";
 import {
   Environment,
   Logger as MatterLogger,
   StorageService,
-  VariableService,
   VendorId,
 } from "@matter/main";
 import fs from "node:fs";
 import { customLogger } from "../logging/custom-logger.js";
+import { createEnvironment } from "../environment/environment.js";
 
 interface Options {
   "log-level": string;
@@ -103,23 +101,10 @@ async function handler(
   MatterLogger.level = "debug";
   MatterLogger.log = matterJsLogger();
 
-  const environment = Environment.default;
-  new VariableService(environment);
-
-  const mdnsInterface = options.mdnsNetworkInterface?.trim() ?? "";
-  environment.set(
-    MdnsService,
-    new MdnsService(environment, {
-      ipv4: true,
-      networkInterface: mdnsInterface.length > 0 ? mdnsInterface : undefined,
-    }),
-  );
-
-  const storageConfig = createStorageService(options.storageLocation);
-  const storageService = environment.get(StorageService);
-  storageService.location = storageConfig.location;
-  storageService.factory = storageConfig.factory;
-  const storage = await storageService.open("app");
+  const environment = createEnvironment(Environment.default, {
+    mdnsNetworkInterface: options.mdnsNetworkInterface,
+    storageLocation: options.storageLocation,
+  });
 
   const homeAssistant = new HomeAssistantClient({
     url: options.homeAssistantUrl,
@@ -128,7 +113,7 @@ async function handler(
 
   const bridgeService = new BridgeService({
     environment,
-    storage,
+    storage: await environment.get(StorageService).open("app"),
     basicInformation,
     homeAssistant,
   });

@@ -26,7 +26,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const attributes = entity.attributes as LightDeviceAttributes;
     const minKelvin = attributes.min_color_temp_kelvin ?? 1500;
     const maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
-    const [hue, saturation] = this.getMatterColor(entity) ?? [];
+    const [hue, saturation] = this.getMatterColor(entity) ?? [0, 0];
     applyPatchState(this.state, {
       ...(this.features.hueSaturation
         ? {
