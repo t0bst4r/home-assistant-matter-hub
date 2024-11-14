@@ -4,12 +4,10 @@ import { matterApi } from "./matter-api.js";
 import * as http from "node:http";
 import { accessLogger } from "./access-log.js";
 import { webUi } from "./web-ui.js";
-import type { Logger } from "winston";
 import { ServiceBase } from "../utils/service.js";
-import { createChildLogger } from "../logging/create-child-logger.js";
+import { createLogger } from "../logging/create-logger.js";
 
 export interface WebApiProps {
-  readonly logger: Logger;
   readonly bridgeService: BridgeService;
   readonly port: number;
   readonly webUiDist?: string;
@@ -23,13 +21,13 @@ export class WebApi extends ServiceBase {
   private server?: http.Server;
 
   constructor(props: WebApiProps) {
-    super("WebApi", props.logger);
+    super("WebApi");
 
     const api = express.Router();
     api.use(express.json()).use("/matter", matterApi(props.bridgeService));
 
     let app = express()
-      .use(accessLogger(createChildLogger(this.log, "access-log")))
+      .use(accessLogger(createLogger("WebApi / Access Log")))
       .use("/api", api);
     if (props.webUiDist) {
       app = app.use(webUi(props.webUiDist));

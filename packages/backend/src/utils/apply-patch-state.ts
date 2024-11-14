@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export function applyPatchState<T extends {}>(
   state: T,
   patch: Partial<T>,
@@ -7,9 +9,11 @@ export function applyPatchState<T extends {}>(
   for (const key of keys) {
     const patchValue = patch[key];
     if (!deepEqual(state[key], patchValue)) {
-      state[key] = patchValue!;
       actualPatch[key] = patchValue!;
     }
+  }
+  if (_.size(actualPatch) > 0) {
+    Object.assign(state, actualPatch);
   }
   return actualPatch;
 }

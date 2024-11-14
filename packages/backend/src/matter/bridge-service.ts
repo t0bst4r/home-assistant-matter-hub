@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { Logger } from "winston";
 import { Bridge } from "./bridge.js";
 import {
   BridgeBasicInformation,
@@ -14,7 +13,6 @@ import { bridgeToJson } from "../utils/json/bridge-to-json.js";
 import { HomeAssistantClient } from "../home-assistant/home-assistant-client.js";
 
 export interface BridgeServiceProps {
-  readonly logger: Logger;
   readonly environment: Environment;
   readonly storage: StorageManager;
   readonly homeAssistant: HomeAssistantClient;
@@ -40,7 +38,7 @@ export class BridgeService extends ServiceBase {
   public readonly bridges: Bridge[] = [];
 
   constructor(props: BridgeServiceProps) {
-    super("Bridges", props.logger);
+    super("Bridges");
     this.environment = props.environment;
     this.storage = props.storage;
     this.basicInformation = props.basicInformation;
@@ -111,7 +109,6 @@ export class BridgeService extends ServiceBase {
 
   private async addBridge(bridgeData: BridgeData): Promise<Bridge> {
     const bridge = new Bridge({
-      logger: this.log,
       environment: this.environment,
       homeAssistant: this.homeAssistant,
       data: bridgeData,

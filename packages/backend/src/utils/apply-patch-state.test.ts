@@ -113,4 +113,19 @@ describe("applyPatchState", () => {
       },
     });
   });
+
+  it("should not mess with zero, null and undefined", () => {
+    const state: Record<
+      "a" | "b" | "c" | "d",
+      string | number | undefined | null
+    > = {
+      a: undefined,
+      b: null,
+      c: 0,
+      d: "",
+    };
+    const patch = applyPatchState(state, { a: 0, b: 0, c: 0, d: 0 });
+    expect(patch).toEqual({ a: 0, b: 0, d: 0 });
+    expect(state).toEqual({ a: 0, b: 0, c: 0, d: 0 });
+  });
 });

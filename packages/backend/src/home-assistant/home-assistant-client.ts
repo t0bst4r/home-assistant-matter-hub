@@ -11,7 +11,6 @@ import {
   HomeAssistantEntityState,
   HomeAssistantFilter,
 } from "@home-assistant-matter-hub/common";
-import { Logger } from "winston";
 import { ServiceBase } from "../utils/service.js";
 import _, { Dictionary } from "lodash";
 import { map, pairwise, startWith, Subject } from "rxjs";
@@ -26,7 +25,6 @@ import { isValidEntity } from "./is-valid-entity.js";
 export interface HomeAssistantClientProps {
   readonly url: string;
   readonly accessToken: string;
-  readonly logger: Logger;
 }
 
 export class HomeAssistantClient
@@ -48,7 +46,7 @@ export class HomeAssistantClient
   private unsubscribeState?: UnsubscribeFunc;
 
   constructor(props: HomeAssistantClientProps) {
-    super("HomeAssistantClient", props.logger);
+    super("HomeAssistantClient");
     this.url = props.url.replace(/\/$/, "");
     this.accessToken = props.accessToken;
   }

@@ -3,19 +3,15 @@ import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
 import { StorageBackendJsonFile } from "@matter/nodejs";
-import { Logger } from "winston";
-import { createChildLogger } from "../logging/create-child-logger.js";
+import { createLogger } from "../logging/create-logger.js";
 
 interface StorageService {
   readonly location: string;
   readonly factory: (namespace: string) => Storage;
 }
 
-export function createStorageService(
-  log: Logger,
-  storageLocation?: string,
-): StorageService {
-  const logger = createChildLogger(log, "Storage");
+export function createStorageService(storageLocation?: string): StorageService {
+  const logger = createLogger("Storage");
   const homedir = os.homedir();
   const location = storageLocation
     ? path.resolve(storageLocation.replace(/^~\//, homedir + "/"))

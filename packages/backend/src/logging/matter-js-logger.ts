@@ -1,11 +1,13 @@
-import { Logger } from "winston";
 import { LogLevel } from "@matter/main";
 import stripColor from "strip-color";
-import { createChildLogger } from "./create-child-logger.js";
+import { createLogger } from "./create-logger.js";
 
-export function matterJsLogger(
-  logger: Logger,
-): (level: LogLevel, formattedLog: string) => void {
+export function matterJsLogger(): (
+  level: LogLevel,
+  formattedLog: string,
+) => void {
+  const baseName = "matter.js";
+  const logger = createLogger(baseName);
   return (enumLevel: LogLevel, formattedLog: string) => {
     formattedLog = stripColor(formattedLog);
 
@@ -20,8 +22,7 @@ export function matterJsLogger(
     }
 
     const level = enumToLevel[enumLevel];
-    const log = createChildLogger(logger, service);
-    log.log(level, message);
+    logger.log(level, message, { loggerName: `${baseName} / ${service}` });
   };
 }
 

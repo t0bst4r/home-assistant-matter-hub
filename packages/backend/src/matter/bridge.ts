@@ -8,7 +8,6 @@ import {
 import { ServerNode } from "@matter/main/node";
 import { AggregatorEndpoint } from "@matter/main/endpoints";
 import { Endpoint, Environment } from "@matter/main";
-import { Logger } from "winston";
 import { detach } from "../utils/detach.js";
 import { MatterDevice } from "./matter-device.js";
 import { ServiceBase } from "../utils/service.js";
@@ -18,7 +17,6 @@ import _, { Dictionary } from "lodash";
 import { createDevice } from "./create-device.js";
 
 export interface BridgeProps {
-  readonly logger: Logger;
   readonly environment: Environment;
   readonly homeAssistant: HomeAssistantClient;
   readonly data: BridgeData;
@@ -64,7 +62,7 @@ export class Bridge extends ServiceBase {
   }
 
   constructor(props: BridgeProps) {
-    super(props.data.id, props.logger);
+    super(props.data.id);
     this.environment = props.environment;
     this.homeAssistant = props.homeAssistant;
     this.data = props.data;

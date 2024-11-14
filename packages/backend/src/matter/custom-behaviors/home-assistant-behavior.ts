@@ -7,6 +7,8 @@ import {
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
+import { Logger } from "winston";
+import { createLogger } from "../../logging/create-logger.js";
 
 export class HomeAssistantBehavior extends Behavior {
   static override readonly id = "homeAssistant";
@@ -18,7 +20,17 @@ export class HomeAssistantBehavior extends Behavior {
   }
 
   get entity(): HomeAssistantEntityState {
+    if (this.state.entity == null) {
+      this.logger.error("Entity State is not defined!");
+    }
     return this.state.entity;
+  }
+
+  private get logger() {
+    if (this.state.logger == null) {
+      this.state.logger = createLogger(`${this.entityId} / HomeAssistant`);
+    }
+    return this.state.logger;
   }
 
   get onChange(): HomeAssistantBehavior.Events["entity$Changed"] {
@@ -44,6 +56,7 @@ export class HomeAssistantBehavior extends Behavior {
 
 export namespace HomeAssistantBehavior {
   export class State {
+    logger?: Logger;
     actions!: HomeAssistantActions;
     basicInformation!: BridgeBasicInformation;
     registry!: HomeAssistantEntityRegistry;

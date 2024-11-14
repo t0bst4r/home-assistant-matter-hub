@@ -7,19 +7,19 @@ import { HomeAssistantClient } from "../home-assistant/home-assistant-client.js"
 import * as ws from "ws";
 import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
 import { Service } from "../utils/service.js";
-import { Logger } from "winston";
-import { createChildLogger } from "../logging/create-child-logger.js";
 import { matterJsLogger } from "../logging/matter-js-logger.js";
 import _ from "lodash";
 import { createStorageService } from "../storage/create-storage-service.js";
 import { MdnsService } from "@matter/main/protocol";
 import {
-  VendorId,
   Environment,
-  StorageService,
   Logger as MatterLogger,
+  StorageService,
+  VariableService,
+  VendorId,
 } from "@matter/main";
 import fs from "node:fs";
+import { customLogger } from "../logging/custom-logger.js";
 
 interface Options {
   "log-level": string;
@@ -99,11 +99,12 @@ async function handler(
     WebSocket: globalThis.WebSocket ?? ws.WebSocket,
   });
 
-  const logger = createLogger(options.logLevel, options.disableLogColors);
+  customLogger.configure(options.logLevel, !options.disableLogColors);
   MatterLogger.level = "debug";
-  MatterLogger.log = matterJsLogger(createChildLogger(logger, "matter.js"));
+  MatterLogger.log = matterJsLogger();
 
   const environment = Environment.default;
+  new VariableService(environment);
 
   const mdnsInterface = options.mdnsNetworkInterface?.trim() ?? "";
   environment.set(
@@ -114,20 +115,18 @@ async function handler(
     }),
   );
 
-  const storageConfig = createStorageService(logger, options.storageLocation);
+  const storageConfig = createStorageService(options.storageLocation);
   const storageService = environment.get(StorageService);
   storageService.location = storageConfig.location;
   storageService.factory = storageConfig.factory;
   const storage = await storageService.open("app");
 
   const homeAssistant = new HomeAssistantClient({
-    logger,
     url: options.homeAssistantUrl,
     accessToken: options.homeAssistantAccessToken,
   });
 
   const bridgeService = new BridgeService({
-    logger,
     environment,
     storage,
     basicInformation,
@@ -135,7 +134,6 @@ async function handler(
   });
 
   const webApi = new WebApi({
-    logger,
     bridgeService,
     port: options.webPort,
     webUiDist,
@@ -145,16 +143,13 @@ async function handler(
   for (const service of services) {
     await service.start?.();
   }
-  const close = closeFn(logger, _.reverse(services));
+  const close = closeFn(_.reverse(services));
   process.on("SIGINT", close);
   process.on("SIGTERM", close);
 }
 
-function closeFn(
-  logger: Logger,
-  services: Service[],
-): (evt: string) => Promise<void> {
-  const log = createChildLogger(logger, "Close");
+function closeFn(services: Service[]): (evt: string) => Promise<void> {
+  const log = createLogger("Close Handler");
   return async (evt: string) => {
     log.info("Received %s, shutting down", evt);
     for (const service of services) {
