@@ -37,6 +37,14 @@ export class CustomStorage extends StorageBackendJsonFile {
         }
       }
     }
+    this.applyTemporaryColorControlFix();
     this.isInitialized = true;
+  }
+
+  private applyTemporaryColorControlFix() {
+    const buggyKeys = Object.keys(this.store).filter(
+      (key) => key.startsWith("root.parts.") && key.endsWith(".colorControl"),
+    );
+    buggyKeys.forEach((key) => delete this.store[key]);
   }
 }
