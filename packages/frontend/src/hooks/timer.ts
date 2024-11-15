@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const resolutionMs = 100;
+const resolutionMs = 1000;
 
 export interface Timer {
   reset: () => void;

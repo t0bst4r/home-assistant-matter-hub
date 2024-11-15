@@ -37,7 +37,7 @@ export const BridgesPage = () => {
         sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
         open={isLoading}
       >
-        <CircularProgress color="inherit" />
+        {isLoading && <CircularProgress color="inherit" />}
       </Backdrop>
 
       <Stack spacing={4}>

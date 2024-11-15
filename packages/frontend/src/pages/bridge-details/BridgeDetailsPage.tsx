@@ -1,14 +1,17 @@
 import { BridgeDetails } from "../../components/bridge/BridgeDetails.tsx";
 import { Link, useParams } from "react-router-dom";
 import { useBridge } from "../../hooks/data/bridges.ts";
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useNotifications } from "@toolpad/core";
 import { useDevices } from "../../hooks/data/devices.ts";
 import { DeviceList } from "../../components/device/DeviceList.tsx";
 import { useTimer } from "../../hooks/timer.ts";
 import { IconButton, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import { Edit } from "@mui/icons-material";
+import { Edit, Refresh } from "@mui/icons-material";
+
+const MemoizedBridgeDetails = memo(BridgeDetails);
+const MemoizedDeviceList = memo(DeviceList);
 
 export const BridgeDetailsPage = () => {
   const [seed, setSeed] = useState<number>(0);
@@ -28,7 +31,7 @@ export const BridgeDetailsPage = () => {
     sleepSeconds: 9,
     startImmediate: true,
     callback: useCallback(() => setSeed(Date.now()), [setSeed]),
-    onTick: setTimer,
+    onTick: useCallback(setTimer, []),
   });
 
   useEffect(() => {
@@ -60,11 +63,25 @@ export const BridgeDetailsPage = () => {
         </IconButton>
       </Box>
 
-      <BridgeDetails bridge={bridge} />
+      <MemoizedBridgeDetails bridge={bridge} />
 
-      {devices && (
-        <DeviceList devices={devices} timer={timer} onRefresh={refreshNow} />
-      )}
+      <Stack spacing={2}>
+        <Box display="flex" justifyContent="flex-start" alignItems="center">
+          <Typography variant="h6">Devices</Typography>
+          <IconButton onClick={refreshNow}>
+            <Refresh />
+          </IconButton>
+          {timer != null && (
+            <Typography variant="body2" color="textSecondary">
+              Auto-refresh in {(timer / 1000).toFixed(0)} seconds...
+            </Typography>
+          )}
+        </Box>
+
+        {devices && (
+          <MemoizedDeviceList devices={devices} onRefresh={refreshNow} />
+        )}
+      </Stack>
     </Stack>
   );
 };
