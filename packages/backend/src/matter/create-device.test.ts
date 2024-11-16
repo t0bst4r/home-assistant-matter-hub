@@ -27,14 +27,17 @@ const testEntities: Record<
   HomeAssistantDomain,
   [HomeAssistantEntityRegistry, HomeAssistantEntityState][]
 > = {
-  [HomeAssistantDomain.binary_sensor]: [
-    createEntity<BinarySensorDeviceAttributes>("binary_sensor.bs1", "on", {
-      device_class: BinarySensorDeviceClass.GarageDoor,
-    }),
-    createEntity<BinarySensorDeviceAttributes>("binary_sensor.bs2", "on", {
-      device_class: BinarySensorDeviceClass.Occupancy,
-    }),
-  ],
+  [HomeAssistantDomain.binary_sensor]: Object.values(
+    BinarySensorDeviceClass,
+  ).map((device_class, idx) =>
+    createEntity<BinarySensorDeviceAttributes>(
+      `binary_sensor.bs${idx + 1}`,
+      "on",
+      {
+        device_class: device_class,
+      },
+    ),
+  ),
   [HomeAssistantDomain.climate]: [
     createEntity<ClimateDeviceAttributes>("climate.cl1", "on", {
       hvac_modes: [ClimateHvacMode.heat],
