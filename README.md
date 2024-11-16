@@ -97,7 +97,8 @@ using the `--storage-location=/path/to/storage` option or `HAMH_STORAGE_STORAGE`
 ## 2. Configuration
 
 Due to its advanced configuration options it is not possible to simply configure everything with environment variables
-or command line parameters. Therefore, bridges are configured within the application itself. General app configuration is
+or command line parameters. Therefore, bridges are configured within the application itself. General app configuration
+is
 done using the CI or environment variables. The following parameters are available:
 
 ```
@@ -203,7 +204,9 @@ rules will be excluded.
 
 ## Frequently Asked Questions
 
-Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for more details.
+Please review
+the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
+more details.
 
 ## Supported Domains / Device Types
 
@@ -221,3 +224,4 @@ Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matt
 | script        | OnOffPlugInUnit                                                      |                                                                                                                                           |
 | automation    | OnOffPlugInUnit                                                      |                                                                                                                                           |
 | scene         | OnOffPlugInUnit                                                      |                                                                                                                                           |
+| media_player  | OnOffPlugInUnit                                                      | Media Players are not supported by most controllers. Therefore adding them as OnOff units.                                                |

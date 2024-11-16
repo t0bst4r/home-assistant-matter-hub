@@ -11,4 +11,5 @@ export enum HomeAssistantDomain {
   script = "script",
   automation = "automation",
   scene = "scene",
+  media_player = "media_player",
 }

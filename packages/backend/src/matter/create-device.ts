@@ -15,6 +15,7 @@ import { CoverDevice } from "./devices/cover-device.js";
 import { ClimateDevice } from "./devices/climate-device.js";
 import { HomeAssistantBehavior } from "./custom-behaviors/home-assistant-behavior.js";
 import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
+import { MediaPlayerDevice } from "./devices/media-player-device.js";
 
 export function createDevice(
   actions: HomeAssistantActions,
@@ -46,4 +47,5 @@ const deviceCtrs: Record<
   automation: SwitchDevice,
   script: SwitchDevice,
   scene: SwitchDevice,
+  media_player: MediaPlayerDevice,
 };
