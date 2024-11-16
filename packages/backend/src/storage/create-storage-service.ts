@@ -4,6 +4,7 @@ import os from "node:os";
 import fs from "node:fs";
 import { StorageBackendJsonFile } from "@matter/nodejs";
 import { createLogger } from "../logging/create-logger.js";
+import { ClusterId } from "@home-assistant-matter-hub/common";
 
 interface StorageService {
   readonly location: string;
@@ -37,13 +38,21 @@ export class CustomStorage extends StorageBackendJsonFile {
         }
       }
     }
-    this.applyTemporaryColorControlFix();
+    this.applyTemporaryFixes([
+      ClusterId.colorControl,
+      ClusterId.windowCovering,
+    ]);
     this.isInitialized = true;
   }
 
-  private applyTemporaryColorControlFix() {
+  private applyTemporaryFixes(clusters: ClusterId[]) {
+    if (clusters.length === 0) {
+      return;
+    }
     const buggyKeys = Object.keys(this.store).filter(
-      (key) => key.startsWith("root.parts.") && key.endsWith(".colorControl"),
+      (key) =>
+        key.startsWith("root.parts.") &&
+        clusters.some((cluster) => key.endsWith(`.${cluster}`)),
     );
     buggyKeys.forEach((key) => delete this.store[key]);
   }

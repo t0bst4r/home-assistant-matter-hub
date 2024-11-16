@@ -31,17 +31,12 @@ export class WindowCoveringServer extends FeaturedBase {
           ? WindowCovering.MovementStatus.Closing
           : WindowCovering.MovementStatus.Stopped;
 
-    let currentLift = this.convertLiftValue(
-      state.attributes.current_position,
-      this.state.configStatus.liftMovementReversed ?? false,
-    );
+    let currentLift = this.convertLiftValue(state.attributes.current_position);
     if (currentLift != null) {
       currentLift *= 100;
     }
     applyPatchState(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
-      targetPositionLiftPercent100ths:
-        this.state.targetPositionLiftPercent100ths ?? currentLift,
       currentPositionLiftPercent100ths: currentLift,
       installedOpenLimitLift: 0,
       installedClosedLimitLift: 10000,
@@ -55,13 +50,13 @@ export class WindowCoveringServer extends FeaturedBase {
 
   override async handleMovement(
     type: MovementType,
-    reversed: boolean,
+    _: boolean,
     direction: MovementDirection,
     targetPercent100ths?: number,
   ) {
     if (type === MovementType.Lift) {
       if (targetPercent100ths != null) {
-        await this.handleGoToPosition(targetPercent100ths, reversed);
+        await this.handleGoToPosition(targetPercent100ths);
       } else if (direction === MovementDirection.Open) {
         await this.handleOpen();
       } else if (direction === MovementDirection.Close) {
@@ -97,18 +92,12 @@ export class WindowCoveringServer extends FeaturedBase {
     );
   }
 
-  private async handleGoToPosition(
-    targetPercent100ths: number,
-    reversed: boolean,
-  ) {
+  private async handleGoToPosition(targetPercent100ths: number) {
     const homeAssistant = this.agent.get(HomeAssistantBehavior);
     const currentPosition = (
       homeAssistant.entity as HomeAssistantEntityState<CoverDeviceAttributes>
     ).attributes.current_position;
-    const targetPosition = this.convertLiftValue(
-      targetPercent100ths / 100,
-      reversed,
-    );
+    const targetPosition = this.convertLiftValue(targetPercent100ths / 100);
     if (targetPosition == null || targetPosition === currentPosition) {
       return;
     }
@@ -122,16 +111,11 @@ export class WindowCoveringServer extends FeaturedBase {
 
   private convertLiftValue(
     percentage: number | undefined | null,
-    reversed: boolean,
   ): number | null {
     if (percentage == null) {
       return null;
     }
-    let result = percentage;
-    if (reversed) {
-      result = 100 - result;
-    }
-    return result;
+    return 100 - percentage;
   }
 }
 
