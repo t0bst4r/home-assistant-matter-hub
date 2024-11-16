@@ -23,7 +23,7 @@ export class BooleanStateServer extends Base {
   }
 
   private getStateValue(state: HomeAssistantEntityState): boolean {
-    const inverted = this.state.config.inverted;
+    const inverted = this.state.config?.inverted;
     const isOn = state.state !== "off";
     return inverted ? !isOn : isOn;
   }
@@ -31,6 +31,6 @@ export class BooleanStateServer extends Base {
 
 export namespace BooleanStateServer {
   export class State extends Base.State {
-    config!: BooleanStateConfig;
+    config?: BooleanStateConfig;
   }
 }
