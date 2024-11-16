@@ -106,3 +106,11 @@ jobs:
             --notes "$CHANGELOG" \
             --title "v$PACKAGE_VERSION" \
             --verify-tag
+
+      - name: Dispatch Addon Repository
+        if: steps.version.outputs.release-required == 'yes'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.ADDON_REPOSITORY_PAT }}
+          event-type: release-hamh
+          client-payload: '{ "version": "${{steps.version.outputs.package-version}}" }'
