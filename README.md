@@ -225,3 +225,4 @@ more details.
 | automation    | OnOffPlugInUnit                                                      |                                                                                                                                           |
 | scene         | OnOffPlugInUnit                                                      |                                                                                                                                           |
 | media_player  | OnOffPlugInUnit                                                      | Media Players are not supported by most controllers. Therefore adding them as OnOff units.                                                |
+| humidifier    | OnOffPlugInUnit                                                      | Matter does not support humidifiers yet. Therefore mapped to an OnOffPlugInUnit with Level Control.                                       |

@@ -16,6 +16,7 @@ import { ClimateDevice } from "./devices/climate-device.js";
 import { HomeAssistantBehavior } from "./custom-behaviors/home-assistant-behavior.js";
 import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
 import { MediaPlayerDevice } from "./devices/media-player-device.js";
+import { HumidifierDevice } from "./devices/humidifier-device.js";
 
 export function createDevice(
   actions: HomeAssistantActions,
@@ -48,4 +49,5 @@ const deviceCtrs: Record<
   script: SwitchDevice,
   scene: SwitchDevice,
   media_player: MediaPlayerDevice,
+  humidifier: HumidifierDevice,
 };

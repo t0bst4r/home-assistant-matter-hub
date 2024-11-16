@@ -12,6 +12,7 @@ import {
   HomeAssistantDomain,
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
+  HumidiferDeviceAttributes,
   LightDeviceAttributes,
   LightDeviceColorMode,
   SensorDeviceAttributes,
@@ -19,7 +20,6 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { createDevice } from "./create-device.js";
 import { MatterDevice } from "./matter-device.js";
-import { deviceToJson } from "../utils/json/device-to-json.js";
 import _ from "lodash";
 import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
 
@@ -106,6 +106,15 @@ const testEntities: Record<
   [HomeAssistantDomain.input_boolean]: [
     createEntity("input_boolean.input_boolean1", "on"),
   ],
+  [HomeAssistantDomain.media_player]: [createEntity("media_player.m1", "on")],
+  [HomeAssistantDomain.humidifier]: [
+    createEntity<HumidiferDeviceAttributes>("humidifier.h1", "on", {
+      min_humidity: 15,
+      max_humidity: 80,
+      humidity: 60,
+      current_humidity: 45,
+    }),
+  ],
 };
 
 const basicInformation: BridgeBasicInformation = {
@@ -131,7 +140,6 @@ describe("createDevice", () => {
     const actual = _.uniq(
       devices
         .filter((d): d is MatterDevice => d != null)
-        .map((d) => deviceToJson(d))
         .flatMap((d) => Object.keys(d.state)),
     ).sort();
     const expected = Object.keys(ClusterId).sort();

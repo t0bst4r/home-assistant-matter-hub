@@ -69,6 +69,7 @@ const renderer: Record<ClusterId, FC<{ state: unknown }> | null> = {
   [ClusterId.bridgedDeviceBasicInformation]: null,
   [ClusterId.identify]: null,
   [ClusterId.groups]: null,
+  [ClusterId.homeAssistant]: null,
 };
 
 const ErrorRenderer = (props: { clusterId: string; state: unknown }) => {

@@ -1,6 +1,7 @@
 import { Behavior, EventEmitter } from "@matter/main";
 import {
   BridgeBasicInformation,
+  ClusterId,
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
@@ -11,7 +12,7 @@ import { Logger } from "winston";
 import { createLogger } from "../../logging/create-logger.js";
 
 export class HomeAssistantBehavior extends Behavior {
-  static override readonly id = "homeAssistant";
+  static override readonly id = ClusterId.homeAssistant;
   declare state: HomeAssistantBehavior.State;
   declare events: HomeAssistantBehavior.Events;
 
