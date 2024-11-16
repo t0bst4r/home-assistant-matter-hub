@@ -9,12 +9,14 @@ import {
   ContactSensorDevice,
   OccupancySensorDevice,
   WaterLeakDetectorDevice,
+  SmokeCoAlarmDevice,
 } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import { BooleanStateServer } from "../behaviors/boolean-state-server.js";
 import { OccupancySensingServer } from "../behaviors/occupancy-sensing-server.js";
 import { EndpointType } from "@matter/main";
+import { SmokeCoAlarmServer } from "../behaviors/smoke-co-alarm-server.js";
 
 const ContactSensorType = ContactSensorDevice.with(
   BasicInformationServer,
@@ -34,6 +36,12 @@ const WaterLeakDetectorType = WaterLeakDetectorDevice.with(
   HomeAssistantBehavior,
   BooleanStateServer,
 );
+const SmokeCoAlarmType = SmokeCoAlarmDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantBehavior,
+  SmokeCoAlarmServer,
+);
 
 const deviceClasses: Partial<Record<BinarySensorDeviceClass, EndpointType>> = {
   [BinarySensorDeviceClass.Occupancy]: OccupancySensorType,
@@ -47,6 +55,7 @@ const deviceClasses: Partial<Record<BinarySensorDeviceClass, EndpointType>> = {
   [BinarySensorDeviceClass.Lock]: ContactSensorType,
 
   [BinarySensorDeviceClass.Moisture]: WaterLeakDetectorType,
+  [BinarySensorDeviceClass.Smoke]: SmokeCoAlarmType,
 };
 
 const defaultDeviceType = ContactSensorType;
