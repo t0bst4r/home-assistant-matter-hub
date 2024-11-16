@@ -5,3 +5,4 @@ export * from "./fan.js";
 export * from "./humidifer.js";
 export * from "./light.js";
 export * from "./sensor.js";
+export * from "./speaker.js";
