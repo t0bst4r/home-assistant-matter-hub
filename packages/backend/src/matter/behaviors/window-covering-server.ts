@@ -36,18 +36,26 @@ export class WindowCoveringServerBase extends FeaturedBase {
     if (currentLift != null) {
       currentLift *= 100;
     }
-    applyPatchState(this.state, {
+    applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
-      currentPositionLiftPercent100ths: currentLift,
-      targetPositionLiftPercent100ths:
-        this.state.targetPositionLiftPercent100ths ?? currentLift,
-      installedOpenLimitLift: 0,
-      installedClosedLimitLift: 10000,
-      operationalStatus: {
-        global: movementStatus,
-        lift: movementStatus,
-      },
       endProductType: WindowCovering.EndProductType.RollerShade,
+      ...(this.features.positionAwareLift
+        ? {
+            currentPositionLiftPercent100ths: currentLift,
+            targetPositionLiftPercent100ths:
+              this.state.targetPositionLiftPercent100ths ?? currentLift,
+            installedOpenLimitLift: 0,
+            installedClosedLimitLift: 10000,
+            operationalStatus: {
+              global: movementStatus,
+              lift: movementStatus,
+            },
+          }
+        : {
+            operationalStatus: {
+              global: movementStatus,
+            },
+          }),
     });
   }
 
