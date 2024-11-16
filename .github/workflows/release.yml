@@ -112,6 +112,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.ADDON_REPOSITORY_PAT }}
-          repository: 't0bst4r/home-assistant-addons'
+          repository: "t0bst4r/home-assistant-addons"
           event-type: release-hamh
           client-payload: '{ "version": "${{steps.version.outputs.package-version}}" }'
