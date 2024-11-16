@@ -31,7 +31,7 @@ export const BridgeDetailsPage = () => {
     sleepSeconds: 9,
     startImmediate: true,
     callback: useCallback(() => setSeed(Date.now()), [setSeed]),
-    onTick: useCallback(setTimer, []),
+    onTick: setTimer,
   });
 
   useEffect(() => {
@@ -78,9 +78,7 @@ export const BridgeDetailsPage = () => {
           )}
         </Box>
 
-        {devices && (
-          <MemoizedDeviceList devices={devices} onRefresh={refreshNow} />
-        )}
+        {devices && <MemoizedDeviceList devices={devices} />}
       </Stack>
     </Stack>
   );

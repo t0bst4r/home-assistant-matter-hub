@@ -18,8 +18,6 @@ import Typography from "@mui/material/Typography";
 
 export interface DeviceListProps {
   readonly devices: DeviceData[];
-  readonly timer?: number;
-  readonly onRefresh?: () => void;
 }
 
 export const DeviceList = ({ devices }: DeviceListProps) => {
