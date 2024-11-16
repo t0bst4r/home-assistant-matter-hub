@@ -10,7 +10,6 @@ import {
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 import { HumidityMeasurementServer } from "../behaviors/humidity-measurement-server.js";
-import { TemperatureMeasurementServer } from "../behaviors/temperature-measurement-server.js";
 
 const ClimateDeviceType = (
   supportsCooling: boolean,
@@ -32,7 +31,6 @@ const ClimateDeviceType = (
     IdentifyServer,
     HomeAssistantBehavior,
     HumidityMeasurementServer,
-    TemperatureMeasurementServer,
     thermostatServer,
   );
 };
@@ -78,18 +76,6 @@ export function ClimateDevice(
               return null;
             }
             return +humidity;
-          },
-        },
-      },
-      temperatureMeasurement: {
-        config: {
-          getValue(entity: HomeAssistantEntityState) {
-            const attributes = entity.attributes as ClimateDeviceAttributes;
-            const temperature = attributes.current_temperature;
-            if (temperature == null || isNaN(+temperature)) {
-              return null;
-            }
-            return +temperature;
           },
         },
       },
