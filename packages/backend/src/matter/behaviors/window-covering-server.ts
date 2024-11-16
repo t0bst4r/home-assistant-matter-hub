@@ -10,11 +10,12 @@ import {
 import { WindowCovering } from "@matter/main/clusters";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { ClusterType } from "@matter/main/types";
 
 const FeaturedBase = Base.with("Lift", "PositionAwareLift", "AbsolutePosition");
 
-export class WindowCoveringServer extends FeaturedBase {
-  declare state: WindowCoveringServer.State;
+export class WindowCoveringServerBase extends FeaturedBase {
+  declare state: WindowCoveringServerBase.State;
 
   override async initialize() {
     await super.initialize();
@@ -38,6 +39,8 @@ export class WindowCoveringServer extends FeaturedBase {
     applyPatchState(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
       currentPositionLiftPercent100ths: currentLift,
+      targetPositionLiftPercent100ths:
+        this.state.targetPositionLiftPercent100ths ?? currentLift,
       installedOpenLimitLift: 0,
       installedClosedLimitLift: 10000,
       operationalStatus: {
@@ -55,7 +58,7 @@ export class WindowCoveringServer extends FeaturedBase {
     targetPercent100ths?: number,
   ) {
     if (type === MovementType.Lift) {
-      if (targetPercent100ths != null) {
+      if (targetPercent100ths != null && this.features.positionAwareLift) {
         await this.handleGoToPosition(targetPercent100ths);
       } else if (direction === MovementDirection.Open) {
         await this.handleOpen();
@@ -119,6 +122,10 @@ export class WindowCoveringServer extends FeaturedBase {
   }
 }
 
-export namespace WindowCoveringServer {
+export namespace WindowCoveringServerBase {
   export class State extends FeaturedBase.State {}
 }
+
+export class WindowCoveringServer extends WindowCoveringServerBase.for(
+  ClusterType(WindowCovering.Base),
+) {}
