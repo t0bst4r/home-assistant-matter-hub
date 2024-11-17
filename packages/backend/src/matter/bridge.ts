@@ -2,6 +2,8 @@ import {
   BridgeBasicInformation,
   BridgeConfig,
   BridgeData,
+  BridgeOverrides,
+  CompatibilityMode,
   HomeAssistantEntityState,
   HomeAssistantFilter,
 } from "@home-assistant-matter-hub/common";
@@ -43,8 +45,16 @@ export class Bridge extends ServiceBase {
     return this.data.port;
   }
 
+  get compatibility(): CompatibilityMode {
+    return this.data.compatibility ?? CompatibilityMode.MaximumCompatibility;
+  }
+
   get filter(): HomeAssistantFilter {
     return this.data.filter;
+  }
+
+  get overrides(): BridgeOverrides | undefined {
+    return this.data.overrides;
   }
 
   get basicInformation(): BridgeBasicInformation {
@@ -115,6 +125,8 @@ export class Bridge extends ServiceBase {
       const device = createDevice(
         this.homeAssistant,
         this.basicInformation,
+        this.overrides ?? { domains: {}, entities: {} },
+        this.compatibility,
         registry,
         initialStates[registry.entity_id],
       );

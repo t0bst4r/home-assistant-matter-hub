@@ -70,10 +70,8 @@ export class BridgeService extends ServiceBase {
       throw new PortAlreadyInUseError(request.port);
     }
     const bridge = await this.addBridge({
+      ...request,
       id: crypto.randomUUID().replace(/-/g, ""),
-      name: request.name,
-      port: request.port,
-      filter: request.filter,
       basicInformation: this.basicInformation,
       deviceCount: 0,
     });

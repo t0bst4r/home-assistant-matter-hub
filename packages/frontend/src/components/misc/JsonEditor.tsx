@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactCodeMirror, { hoverTooltip } from "@uiw/react-codemirror";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
-import { Button, useTheme } from "@mui/material";
+import { Alert, Button, useTheme } from "@mui/material";
 import { linter } from "@codemirror/lint";
 import { json, jsonLanguage, jsonParseLinter } from "@codemirror/lang-json";
 import {
@@ -12,7 +12,7 @@ import {
   stateExtensions,
 } from "codemirror-json-schema";
 import Box from "@mui/material/Box";
-import Ajv from "ajv";
+import Ajv, { ErrorObject } from "ajv";
 import type { JSONSchema7 } from "json-schema";
 
 type OnChangeParams<T extends {}> =
@@ -34,6 +34,7 @@ export const JsonEditor = <T extends {}>({
 }: JsonEditorProps<T>) => {
   const codeMirrorTheme = useCodeTheme();
 
+  const [validationErrors, setValidationErrors] = useState<ErrorObject[]>();
   const [stringValue, setStringValue] = useState(() => JSON.stringify(value));
   const [lastPopulatedValue, setLastPopulatedValue] = useState<T>();
 
@@ -42,6 +43,7 @@ export const JsonEditor = <T extends {}>({
       const parsedConfig = JSON.parse(value) as T;
       if (schema) {
         const isValid = ajv.validate(schema, parsedConfig);
+        setValidationErrors(ajv.errors ?? undefined);
         if (!isValid) {
           return { isValid: false };
         }
@@ -105,6 +107,21 @@ export const JsonEditor = <T extends {}>({
           Prettify
         </Button>
       </Box>
+      {validationErrors && (
+        <Alert severity="error" variant="outlined">
+          <ul>
+            {validationErrors.map((error, idx) => (
+              <li key={idx}>
+                <code>{error.instancePath}</code>{" "}
+                <span>
+                  {error.message} (
+                  <code>{Object.values(error.params).join(", ")}</code>)
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Alert>
+      )}
     </>
   );
 };

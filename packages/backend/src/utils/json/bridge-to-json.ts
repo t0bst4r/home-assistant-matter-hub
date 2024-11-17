@@ -7,7 +7,9 @@ export function bridgeToJson(bridge: Bridge): BridgeData {
     id: bridge.id,
     name: bridge.name,
     port: bridge.port,
+    compatibility: bridge.compatibility,
     filter: bridge.filter,
+    overrides: bridge.overrides,
     basicInformation: bridge.basicInformation,
     deviceCount: bridge.devices.length,
     commissioning: bridge.commissioning

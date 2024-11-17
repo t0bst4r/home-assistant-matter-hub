@@ -1,5 +1,7 @@
 import {
   BridgeBasicInformation,
+  BridgeOverrides,
+  CompatibilityMode,
   type HomeAssistantDomain,
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
@@ -21,6 +23,8 @@ import { HumidifierDevice } from "./devices/humidifier-device.js";
 export function createDevice(
   actions: HomeAssistantActions,
   basicInformation: BridgeBasicInformation,
+  overrides: BridgeOverrides,
+  compatibility: CompatibilityMode,
   registry: HomeAssistantEntityRegistry,
   entity: HomeAssistantEntityState,
 ): MatterDevice | undefined {
@@ -29,12 +33,25 @@ export function createDevice(
   if (!factory) {
     return undefined;
   }
-  return factory({ actions, basicInformation, registry, entity });
+  const config: object = Object.assign(
+    {},
+    overrides.domains[domain] ?? {},
+    overrides.entities[entity.entity_id] ?? {},
+  );
+  return factory(
+    { actions, basicInformation, registry, entity },
+    compatibility,
+    config,
+  );
 }
 
 const deviceCtrs: Record<
   HomeAssistantDomain,
-  (homeAssistant: HomeAssistantBehavior.State) => MatterDevice | undefined
+  (
+    homeAssistant: HomeAssistantBehavior.State,
+    compatibility: CompatibilityMode,
+    config: unknown,
+  ) => MatterDevice | undefined
 > = {
   light: LightDevice,
   switch: SwitchDevice,

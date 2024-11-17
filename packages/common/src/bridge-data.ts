@@ -1,9 +1,23 @@
 import { HomeAssistantFilter } from "./home-assistant-filter.js";
+import { HomeAssistantDomain } from "./home-assistant-domain.js";
+import { CompatibilityMode } from "./compatibility-mode.js";
+
+export type BridgeDomainOverrides = Partial<
+  Record<HomeAssistantDomain, object>
+>;
+export type BridgeEntityOverrides = Partial<Record<string, object>>;
+
+export interface BridgeOverrides {
+  readonly domains: BridgeDomainOverrides;
+  readonly entities: BridgeEntityOverrides;
+}
 
 export interface BridgeConfig {
   readonly name: string;
   readonly port: number;
+  readonly compatibility?: CompatibilityMode;
   readonly filter: HomeAssistantFilter;
+  readonly overrides?: BridgeOverrides;
 }
 
 export interface CreateBridgeRequest extends BridgeConfig {}

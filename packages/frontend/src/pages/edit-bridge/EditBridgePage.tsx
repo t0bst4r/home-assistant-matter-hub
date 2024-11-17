@@ -1,4 +1,4 @@
-import { Button, Container, TextField } from "@mui/material";
+import { Button, Container, MenuItem, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { PropsWithChildren, useEffect, useState } from "react";
 import {
@@ -13,6 +13,9 @@ import {
 } from "../../hooks/data/bridges.ts";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useNotifications } from "@toolpad/core";
+import { CompatibilityMode } from "@home-assistant-matter-hub/common";
+import { SelectField } from "../../components/select-field/SelectField.tsx";
+import Box from "@mui/material/Box";
 
 const defaultConfig: EditableBridgeConfig = {
   filter: {
@@ -24,9 +27,10 @@ const defaultConfig: EditableBridgeConfig = {
 const ResponsiveLabel = ({ children }: PropsWithChildren) => (
   <Grid
     size={{ xs: 12, sm: 4, md: 3 }}
-    sx={{ display: { xs: "none", sm: "block" } }}
+    display={{ xs: "none", sm: "flex" }}
+    alignItems="center"
   >
-    {children}
+    <Box>{children}</Box>
   </Grid>
 );
 
@@ -50,6 +54,10 @@ export const EditBridgePage = () => {
 
   const [port, setPort] = useState<number>();
   const [portIsValid, setPortIsValid] = useState(false);
+
+  const [compatibility, setCompatibility] = useState<CompatibilityMode>(
+    CompatibilityMode.MaximumCompatibility,
+  );
 
   const [currentConfig, setCurrentConfig] =
     useState<EditableBridgeConfig>(defaultConfig);
@@ -76,13 +84,19 @@ export const EditBridgePage = () => {
     }
 
     if (bridge) {
-      updateBridge({ ...currentConfig!, name, port: port!, id: bridge.id })
+      updateBridge({
+        ...currentConfig!,
+        compatibility,
+        name,
+        port: port!,
+        id: bridge.id,
+      })
         .then(() => navigate(`/bridges/${bridge.id}`))
         .catch((err: Error) =>
           notifications.show(err.message, { severity: "error" }),
         );
     } else {
-      createBridge({ ...currentConfig!, name, port: port! })
+      createBridge({ ...currentConfig!, compatibility, name, port: port! })
         .then(() => navigate("/bridges"))
         .catch((err: Error) =>
           notifications.show(err.message, { severity: "error" }),
@@ -94,7 +108,10 @@ export const EditBridgePage = () => {
     if (bridge) {
       setPort(bridge.port);
       setName(bridge.name);
-      setCurrentConfig({ filter: bridge.filter });
+      setCompatibility(
+        bridge.compatibility ?? CompatibilityMode.MaximumCompatibility,
+      );
+      setCurrentConfig({ filter: bridge.filter, overrides: bridge.overrides });
     } else if (usedPorts) {
       setPort(nextFreePort(usedPorts));
     }
@@ -126,6 +143,7 @@ export const EditBridgePage = () => {
             onChange={(e) => setName(e.target.value)}
           />
         </ResponsiveFormField>
+
         <ResponsiveLabel>Port</ResponsiveLabel>
         <ResponsiveFormField>
           <TextField
@@ -136,6 +154,20 @@ export const EditBridgePage = () => {
             value={port ?? ""}
             onChange={(e) => setPort(Number(e.target.value))}
           />
+        </ResponsiveFormField>
+
+        <ResponsiveLabel>Compatibility</ResponsiveLabel>
+        <ResponsiveFormField>
+          <SelectField
+            fullWidth
+            label="Compatibility"
+            value={compatibility}
+            onChange={setCompatibility}
+          >
+            {Object.values(CompatibilityMode).map((mode) => (
+              <MenuItem value={mode}>{mode}</MenuItem>
+            ))}
+          </SelectField>
         </ResponsiveFormField>
 
         <Grid size={12}>

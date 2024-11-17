@@ -7,6 +7,7 @@ import {
   ClimateHvacAction,
   ClimateHvacMode,
   ClusterId,
+  CompatibilityMode,
   CoverDeviceAttributes,
   FanDeviceAttributes,
   HomeAssistantDomain,
@@ -138,7 +139,14 @@ describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
     const devices = entities.map(([registry, entity]) =>
-      createDevice(mockedActions, basicInformation, registry, entity),
+      createDevice(
+        mockedActions,
+        basicInformation,
+        { domains: {}, entities: {} },
+        CompatibilityMode.Matter,
+        registry,
+        entity,
+      ),
     );
     const actual = _.uniq(
       devices
