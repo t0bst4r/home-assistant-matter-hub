@@ -1,25 +1,20 @@
 import {
+  CompatibilityMode,
   HomeAssistantEntityState,
+  MediaPlayerDeviceClass,
   SpeakerDeviceAttributes,
-  BridgeFeatureFlags,
 } from "@home-assistant-matter-hub/common";
-import { OnOffPlugInUnitDevice } from "@matter/main/devices";
 import { SpeakerDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
 import { OnOffServer } from "../behaviors/on-off-server.js";
+import { MatterDevice } from "../matter-device.js";
 import {
   LevelControlConfig,
   LevelControlServer,
 } from "../behaviors/level-control-server.js";
-
-const FallbackEndpointType = OnOffPlugInUnitDevice.with(
-  BasicInformationServer,
-  IdentifyServer,
-  HomeAssistantEntityBehavior,
-  OnOffServer,
-);
+import { SwitchDevice } from "./switch-device.js";
 
 const volumeLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<SpeakerDeviceAttributes>) => {
@@ -31,7 +26,7 @@ const volumeLevelConfig: LevelControlConfig = {
   moveToLevel: {
     action: "media_player.volume_set",
     data: (value) => {
-      return { volume_level: value / 254 };
+      return { volume_level: value / 100 };
     },
   },
 };
@@ -39,9 +34,9 @@ const volumeLevelConfig: LevelControlConfig = {
 const MediaPlayerEndpointType = SpeakerDevice.with(
   BasicInformationServer,
   IdentifyServer,
-  HomeAssistantEntityBehavior,
+  HomeAssistantBehavior,
   OnOffServer,
-  LevelControlServer.set({ config: volumeLevelConfig }),
+  LevelControlServer,
 );
 
 export function MediaPlayerDevice(
