@@ -6,6 +6,6 @@ export enum MediaPlayerDeviceClass {
 }
 
 export interface SpeakerDeviceAttributes {
-  volume_level?: number;
   device_class?: MediaPlayerDeviceClass;
+  volume_level?: number;
 }
