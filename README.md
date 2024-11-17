@@ -204,9 +204,8 @@ rules will be excluded.
 
 ## Frequently Asked Questions
 
-Please review
-the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
-more details.
+Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
+more details and Frequently Asked Questions.
 
 ## Supported Domains / Device Types
 
