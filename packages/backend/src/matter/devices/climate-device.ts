@@ -9,12 +9,27 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
 import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
-import { HumidityMeasurementServer } from "../behaviors/humidity-measurement-server.js";
+import {
+  HumidityMeasurementConfig,
+  HumidityMeasurementServer,
+} from "../behaviors/humidity-measurement-server.js";
+
+const humidityConfig: HumidityMeasurementConfig = {
+  getValue(entity: HomeAssistantEntityState) {
+    const attributes = entity.attributes as ClimateDeviceAttributes;
+    const humidity = attributes.current_humidity;
+    if (humidity == null || isNaN(+humidity)) {
+      return null;
+    }
+    return +humidity;
+  },
+};
 
 const ClimateDeviceType = (
   supportsCooling: boolean,
   supportsHeating: boolean,
   supportsAuto: boolean,
+  supportsHumidity: boolean,
 ) => {
   const thermostatServer = supportsAuto
     ? ThermostatServer.with("Cooling", "Heating", "AutoMode")
@@ -26,13 +41,20 @@ const ClimateDeviceType = (
           ? ThermostatServer.with("Heating")
           : ThermostatServer;
 
-  return ThermostatDevice.with(
+  const device = ThermostatDevice.with(
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantBehavior,
-    HumidityMeasurementServer,
     thermostatServer,
   );
+
+  if (supportsHumidity) {
+    return device.with(
+      HumidityMeasurementServer.set({ config: humidityConfig }),
+    );
+  } else {
+    return device;
+  }
 };
 
 const coolingModes: ClimateHvacMode[] = [
@@ -51,34 +73,25 @@ const autoModes: ClimateHvacMode[] = [
 export function ClimateDevice(
   homeAssistant: HomeAssistantBehavior.State,
 ): MatterDevice | undefined {
-  const entity =
-    homeAssistant.entity as HomeAssistantEntityState<ClimateDeviceAttributes>;
+  const attributes = homeAssistant.entity.attributes as ClimateDeviceAttributes;
   const supportsCooling = coolingModes.some((mode) =>
-    entity.attributes.hvac_modes.includes(mode),
+    attributes.hvac_modes.includes(mode),
   );
   const supportsHeating = heatingModes.some((mode) =>
-    entity.attributes.hvac_modes.includes(mode),
+    attributes.hvac_modes.includes(mode),
   );
   const supportsAuto = autoModes.some((mode) =>
-    entity.attributes.hvac_modes.includes(mode),
+    attributes.hvac_modes.includes(mode),
   );
+  const supportsHumidity = attributes.current_humidity !== undefined;
 
   return new MatterDevice(
-    ClimateDeviceType(supportsCooling, supportsHeating, supportsAuto),
+    ClimateDeviceType(
+      supportsCooling,
+      supportsHeating,
+      supportsAuto,
+      supportsHumidity,
+    ),
     homeAssistant,
-    {
-      relativeHumidityMeasurement: {
-        config: {
-          getValue(entity: HomeAssistantEntityState) {
-            const attributes = entity.attributes as ClimateDeviceAttributes;
-            const humidity = attributes.current_humidity;
-            if (humidity == null || isNaN(+humidity)) {
-              return null;
-            }
-            return +humidity;
-          },
-        },
-      },
-    },
   );
 }

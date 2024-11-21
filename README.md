@@ -12,7 +12,7 @@ local communication without the need of port forwarding etc.
 To successfully pair the bridge with your Controller (e.g. Alexa, Google Home, Apple Home) it is recommended to have
 IPv6 enabled **in your local network**. Additionally, it is not recommended to place both in different VLANs.
 
-There were some users who got that working, but this can break any time due to 
+There were some users who got that working, but this can break any time due to
 
 ## 1. Installation
 
@@ -221,7 +221,7 @@ more details and Frequently Asked Questions.
 ## Supported Domains / Device Types
 
 | Domain        | Represented as Device Class                                          | Comment                                                                                                                                                                                  |
-| ------------- | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | light         | OnOffLight, DimmableLight, ColorTemperatureLight, ExtendedColorLight | Depends on the supported features attribute of the device.                                                                                                                               |
 | switch        | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
 | lock          | DoorLock                                                             |                                                                                                                                                                                          |

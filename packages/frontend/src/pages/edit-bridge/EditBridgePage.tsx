@@ -1,4 +1,4 @@
-import { Button, Container, MenuItem, TextField } from "@mui/material";
+import { Button, Container, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { PropsWithChildren, useEffect, useState } from "react";
 import {
@@ -14,7 +14,6 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useNotifications } from "@toolpad/core";
 import { CompatibilityMode } from "@home-assistant-matter-hub/common";
-import { SelectField } from "../../components/select-field/SelectField.tsx";
 import Box from "@mui/material/Box";
 
 const defaultConfig: EditableBridgeConfig = {
@@ -156,7 +155,7 @@ export const EditBridgePage = () => {
           />
         </ResponsiveFormField>
 
-        <ResponsiveLabel>Compatibility</ResponsiveLabel>
+        {/*<ResponsiveLabel>Compatibility</ResponsiveLabel>
         <ResponsiveFormField>
           <SelectField
             fullWidth
@@ -168,7 +167,7 @@ export const EditBridgePage = () => {
               <MenuItem value={mode}>{mode}</MenuItem>
             ))}
           </SelectField>
-        </ResponsiveFormField>
+        </ResponsiveFormField>*/}
 
         <Grid size={12}>
           <BridgeConfigEditor config={currentConfig} onChange={configChanged} />
