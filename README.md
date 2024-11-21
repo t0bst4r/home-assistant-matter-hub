@@ -7,6 +7,13 @@ local communication without the need of port forwarding etc.
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/t0bst4r)
 
+## Prerequisites
+
+To successfully pair the bridge with your Controller (e.g. Alexa, Google Home, Apple Home) it is recommended to have
+IPv6 enabled **in your local network**. Additionally, it is not recommended to place both in different VLANs.
+
+There were some users who got that working, but this can break any time due to 
+
 ## 1. Installation
 
 This application can be installed in three different ways:
@@ -168,10 +175,14 @@ The `type` can be one of:
 - `platform` - the integration you want to include or exclude
 - `label` - the slug of a label you want to include or exclude
 
-The `value` property is a string containg the corresponding value. You can add multiple include or exclude rules which
+The `value` property is a string containing the corresponding value. You can add multiple include or exclude rules which
 are then combined.
 All entities which match one of the include-rules will be included, but all entities which match one of the exclude
 rules will be excluded.
+
+> [!WARNING]
+> When performing changes on entities, like adding or removing a label, you need to restart the matter-hub application
+> for the changes to take effect.
 
 ```json
 {
@@ -202,26 +213,26 @@ rules will be excluded.
 }
 ```
 
-## Frequently Asked Questions
+## Frequently Asked Questions & Troubleshooting
 
 Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
 more details and Frequently Asked Questions.
 
 ## Supported Domains / Device Types
 
-| Domain        | Represented as Device Class                                          | Comment                                                                                                                         |
-| ------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| light         | OnOffLight, DimmableLight, ColorTemperatureLight, ExtendedColorLight | Depends on the supported features attribute of the device.                                                                      |
-| switch        | OnOffPlugInUnit                                                      |                                                                                                                                 |
-| lock          | DoorLock                                                             |                                                                                                                                 |
-| fan           | OnOffPlugInUnit                                                      | Fans are supported in the matter specification, but they are not yet supported by Voice Assistants like Alexa, Google or Apple. |
-| binary_sensor | ContactSensor, OccupancySensor, WaterLeadDetector                    | All device-classes which are explitly implemented, are mapped to contact sensor. Feel free to open a PR to improve this.        |
-| sensor        | TemperatureSensor, HumiditySensor                                    | Currently only Temperature and Humidity are supported. Feel free to open a PR to improve this.                                  |
-| cover         | WindowCovering                                                       |                                                                                                                                 |
-| climate       | Thermostat                                                           |                                                                                                                                 |
-| input_boolean | OnOffPlugInUnit                                                      |                                                                                                                                 |
-| script        | OnOffPlugInUnit                                                      |                                                                                                                                 |
-| automation    | OnOffPlugInUnit                                                      |                                                                                                                                 |
-| scene         | OnOffPlugInUnit                                                      |                                                                                                                                 |
-| media_player  | OnOffPlugInUnit                                                      | Media Players are not supported by most controllers. Therefore adding them as OnOff units.                                      |
-| humidifier    | OnOffPlugInUnit                                                      | Matter does not support humidifiers yet. Therefore mapped to an OnOffPlugInUnit with Level Control.                             |
+| Domain        | Represented as Device Class                                          | Comment                                                                                                                                                                                  |
+| ------------- | -------------------------------------------------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| light         | OnOffLight, DimmableLight, ColorTemperatureLight, ExtendedColorLight | Depends on the supported features attribute of the device.                                                                                                                               |
+| switch        | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
+| lock          | DoorLock                                                             |                                                                                                                                                                                          |
+| fan           | OnOffPlugInUnit                                                      | Fans are supported in the matter specification, but they are not yet supported by Voice Assistants like Alexa, Google or Apple.                                                          |
+| binary_sensor | ContactSensor, OccupancySensor, WaterLeadDetector                    | All device-classes which are explitly implemented, are mapped to contact sensor. Feel free to open a PR to improve this.<br/>Water Leak Detectors are not supported by every controller. |
+| sensor        | TemperatureSensor, HumiditySensor                                    | Currently only Temperature and Humidity are supported. Feel free to open a PR to improve this.                                                                                           |
+| cover         | WindowCovering                                                       |                                                                                                                                                                                          |
+| climate       | Thermostat                                                           |                                                                                                                                                                                          |
+| input_boolean | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
+| script        | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
+| automation    | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
+| scene         | OnOffPlugInUnit                                                      |                                                                                                                                                                                          |
+| media_player  | OnOffPlugInUnit                                                      | Media Players are not supported by most controllers. Therefore adding them as OnOff units.                                                                                               |
+| humidifier    | OnOffPlugInUnit                                                      | Matter does not support humidifiers yet. Therefore mapped to an OnOffPlugInUnit with Level Control.                                                                                      |
