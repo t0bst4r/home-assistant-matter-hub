@@ -1,20 +1,16 @@
 {
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "useDaemonProcess": false,
   "targetDefaults": {
     "lint": {
-      "inputs": ["default"],
       "cache": true
     },
     "test": {
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^default"],
-      "cache": true
+      "cache": true,
+      "dependsOn": ["^build"]
     },
     "build": {
       "cache": true,
-      "inputs": ["default", "^default"],
       "dependsOn": ["^build"]
     },
     "serve": {
@@ -43,5 +39,6 @@
     {
       "plugin": "@nx/js"
     }
-  ]
+  ],
+  "nxCloudId": "6740844a1ef91af262ecd0d2"
 }
