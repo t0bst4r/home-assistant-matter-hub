@@ -10,7 +10,7 @@ local communication without the need of port forwarding etc.
 ## Prerequisites
 
 To successfully pair the bridge with your Controller (e.g. Alexa, Google Home, Apple Home) it is recommended to have
-IPv6 enabled **in your local network**. Additionally, it is not recommended to place both in different VLANs.
+**IPv6 enabled in your local network**. Additionally, it is not recommended to place both in different VLANs.
 
 There were some users who got that working, but this can break any time due to
 
@@ -69,6 +69,12 @@ docker run -d \
   --network=host \
   ghcr.io/t0bst4r/home-assistant-matter-hub:latest
 ```
+
+> [!WARNING]
+> Make sure your docker installation has IPv6 enabled, too.
+> See [this guide](https://fariszr.com/docker-ipv6-setup-with-propagation/) for more information.
+> 
+> If you are running docker on a NAS, make sure to enable IPv6 in the NAS settings, too.
 
 ### 1.3 Manual installation using `npm`
 
