@@ -1,5 +1,5 @@
 import { BridgeDetails } from "../../components/bridge/BridgeDetails.tsx";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { useBridge } from "../../hooks/data/bridges.ts";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useNotifications } from "@toolpad/core";

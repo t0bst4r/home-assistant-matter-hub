@@ -1,5 +1,5 @@
 import { Breadcrumbs, Link } from "@mui/material";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router";
 import { PropsWithChildren } from "react";
 
 const LinkRouter = ({ to, children }: PropsWithChildren<{ to: string }>) => {

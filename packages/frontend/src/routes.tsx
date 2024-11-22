@@ -1,4 +1,4 @@
-import { Navigate, RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router";
 import { BridgesPage } from "./pages/bridges/BridgesPage.tsx";
 import { FundingPage } from "./pages/funding/FundingPage.tsx";
 import { AboutPage } from "./pages/about/AboutPage.tsx";

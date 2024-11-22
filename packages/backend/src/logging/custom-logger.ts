@@ -15,7 +15,8 @@ const colorPerLevel: Record<string, (str: string) => string> = {
   error: (str) => chalk.red(str),
 };
 
-const formatPrint: Format = format.printf((info) => {
+const formatPrint: Format = format.printf((transformableInfo) => {
+  const info = transformableInfo as Record<string, string>;
   const color =
     colorPerLevel[colorize ? info.level : "no-color"] ?? ((str: string) => str);
 

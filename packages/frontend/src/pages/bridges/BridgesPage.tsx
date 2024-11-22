@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import { BridgeData } from "@home-assistant-matter-hub/common";
 import { Add } from "@mui/icons-material";
 import { useNotifications } from "@toolpad/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 
 export const BridgesPage = () => {
   const notifications = useNotifications();

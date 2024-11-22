@@ -11,7 +11,7 @@ import {
   useUpdateBridge,
   useUsedPorts,
 } from "../../hooks/data/bridges.ts";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router";
 import { useNotifications } from "@toolpad/core";
 import { CompatibilityMode } from "@home-assistant-matter-hub/common";
 import Box from "@mui/material/Box";
