@@ -36,7 +36,7 @@ function maxLengthOrHash(value: string, maxLength: number): string {
   if (maxLength < 16) {
     throw new Error("MaxLength cannot be shorter than 16");
   }
-  if (value.length < maxLength) {
+  if (value.length <= maxLength) {
     return value;
   } else {
     const hash = crypto
