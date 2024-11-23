@@ -12,7 +12,7 @@ import { testBit } from "../../utils/test-bit.js";
 
 const CoverDeviceType = (positionAwareLift: boolean) => {
   const windowCoveringServer = positionAwareLift
-    ? WindowCoveringServer.with("Lift", "PositionAwareLift", "AbsolutePosition")
+    ? WindowCoveringServer.with("Lift", "PositionAwareLift")
     : WindowCoveringServer.with("Lift");
   return WindowCoveringDevice.with(
     BasicInformationServer,

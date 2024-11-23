@@ -12,7 +12,7 @@ import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavi
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
 
-const FeaturedBase = Base.with("Lift", "PositionAwareLift", "AbsolutePosition");
+const FeaturedBase = Base.with("Lift", "PositionAwareLift");
 
 export class WindowCoveringServerBase extends FeaturedBase {
   declare state: WindowCoveringServerBase.State;
@@ -44,8 +44,6 @@ export class WindowCoveringServerBase extends FeaturedBase {
             currentPositionLiftPercent100ths: currentLift,
             targetPositionLiftPercent100ths:
               this.state.targetPositionLiftPercent100ths ?? currentLift,
-            installedOpenLimitLift: 0,
-            installedClosedLimitLift: 10000,
             operationalStatus: {
               global: movementStatus,
               lift: movementStatus,
@@ -54,6 +52,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
         : {
             operationalStatus: {
               global: movementStatus,
+              lift: movementStatus,
             },
           }),
     });
