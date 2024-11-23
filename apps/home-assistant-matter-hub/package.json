@@ -90,6 +90,7 @@
       },
       "build": {
         "inputs": [
+          "^default",
           "default",
           "{workspaceRoot}/README.md",
           "{workspaceRoot}/LICENSE"

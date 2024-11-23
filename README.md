@@ -73,7 +73,7 @@ docker run -d \
 > [!WARNING]
 > Make sure your docker installation has IPv6 enabled, too.
 > See [this guide](https://fariszr.com/docker-ipv6-setup-with-propagation/) for more information.
-> 
+>
 > If you are running docker on a NAS, make sure to enable IPv6 in the NAS settings, too.
 
 ### 1.3 Manual installation using `npm`
