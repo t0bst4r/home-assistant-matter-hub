@@ -99,8 +99,8 @@ export const JsonEditor = <T extends {}>({
       <Box position="relative">
         <Typography gutterBottom variant="h5" component="div">
           {editionMode === EditionModeType.FIELDS_EDITOR
-            ? "Json Editor"
-            : "Fields Editor"}
+            ? "Fields Editor"
+            : "Json Editor"}
         </Typography>
         <Button
           sx={{
