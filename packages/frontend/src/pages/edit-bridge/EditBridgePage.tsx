@@ -50,6 +50,7 @@ export const EditBridgePage = () => {
 
   const [name, setName] = useState("");
   const [nameIsValid, setNameIsValid] = useState(false);
+  const [isParsedData, setIsParsedData] = useState(false);
 
   const [port, setPort] = useState<number>();
   const [portIsValid, setPortIsValid] = useState(false);
@@ -111,8 +112,10 @@ export const EditBridgePage = () => {
         bridge.compatibility ?? CompatibilityMode.MaximumCompatibility,
       );
       setCurrentConfig({ filter: bridge.filter });
+      setIsParsedData(true);
     } else if (usedPorts) {
       setPort(nextFreePort(usedPorts));
+      setIsParsedData(true);
     }
   }, [bridge, usedPorts]);
 
@@ -129,6 +132,7 @@ export const EditBridgePage = () => {
     }
   }, [bridge, usedPorts, port]);
 
+  if (!isParsedData) return <>Loading</>;
   return (
     <Container>
       <Grid container spacing={2}>
@@ -170,7 +174,11 @@ export const EditBridgePage = () => {
         </ResponsiveFormField>*/}
 
         <Grid size={12}>
-          <BridgeConfigEditor config={currentConfig} onChange={configChanged} />
+          <BridgeConfigEditor
+            config={currentConfig}
+            onChange={configChanged}
+            isValid={configIsValid}
+          />
         </Grid>
 
         <Grid size={{ xs: 6, sm: 4, md: 3 }}>
