@@ -5,7 +5,7 @@ import {
 import type { JSONSchema7 } from "json-schema";
 import { JsonEditor } from "../misc/JsonEditor.tsx";
 import { Box, Button, Typography } from "@mui/material";
-import FieldsEditor from "../fields-editor/FieldsEditor.tsx";
+import { FieldsEditor } from "../fields-editor/FieldsEditor.tsx";
 import { useState } from "react";
 import { LibraryBooks, TextFields } from "@mui/icons-material";
 
@@ -40,7 +40,7 @@ export interface BridgeConfigEditorProps {
   ) => void;
 }
 
-enum EditionModeType {
+enum BridgeEditorMode {
   JSON_EDITOR = "JSON_EDITOR",
   FIELDS_EDITOR = "FIELDS_EDITOR",
 }
@@ -50,7 +50,9 @@ export const BridgeConfigEditor = ({
   onChange,
   isValid,
 }: BridgeConfigEditorProps) => {
-  const [editionMode, setEditionMode] = useState(EditionModeType.FIELDS_EDITOR);
+  const [editionMode, setEditionMode] = useState(
+    BridgeEditorMode.FIELDS_EDITOR,
+  );
   const valueChanged = (event: {
     isValid: boolean;
     value?: EditableBridgeConfig;
@@ -58,41 +60,34 @@ export const BridgeConfigEditor = ({
     onChange(event.value, event.isValid);
   };
 
-  const handdleChangeEditionType = () => {
+  const toggleEditionType = () => {
     setEditionMode(
-      editionMode === EditionModeType.FIELDS_EDITOR
-        ? EditionModeType.JSON_EDITOR
-        : EditionModeType.FIELDS_EDITOR,
+      editionMode === BridgeEditorMode.FIELDS_EDITOR
+        ? BridgeEditorMode.JSON_EDITOR
+        : BridgeEditorMode.FIELDS_EDITOR,
     );
   };
 
   return (
-    <Box position="relative">
-      <Typography gutterBottom variant="h5" component="div">
-        {editionMode === EditionModeType.FIELDS_EDITOR
-          ? "Fields Editor"
-          : "Json Editor"}
-      </Typography>
-      <Button
-        sx={{
-          position: "absolute",
-          right: "0",
-          top: "0",
-        }}
-        onClick={() => handdleChangeEditionType()}
-        disabled={!isValid}
-      >
-        {editionMode === EditionModeType.FIELDS_EDITOR ? (
-          <TextFields />
-        ) : (
-          <LibraryBooks />
-        )}
-      </Button>
-
-      {editionMode === EditionModeType.FIELDS_EDITOR && (
+    <Box>
+      <Box display="flex" justifyContent={"space-between"}>
+        <Typography gutterBottom variant="h5" component="div">
+          {editionMode === BridgeEditorMode.FIELDS_EDITOR
+            ? "Fields Editor"
+            : "Json Editor"}
+        </Typography>
+        <Button onClick={() => toggleEditionType()} disabled={!isValid}>
+          {editionMode === BridgeEditorMode.FIELDS_EDITOR ? (
+            <TextFields />
+          ) : (
+            <LibraryBooks />
+          )}
+        </Button>
+      </Box>
+      {editionMode === BridgeEditorMode.FIELDS_EDITOR && (
         <FieldsEditor value={config} onChange={valueChanged} />
       )}
-      {editionMode === EditionModeType.JSON_EDITOR && (
+      {editionMode === BridgeEditorMode.JSON_EDITOR && (
         <JsonEditor
           value={config}
           onChange={valueChanged}
