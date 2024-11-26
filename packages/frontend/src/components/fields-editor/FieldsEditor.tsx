@@ -54,7 +54,7 @@ const FieldsEditor = ({ value, onChange }: FieldsEditorProps) => {
     }
     onChange({ isValid: true, value: fieldValues });
   }, [fieldValues, value, onChange]);
-  console.log("values", value);
+
   return (
     <>
       <EditionFilter
