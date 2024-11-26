@@ -6,6 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -81,9 +82,9 @@ export const MatterElementFieldEditor = ({
           </Button>
         </Grid2>
       </Grid2>
-      <Grid2 size={12}>
+      <Stack>
         <Divider />
-      </Grid2>
+      </Stack>
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { HomeAssistantMatcher } from "@home-assistant-matter-hub/common";
-import { FilterEditor } from "./filterEditor";
+import { FilterEditor } from "./FilterEditor";
 import { type EditableBridgeConfig } from "../bridge/BridgeConfigEditor";
 
 interface FieldsEditorProps {
@@ -32,14 +32,14 @@ export const FieldsEditor = ({ value, onChange }: FieldsEditorProps) => {
       <FilterEditor
         title="Includes"
         values={value.filter.include}
-        onChange={(newIncludesValue) =>
+        onChange={(newIncludesValue: HomeAssistantMatcher[]) =>
           handleOnChange(newIncludesValue, "include")
         }
       />
       <FilterEditor
         title="Excludes"
         values={value.filter.exclude}
-        onChange={(newExcludesValue) =>
+        onChange={(newExcludesValue: HomeAssistantMatcher[]) =>
           handleOnChange(newExcludesValue, "exclude")
         }
       />
