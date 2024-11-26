@@ -78,7 +78,13 @@ const Pairing = (props: { bridge: BridgeData }) => {
             </Alert>
           </Box>
         )}
-        <Box style={{ background: 'white', padding: '9px', paddingBottom: "2.6px" }}>
+        <Box
+          style={{
+            background: "white",
+            padding: "9px",
+            paddingBottom: "2.6px",
+          }}
+        >
           <QRCode
             value={props.bridge.commissioning.qrPairingCode}
             style={{ width: "100%", height: "100%" }}
