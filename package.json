@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "cleanup": "nx run-many -t cleanup --parallel 100 && nx reset && git clean -fx",
+    "cleanup": "nx run-many -t cleanup --parallel 100 && nx reset && npx rimraf .local-storage node_modules",
     "lint": "nx run-many -t lint && prettier . --check",
     "lint:fix": "nx run-many -t lint:fix && prettier . --write",
     "test": "nx run-many -t test",

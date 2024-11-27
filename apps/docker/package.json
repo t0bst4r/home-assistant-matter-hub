@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "cleanup": "rimraf package.tgz",
+    "cleanup": "npx rimraf package.tgz",
     "build": "./build.sh",
     "retrieve-package": "node retrieve-package.js",
     "nx-release-publish": "./build.sh --latest --push --all-platforms"

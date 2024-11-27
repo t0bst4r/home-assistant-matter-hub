@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "cleanup": "rimraf generated/pages",
+    "cleanup": "npx rimraf generated/pages",
     "build": "node generate.js"
   },
   "dependencies": {},

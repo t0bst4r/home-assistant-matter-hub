@@ -41,7 +41,7 @@
   "license": "Apache-2.0",
   "repository": "github:t0bst4r/home-assistant-matter-hub",
   "scripts": {
-    "cleanup": "rimraf dist pack",
+    "cleanup": "npx rimraf node_modules dist pack LICENSE README.md",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "node build.js",

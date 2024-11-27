@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "cleanup": "rimraf dist",
+    "cleanup": "npx rimraf node_modules dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc"

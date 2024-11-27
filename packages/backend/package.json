@@ -5,7 +5,7 @@
   "type": "module",
   "destination": "./dist",
   "scripts": {
-    "cleanup": "rimraf dist",
+    "cleanup": "npx rimraf node_modules dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc && node bundle.js",
