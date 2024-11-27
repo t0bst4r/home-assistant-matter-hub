@@ -1,4 +1,4 @@
-import { BridgeData } from "@home-assistant-matter-hub/common";
+import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import Box from "@mui/material/Box";
 import { Alert, Chip, Paper, Stack, Typography } from "@mui/material";
 import QRCode from "react-qr-code";
@@ -8,7 +8,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { FabricList } from "../fabric/FabricList.tsx";
 
 export interface BridgeDetailsProps {
-  readonly bridge: BridgeData;
+  readonly bridge: BridgeDataWithMetadata;
 }
 
 export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
@@ -59,7 +59,7 @@ export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
   );
 };
 
-const Pairing = (props: { bridge: BridgeData }) => {
+const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
   if (!props.bridge.commissioning) {
     return <></>;
   }
@@ -95,7 +95,7 @@ const Pairing = (props: { bridge: BridgeData }) => {
   );
 };
 
-const BasicInfo = (props: { bridge: BridgeData }) => {
+const BasicInfo = (props: { bridge: BridgeDataWithMetadata }) => {
   return (
     <>
       <Typography variant="subtitle2" component="div">
@@ -115,7 +115,7 @@ const BasicInfo = (props: { bridge: BridgeData }) => {
   );
 };
 
-const CommissioningInfo = (props: { bridge: BridgeData }) => {
+const CommissioningInfo = (props: { bridge: BridgeDataWithMetadata }) => {
   if (!props.bridge.commissioning) {
     return <></>;
   }

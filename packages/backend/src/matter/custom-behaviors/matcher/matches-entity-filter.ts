@@ -1,12 +1,12 @@
 import {
-  HomeAssistantEntityRegistry,
+  HomeAssistantEntityInformation,
   HomeAssistantFilter,
   HomeAssistantMatcher,
 } from "@home-assistant-matter-hub/common";
 
-export function matchEntityFilter(
-  entity: HomeAssistantEntityRegistry,
+export function matchesEntityFilter(
   filter: HomeAssistantFilter,
+  entity: HomeAssistantEntityInformation,
 ): boolean {
   const included =
     filter.include.length === 0 ||
@@ -18,16 +18,19 @@ export function matchEntityFilter(
 }
 
 export function testMatcher(
-  entity: HomeAssistantEntityRegistry,
+  entity: HomeAssistantEntityInformation,
   matcher: HomeAssistantMatcher,
 ): boolean {
   switch (matcher.type) {
     case "domain":
       return entity.entity_id.split(".")[0] === matcher.value;
     case "label":
-      return !!entity.labels && entity.labels.includes(matcher.value);
+      return (
+        !!entity.registry?.labels &&
+        entity.registry.labels.includes(matcher.value)
+      );
     case "platform":
-      return entity.platform === matcher.value;
+      return entity.registry?.platform === matcher.value;
     case "pattern":
       return patternToRegex(matcher.value).test(entity.entity_id);
   }

@@ -1,14 +1,14 @@
-import { MatterDevice } from "../matter-device.js";
 import { WindowCoveringDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import { WindowCoveringServer } from "../behaviors/window-covering-server.js";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   CoverDeviceAttributes,
   CoverSupportedFeatures,
 } from "@home-assistant-matter-hub/common";
 import { testBit } from "../../utils/test-bit.js";
+import { EndpointType } from "@matter/main";
 
 const CoverDeviceType = (positionAwareLift: boolean) => {
   const windowCoveringServer = positionAwareLift
@@ -17,21 +17,20 @@ const CoverDeviceType = (positionAwareLift: boolean) => {
   return WindowCoveringDevice.with(
     BasicInformationServer,
     IdentifyServer,
-    HomeAssistantBehavior,
+    HomeAssistantEntityBehavior,
     windowCoveringServer,
   );
 };
 
-export function CoverDevice(homeAssistant: HomeAssistantBehavior.State) {
-  const attributes = homeAssistant.entity.attributes as CoverDeviceAttributes;
+export function CoverDevice(
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+): EndpointType {
+  const attributes = homeAssistantEntity.entity.state
+    .attributes as CoverDeviceAttributes;
   const supportedFeatures = attributes.supported_features ?? 0;
   const positionAwareLift = testBit(
     supportedFeatures,
     CoverSupportedFeatures.support_set_position,
   );
-  return new MatterDevice(CoverDeviceType(positionAwareLift), homeAssistant, {
-    windowCovering: {
-      configStatus: { liftMovementReversed: true },
-    },
-  });
+  return CoverDeviceType(positionAwareLift).set({ homeAssistantEntity });
 }

@@ -1,10 +1,8 @@
-import { MatterDevice } from "../matter-device.js";
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   ContactSensorDevice,
   OccupancySensorDevice,
@@ -19,23 +17,28 @@ import { EndpointType } from "@matter/main";
 const ContactSensorType = ContactSensorDevice.with(
   BasicInformationServer,
   IdentifyServer,
-  HomeAssistantBehavior,
+  HomeAssistantEntityBehavior,
   BooleanStateServer.set({ config: { inverted: true } }),
 );
 const OccupancySensorType = OccupancySensorDevice.with(
   BasicInformationServer,
   IdentifyServer,
-  HomeAssistantBehavior,
+  HomeAssistantEntityBehavior,
   OccupancySensingServer,
 );
 const WaterLeakDetectorType = WaterLeakDetectorDevice.with(
   BasicInformationServer,
   IdentifyServer,
-  HomeAssistantBehavior,
+  HomeAssistantEntityBehavior,
   BooleanStateServer,
 );
 
-const deviceClasses: Partial<Record<BinarySensorDeviceClass, EndpointType>> = {
+type CombinedType =
+  | typeof ContactSensorType
+  | typeof OccupancySensorType
+  | typeof WaterLeakDetectorType;
+
+const deviceClasses: Partial<Record<BinarySensorDeviceClass, CombinedType>> = {
   [BinarySensorDeviceClass.Occupancy]: OccupancySensorType,
   [BinarySensorDeviceClass.Motion]: OccupancySensorType,
   [BinarySensorDeviceClass.Moving]: OccupancySensorType,
@@ -51,13 +54,15 @@ const deviceClasses: Partial<Record<BinarySensorDeviceClass, EndpointType>> = {
 
 const defaultDeviceType = ContactSensorType;
 
-export function BinarySensorDevice(homeAssistant: HomeAssistantBehavior.State) {
-  const entity =
-    homeAssistant.entity as HomeAssistantEntityState<BinarySensorDeviceAttributes>;
-  const deviceClass = entity.attributes.device_class;
+export function BinarySensorDevice(
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+): EndpointType {
+  const attributes = homeAssistantEntity.entity.state
+    .attributes as BinarySensorDeviceAttributes;
+  const deviceClass = attributes.device_class;
   const type =
     deviceClass && deviceClasses[deviceClass]
       ? deviceClasses[deviceClass]
       : defaultDeviceType;
-  return new MatterDevice(type, homeAssistant);
+  return type.set({ homeAssistantEntity });
 }

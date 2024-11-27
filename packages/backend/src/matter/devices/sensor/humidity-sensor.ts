@@ -5,17 +5,10 @@ import {
   HumidityMeasurementServer,
 } from "../../behaviors/humidity-measurement-server.js";
 import { HumiditySensorDevice } from "@matter/main/devices";
-import { HomeAssistantBehavior } from "../../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
 import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 
-export const HumiditySensorType = HumiditySensorDevice.with(
-  BasicInformationServer,
-  IdentifyServer,
-  HomeAssistantBehavior,
-  HumidityMeasurementServer,
-);
-
-export const humiditySensorConfig: HumidityMeasurementConfig = {
+const humiditySensorConfig: HumidityMeasurementConfig = {
   getValue({ state }: HomeAssistantEntityState) {
     if (state == null || isNaN(+state)) {
       return null;
@@ -23,3 +16,10 @@ export const humiditySensorConfig: HumidityMeasurementConfig = {
     return +state;
   },
 };
+
+export const HumiditySensorType = HumiditySensorDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantEntityBehavior,
+  HumidityMeasurementServer.set({ config: humiditySensorConfig }),
+);

@@ -1,38 +1,36 @@
 import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behaviors";
 import crypto from "node:crypto";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
-import { VendorId } from "@matter/main";
-import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(entity: HomeAssistantEntityState) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    const { basicInformation } = homeAssistant.state;
+  private update(entity: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
-      vendorId: VendorId(basicInformation.vendorId),
-      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
-      productName: maxLengthOrHash(basicInformation.productName, 32),
-      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
-      hardwareVersion: basicInformation.hardwareVersion,
-      softwareVersion: basicInformation.softwareVersion,
       nodeLabel: maxLengthOrHash(
-        entity.attributes.friendly_name ?? entity.entity_id,
+        entity.state.attributes.friendly_name ?? entity.entity_id,
         32,
       ),
-      reachable: entity.state !== "unavailable",
+      reachable: entity.state.state !== "unavailable",
     });
   }
 }
 
-function maxLengthOrHash(value: string, maxLength: number): string {
+function maxLengthOrHash(
+  value: string | undefined,
+  maxLength: number,
+): string | undefined {
+  if (value == undefined) {
+    return undefined;
+  }
+  const hashLength = 4;
   if (maxLength < 16) {
     throw new Error("MaxLength cannot be shorter than 16");
   }
@@ -43,7 +41,7 @@ function maxLengthOrHash(value: string, maxLength: number): string {
       .createHash("md5")
       .update(value)
       .digest("hex")
-      .substring(0, 4);
-    return value.substring(0, maxLength - 4) + hash;
+      .substring(0, hashLength);
+    return value.substring(0, maxLength - hashLength) + hash;
   }
 }

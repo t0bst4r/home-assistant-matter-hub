@@ -1,6 +1,6 @@
-import { Environment, StorageService, VariableService } from "@matter/main";
-import { MdnsService } from "@matter/main/protocol";
-import { createStorageService } from "../storage/create-storage-service.js";
+import { Environment, VariableService } from "@matter/main";
+import { mdns } from "./mdns.js";
+import { storage } from "./storage.js";
 
 export interface EnvironmentConfig {
   mdnsNetworkInterface: string | undefined;
@@ -12,17 +12,8 @@ export function createEnvironment(
   config: EnvironmentConfig,
 ): Environment {
   new VariableService(environment);
-
-  new MdnsService(environment, {
-    ipv4: true,
-    networkInterface: notEmpty(config.mdnsNetworkInterface),
-  });
-
-  const storageConfig = createStorageService(config.storageLocation);
-  const storageService = environment.get(StorageService);
-  storageService.location = storageConfig.location;
-  storageService.factory = storageConfig.factory;
-
+  mdns(environment, notEmpty(config.mdnsNetworkInterface));
+  storage(environment, notEmpty(config.storageLocation));
   return environment;
 }
 

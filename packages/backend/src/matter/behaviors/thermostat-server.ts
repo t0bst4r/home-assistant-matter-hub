@@ -1,11 +1,11 @@
 import { ThermostatServer as Base } from "@matter/main/behaviors";
 import { Thermostat } from "@matter/main/clusters";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   ClimateDeviceAttributes,
   ClimateHvacAction,
   ClimateHvacMode,
-  HomeAssistantEntityState,
+  HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
 import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
@@ -17,7 +17,7 @@ export class ThermostatServerBase extends FeaturedBase {
 
   override async initialize() {
     await super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     if (this.features.heating) {
       this.reactTo(
@@ -35,16 +35,16 @@ export class ThermostatServerBase extends FeaturedBase {
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(entity: HomeAssistantEntityState) {
-    const attributes = entity.attributes as ClimateDeviceAttributes;
+  private update(entity: HomeAssistantEntityInformation) {
+    const attributes = entity.state.attributes as ClimateDeviceAttributes;
     const currentTemperature = this.toTemp(attributes.current_temperature);
     const targetTemperature = this.toTemp(attributes.temperature);
     applyPatchState(this.state, {
       localTemperature: currentTemperature ?? null,
-      systemMode: this.getSystemMode(attributes.hvac_mode, entity.state),
+      systemMode: this.getSystemMode(attributes.hvac_mode, entity.state.state),
       thermostatRunningState: this.getRunningState(
         attributes.hvac_action,
-        entity.state,
+        entity.state.state,
         currentTemperature,
         targetTemperature,
       ),
@@ -76,7 +76,7 @@ export class ThermostatServerBase extends FeaturedBase {
         ? {
             thermostatRunningMode: this.getRunningMode(
               attributes.hvac_action,
-              entity.state,
+              entity.state.state,
               currentTemperature,
               targetTemperature,
             ),
@@ -94,7 +94,7 @@ export class ThermostatServerBase extends FeaturedBase {
     if (targetTemperature == undefined) {
       return;
     }
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const temperature = targetTemperature / 100 + request.amount / 10;
     await homeAssistant.callAction(
       "climate",
@@ -105,11 +105,11 @@ export class ThermostatServerBase extends FeaturedBase {
   }
 
   private async targetTemperatureChanged(value: number) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    if (homeAssistant.entity.state === "off") {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    if (homeAssistant.entity.state.state === "off") {
       return;
     }
-    const currentAttributes = homeAssistant.entity
+    const currentAttributes = homeAssistant.entity.state
       .attributes as ClimateDeviceAttributes;
     const current = this.toTemp(currentAttributes.current_temperature);
     if (value === current) {
@@ -124,12 +124,12 @@ export class ThermostatServerBase extends FeaturedBase {
   }
 
   private async systemModeChanged(systemMode: Thermostat.SystemMode) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    const currentAttributes = homeAssistant.entity
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const currentAttributes = homeAssistant.entity.state
       .attributes as ClimateDeviceAttributes;
     const current = this.getSystemMode(
       currentAttributes.hvac_mode,
-      homeAssistant.entity.state,
+      homeAssistant.entity.state.state,
     );
     if (systemMode === current) {
       return;

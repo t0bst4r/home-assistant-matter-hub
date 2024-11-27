@@ -1,6 +1,9 @@
 import { LevelControlServer as Base } from "@matter/main/behaviors";
-import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import {
+  HomeAssistantEntityInformation,
+  HomeAssistantEntityState,
+} from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface LevelControlConfig {
@@ -18,12 +21,12 @@ export class LevelControlServer extends Base {
 
   override async initialize() {
     super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(state: HomeAssistantEntityState) {
+  private update({ state }: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
       currentLevel: this.validValue(this.state.config.getValue(state)) ?? null,
       minLevel:
@@ -34,8 +37,8 @@ export class LevelControlServer extends Base {
   }
 
   override async moveToLevelLogic(level: number) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    const current = this.state.config.getValue(homeAssistant.entity);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const current = this.state.config.getValue(homeAssistant.entity.state);
     if (level === current) {
       return;
     }

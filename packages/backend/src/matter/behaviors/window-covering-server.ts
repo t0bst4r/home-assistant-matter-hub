@@ -5,10 +5,11 @@ import {
 } from "@matter/main/behaviors";
 import {
   CoverDeviceAttributes,
+  HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { WindowCovering } from "@matter/main/clusters";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
 
@@ -19,12 +20,14 @@ export class WindowCoveringServerBase extends FeaturedBase {
 
   override async initialize() {
     await super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(state: HomeAssistantEntityState<CoverDeviceAttributes>) {
+  private update(entity: HomeAssistantEntityInformation) {
+    const state =
+      entity.state as HomeAssistantEntityState<CoverDeviceAttributes>;
     const movementStatus: WindowCovering.MovementStatus | undefined =
       state.state === "opening"
         ? WindowCovering.MovementStatus.Opening
@@ -75,7 +78,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     }
   }
   override async handleStopMovement() {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction(
       "cover",
       "stop_cover",
@@ -84,7 +87,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     );
   }
   private async handleOpen() {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction(
       "cover",
       "open_cover",
@@ -93,7 +96,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     );
   }
   private async handleClose() {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction(
       "cover",
       "close_cover",
@@ -103,10 +106,10 @@ export class WindowCoveringServerBase extends FeaturedBase {
   }
 
   private async handleGoToPosition(targetPercent100ths: number) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    const currentPosition = (
-      homeAssistant.entity as HomeAssistantEntityState<CoverDeviceAttributes>
-    ).attributes.current_position;
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const attributes = homeAssistant.entity.state
+      .attributes as CoverDeviceAttributes;
+    const currentPosition = attributes.current_position;
     const targetPosition = this.convertLiftValue(targetPercent100ths / 100);
     if (targetPosition == null || targetPosition === currentPosition) {
       return;

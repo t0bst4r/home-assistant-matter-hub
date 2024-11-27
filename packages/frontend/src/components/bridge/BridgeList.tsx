@@ -1,13 +1,13 @@
-import { BridgeData } from "@home-assistant-matter-hub/common";
+import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import { BridgeCard } from "./BridgeCard.tsx";
 import Grid from "@mui/material/Grid2";
 
 export interface BridgeListProps {
-  bridges: BridgeData[];
-  onSelect: (bridge: BridgeData) => void;
+  bridges: BridgeDataWithMetadata[];
+  onSelect: (bridge: BridgeDataWithMetadata) => void;
   selectedId?: string;
-  onDelete: (bridge: BridgeData) => void;
-  onReset: (bridge: BridgeData) => void;
+  onDelete: (bridge: BridgeDataWithMetadata) => void;
+  onReset: (bridge: BridgeDataWithMetadata) => void;
 }
 
 export const BridgeList = ({

@@ -1,6 +1,9 @@
 import { RelativeHumidityMeasurementServer as Base } from "@matter/main/behaviors";
-import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import {
+  HomeAssistantEntityInformation,
+  HomeAssistantEntityState,
+} from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface HumidityMeasurementConfig {
@@ -12,13 +15,13 @@ export class HumidityMeasurementServer extends Base {
 
   override async initialize() {
     await super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(state: HomeAssistantEntityState) {
-    const humidity = this.getHumidity(this.state.config, state);
+  private update(entity: HomeAssistantEntityInformation) {
+    const humidity = this.getHumidity(this.state.config, entity.state);
     applyPatchState(this.state, { measuredValue: humidity });
   }
 

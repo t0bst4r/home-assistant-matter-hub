@@ -1,5 +1,5 @@
 import {
-  BridgeData,
+  BridgeDataWithMetadata,
   CreateBridgeRequest,
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
@@ -7,7 +7,7 @@ import {
 export async function fetchBridges() {
   const res = await fetch(`/api/matter/bridges?_s=${Date.now()}`);
   const json = await res.json();
-  return json as BridgeData[];
+  return json as BridgeDataWithMetadata[];
 }
 
 export async function createBridge(req: CreateBridgeRequest) {
@@ -17,7 +17,7 @@ export async function createBridge(req: CreateBridgeRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(req),
-  }).then((res) => res.json() as Promise<BridgeData>);
+  }).then((res) => res.json() as Promise<BridgeDataWithMetadata>);
 }
 
 export async function updateBridge(req: UpdateBridgeRequest) {
@@ -27,7 +27,7 @@ export async function updateBridge(req: UpdateBridgeRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(req),
-  }).then((res) => res.json() as Promise<BridgeData>);
+  }).then((res) => res.json() as Promise<BridgeDataWithMetadata>);
 }
 
 export async function deleteBridge(bridgeId: string) {
@@ -39,5 +39,5 @@ export async function deleteBridge(bridgeId: string) {
 export async function resetBridge(bridgeId: string) {
   return await fetch(`/api/matter/bridges/${bridgeId}/actions/factory-reset`, {
     method: "GET",
-  }).then((res) => res.json() as Promise<BridgeData>);
+  }).then((res) => res.json() as Promise<BridgeDataWithMetadata>);
 }

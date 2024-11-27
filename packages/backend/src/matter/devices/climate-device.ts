@@ -1,4 +1,3 @@
-import { MatterDevice } from "../matter-device.js";
 import { ThermostatDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
@@ -8,11 +7,12 @@ import {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { ThermostatServer } from "../behaviors/thermostat-server.js";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   HumidityMeasurementConfig,
   HumidityMeasurementServer,
 } from "../behaviors/humidity-measurement-server.js";
+import { EndpointType } from "@matter/main";
 
 const humidityConfig: HumidityMeasurementConfig = {
   getValue(entity: HomeAssistantEntityState) {
@@ -44,7 +44,7 @@ const ClimateDeviceType = (
   const device = ThermostatDevice.with(
     BasicInformationServer,
     IdentifyServer,
-    HomeAssistantBehavior,
+    HomeAssistantEntityBehavior,
     thermostatServer,
   );
 
@@ -71,9 +71,10 @@ const autoModes: ClimateHvacMode[] = [
 ];
 
 export function ClimateDevice(
-  homeAssistant: HomeAssistantBehavior.State,
-): MatterDevice | undefined {
-  const attributes = homeAssistant.entity.attributes as ClimateDeviceAttributes;
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+): EndpointType {
+  const attributes = homeAssistantEntity.entity.state
+    .attributes as ClimateDeviceAttributes;
   const supportsCooling = coolingModes.some((mode) =>
     attributes.hvac_modes.includes(mode),
   );
@@ -85,13 +86,10 @@ export function ClimateDevice(
   );
   const supportsHumidity = attributes.current_humidity !== undefined;
 
-  return new MatterDevice(
-    ClimateDeviceType(
-      supportsCooling,
-      supportsHeating,
-      supportsAuto,
-      supportsHumidity,
-    ),
-    homeAssistant,
-  );
+  return ClimateDeviceType(
+    supportsCooling,
+    supportsHeating,
+    supportsAuto,
+    supportsHumidity,
+  ).set({ homeAssistantEntity });
 }

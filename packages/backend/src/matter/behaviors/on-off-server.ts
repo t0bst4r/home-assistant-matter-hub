@@ -1,6 +1,9 @@
 import { OnOffServer as Base } from "@matter/main/behaviors";
-import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import {
+  HomeAssistantEntityInformation,
+  HomeAssistantEntityState,
+} from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface OnOffConfig {
@@ -18,20 +21,20 @@ export class OnOffServer extends Base {
 
   override async initialize() {
     super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(state: HomeAssistantEntityState) {
+  private update({ state }: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
       onOff: this.isOn(state),
     });
   }
 
   override async on() {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    if (this.isOn(homeAssistant.entity)) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    if (this.isOn(homeAssistant.entity.state)) {
       return;
     }
     const [domain, action] = (
@@ -43,8 +46,8 @@ export class OnOffServer extends Base {
   }
 
   override async off() {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    if (!this.isOn(homeAssistant.entity)) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    if (!this.isOn(homeAssistant.entity.state)) {
       return;
     }
     const [domain, action] = (

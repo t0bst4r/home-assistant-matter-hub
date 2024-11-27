@@ -7,7 +7,6 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
 import { BridgeService } from "../matter/bridge-service.js";
-import { bridgeToJson } from "../utils/json/bridge-to-json.js";
 import { deviceToJson } from "../utils/json/device-to-json.js";
 import { Ajv } from "ajv";
 
@@ -20,7 +19,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
   });
 
   router.get("/bridges", (_, res) => {
-    res.status(200).json(bridgeService.bridges.map(bridgeToJson));
+    res.status(200).json(bridgeService.bridges.map((b) => b.data));
   });
 
   router.post("/bridges", async (req, res) => {
@@ -31,7 +30,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
     } else {
       try {
         const bridge = await bridgeService.create(body);
-        res.status(200).json(bridgeToJson(bridge));
+        res.status(200).json(bridge.data);
       } catch (error: unknown) {
         if (error instanceof PortAlreadyInUseError) {
           res.status(400).json({ error: error.message });
@@ -45,7 +44,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
-      res.status(200).json(bridgeToJson(bridge));
+      res.status(200).json(bridge.data);
     } else {
       res.status(404).send("Not Found");
     }
@@ -65,7 +64,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
         if (!bridge) {
           res.status(404).send("Not Found");
         } else {
-          res.status(200).json(bridgeToJson(bridge));
+          res.status(200).json(bridge.data);
         }
       } catch (error: unknown) {
         if (error instanceof PortAlreadyInUseError) {
@@ -87,7 +86,8 @@ export function matterApi(bridgeService: BridgeService): express.Router {
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
       await bridge.factoryReset();
-      res.status(200).json(bridgeToJson(bridge));
+      await bridge.start();
+      res.status(200).json(bridge.data);
     } else {
       res.status(404).send("Not Found");
     }
@@ -97,7 +97,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
-      res.status(200).json(bridge.devices.map(deviceToJson));
+      res.status(200).json(Array.from(bridge.parts).map(deviceToJson));
     } else {
       res.status(404).send("Not Found");
     }

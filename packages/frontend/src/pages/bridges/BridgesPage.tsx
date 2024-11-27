@@ -7,7 +7,7 @@ import { BridgeList } from "../../components/bridge/BridgeList";
 import { Backdrop, CircularProgress, IconButton, Stack } from "@mui/material";
 import { useEffect } from "react";
 import Box from "@mui/material/Box";
-import { BridgeData } from "@home-assistant-matter-hub/common";
+import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import { Add } from "@mui/icons-material";
 import { useNotifications } from "@toolpad/core";
 import { Link, useNavigate } from "react-router";
@@ -21,7 +21,7 @@ export const BridgesPage = () => {
 
   const { content: bridges, isLoading, error: bridgeError } = useBridges();
 
-  const setSelectedBridge = (bridge: BridgeData) => {
+  const setSelectedBridge = (bridge: BridgeDataWithMetadata) => {
     navigate(`${bridge.id}`);
   };
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { testMatcher } from "./match-entity-filter.js";
+import { testMatcher } from "./matches-entity-filter.js";
 import {
   HomeAssistantEntityRegistry,
   HomeAssistantMatcherType,

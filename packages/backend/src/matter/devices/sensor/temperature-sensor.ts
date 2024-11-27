@@ -5,20 +5,13 @@ import {
   TemperatureMeasurementConfig,
   TemperatureMeasurementServer,
 } from "../../behaviors/temperature-measurement-server.js";
-import { HomeAssistantBehavior } from "../../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   HomeAssistantEntityState,
   SensorDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 
-export const TemperatureSensorType = TemperatureSensorDevice.with(
-  BasicInformationServer,
-  IdentifyServer,
-  HomeAssistantBehavior,
-  TemperatureMeasurementServer,
-);
-
-export const temperatureSensorConfig: TemperatureMeasurementConfig = {
+const temperatureSensorConfig: TemperatureMeasurementConfig = {
   getValue({ state }: HomeAssistantEntityState) {
     if (state == null || isNaN(+state)) {
       return null;
@@ -31,3 +24,10 @@ export const temperatureSensorConfig: TemperatureMeasurementConfig = {
     return state.attributes.unit_of_measurement ?? null;
   },
 };
+
+export const TemperatureSensorType = TemperatureSensorDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantEntityBehavior,
+  TemperatureMeasurementServer.set({ config: temperatureSensorConfig }),
+);

@@ -1,6 +1,6 @@
 import { createAppSelector, AppState } from "../types";
 import { AsyncState } from "../utils/async";
-import { BridgeData } from "@home-assistant-matter-hub/common";
+import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 
 export const selectBridgeState = (state: AppState) => state.bridges;
 
@@ -11,7 +11,7 @@ export const selectBridges = createAppSelector(
 
 export const selectBridge = (bridgeId: string | undefined) =>
   createAppSelector([selectBridges], (bridges) => {
-    const result: AsyncState<BridgeData> = {
+    const result: AsyncState<BridgeDataWithMetadata> = {
       isInitialized: bridges.isInitialized,
       isLoading: bridges.isLoading,
       error: bridges.error,

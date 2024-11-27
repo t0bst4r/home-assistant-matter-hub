@@ -1,56 +1,60 @@
 import express from "express";
-import type { BridgeService } from "../matter/bridge-service.js";
 import { matterApi } from "./matter-api.js";
 import * as http from "node:http";
 import { accessLogger } from "./access-log.js";
 import { webUi } from "./web-ui.js";
-import { ServiceBase } from "../utils/service.js";
 import { createLogger } from "../logging/create-logger.js";
+import { Environment, Environmental } from "@matter/main";
+import { BridgeService } from "../matter/bridge-service.js";
+import { register } from "../environment/register.js";
 
 export interface WebApiProps {
-  readonly bridgeService: BridgeService;
   readonly port: number;
   readonly webUiDist?: string;
 }
 
-export class WebApi extends ServiceBase {
-  private readonly port: number;
-  private readonly includesWebUi: boolean;
+export class WebApi implements Environmental.Service {
+  readonly construction: Promise<void>;
+  private readonly log = createLogger("WebApi");
+  private readonly accessLogger = accessLogger(
+    createLogger(`WebApi / Access Log`),
+  );
 
-  private readonly app: express.Application;
-  private server?: http.Server;
+  private app!: express.Application;
+  private server!: http.Server;
 
-  constructor(props: WebApiProps) {
-    super("WebApi");
-
-    const api = express.Router();
-    api.use(express.json()).use("/matter", matterApi(props.bridgeService));
-
-    let app = express()
-      .use(accessLogger(createLogger("WebApi / Access Log")))
-      .use("/api", api);
-    if (props.webUiDist) {
-      app = app.use(webUi(props.webUiDist));
-    }
-    this.app = app;
-    this.port = props.port;
-    this.includesWebUi = !!props.webUiDist;
+  constructor(
+    private readonly environment: Environment,
+    private readonly props: WebApiProps,
+  ) {
+    register(environment, WebApi, this);
+    this.construction = this.initialize();
   }
 
-  async start() {
+  private async initialize() {
+    const bridgeService = await this.environment.load(BridgeService);
+
+    const api = express.Router();
+    api.use(express.json()).use("/matter", matterApi(bridgeService));
+
+    this.app = express()
+      .use(this.accessLogger)
+      .use("/api", api)
+      .use(webUi(this.props.webUiDist));
+
     this.server = await new Promise((resolve) => {
-      const server = this.app.listen(this.port, () => {
+      const server = this.app.listen(this.props.port, () => {
         this.log.info(
           "HTTP server (API %s) listening on port %s",
-          this.includesWebUi ? "& Web App" : "only",
-          this.port,
+          this.props.webUiDist ? "& Web App" : "only",
+          this.props.port,
         );
         resolve(server);
       });
     });
   }
 
-  async close() {
+  async [Symbol.asyncDispose]() {
     await new Promise<void>((resolve, reject) => {
       this.server?.close((error) => {
         if (error) {

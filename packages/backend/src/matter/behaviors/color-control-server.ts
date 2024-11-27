@@ -1,11 +1,12 @@
 import {
   ColorConverter,
+  HomeAssistantEntityInformation,
   HomeAssistantEntityState,
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
@@ -17,16 +18,16 @@ export class ColorControlServerBase extends FeaturedBase {
   override async initialize() {
     await super.initialize();
 
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(entity: HomeAssistantEntityState) {
-    const attributes = entity.attributes as LightDeviceAttributes;
+  private update(entity: HomeAssistantEntityInformation) {
+    const attributes = entity.state.attributes as LightDeviceAttributes;
     const minKelvin = attributes.min_color_temp_kelvin ?? 1500;
     const maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
-    const [hue, saturation] = this.getMatterColor(entity) ?? [0, 0];
+    const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
       ...(this.features.hueSaturation
         ? {
@@ -60,9 +61,9 @@ export class ColorControlServerBase extends FeaturedBase {
   }
 
   override async moveToColorTemperatureLogic(targetMireds: number) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
-    const current =
-      homeAssistant.entity as HomeAssistantEntityState<LightDeviceAttributes>;
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const current = homeAssistant.entity
+      .state as HomeAssistantEntityState<LightDeviceAttributes>;
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(targetMireds);
 
     if (current.attributes.color_temp_kelvin === targetKelvin) {
@@ -99,9 +100,9 @@ export class ColorControlServerBase extends FeaturedBase {
     targetHue: number,
     targetSaturation: number,
   ) {
-    const homeAssistant = this.agent.get(HomeAssistantBehavior);
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const [currentHue, currentSaturation] =
-      this.getMatterColor(homeAssistant.entity) ?? [];
+      this.getMatterColor(homeAssistant.entity.state) ?? [];
     if (currentHue == targetHue && currentSaturation == targetSaturation) {
       return;
     }

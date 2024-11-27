@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import {
-  BridgeData,
+  BridgeDataWithMetadata,
   CreateBridgeRequest,
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
@@ -45,7 +45,7 @@ export function useBridge(bridgeId: string | undefined) {
 
 export function useCreateBridge(): (
   req: CreateBridgeRequest,
-) => Promise<BridgeData> {
+) => Promise<BridgeDataWithMetadata> {
   const dispatch = useAppDispatch();
   return useCallback(
     async (req: CreateBridgeRequest) => {
@@ -53,7 +53,7 @@ export function useCreateBridge(): (
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
       } else {
-        return res.payload as BridgeData;
+        return res.payload as BridgeDataWithMetadata;
       }
     },
     [dispatch],
@@ -62,7 +62,7 @@ export function useCreateBridge(): (
 
 export function useUpdateBridge(): (
   req: UpdateBridgeRequest,
-) => Promise<BridgeData> {
+) => Promise<BridgeDataWithMetadata> {
   const dispatch = useAppDispatch();
   return useCallback(
     async (req: UpdateBridgeRequest) => {
@@ -70,14 +70,16 @@ export function useUpdateBridge(): (
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
       } else {
-        return res.payload as BridgeData;
+        return res.payload as BridgeDataWithMetadata;
       }
     },
     [dispatch],
   );
 }
 
-export function useResetBridge(): (bridgeId: string) => Promise<BridgeData> {
+export function useResetBridge(): (
+  bridgeId: string,
+) => Promise<BridgeDataWithMetadata> {
   const dispatch = useAppDispatch();
   return useCallback(
     async (bridgeId: string) => {
@@ -85,7 +87,7 @@ export function useResetBridge(): (bridgeId: string) => Promise<BridgeData> {
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
       } else {
-        return res.payload as BridgeData;
+        return res.payload as BridgeDataWithMetadata;
       }
     },
     [dispatch],

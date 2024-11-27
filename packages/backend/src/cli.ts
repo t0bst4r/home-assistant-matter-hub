@@ -5,7 +5,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import * as path from "node:path";
 
-import start from "./commands/start.js";
+import start from "./commands/start/start-command.js";
 
 const dirname =
   import.meta.dirname ?? url.fileURLToPath(new URL(".", import.meta.url));

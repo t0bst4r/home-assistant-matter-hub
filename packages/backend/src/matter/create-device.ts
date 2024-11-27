@@ -1,12 +1,8 @@
 import {
-  BridgeBasicInformation,
-  BridgeOverrides,
-  CompatibilityMode,
+  BridgeData,
   type HomeAssistantDomain,
-  HomeAssistantEntityRegistry,
-  HomeAssistantEntityState,
+  HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
-import { MatterDevice } from "./matter-device.js";
 import { LightDevice } from "./devices/light-device.js";
 import { SwitchDevice } from "./devices/switch-device.js";
 import { LockDevice } from "./devices/lock-device.js";
@@ -15,43 +11,29 @@ import { BinarySensorDevice } from "./devices/binary-sensor-device.js";
 import { SensorDevice } from "./devices/sensor-device.js";
 import { CoverDevice } from "./devices/cover-device.js";
 import { ClimateDevice } from "./devices/climate-device.js";
-import { HomeAssistantBehavior } from "./custom-behaviors/home-assistant-behavior.js";
-import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
+import { HomeAssistantEntityBehavior } from "./custom-behaviors/home-assistant-entity-behavior.js";
 import { MediaPlayerDevice } from "./devices/media-player-device.js";
 import { HumidifierDevice } from "./devices/humidifier-device.js";
+import { EndpointType } from "@matter/main";
 
 export function createDevice(
-  actions: HomeAssistantActions,
-  basicInformation: BridgeBasicInformation,
-  overrides: BridgeOverrides,
-  compatibility: CompatibilityMode,
-  registry: HomeAssistantEntityRegistry,
-  entity: HomeAssistantEntityState,
-): MatterDevice | undefined {
+  bridge: BridgeData,
+  entity: HomeAssistantEntityInformation,
+): EndpointType | undefined {
   const domain = entity.entity_id.split(".")[0] as HomeAssistantDomain;
   const factory = deviceCtrs[domain];
   if (!factory) {
     return undefined;
   }
-  const config: object = Object.assign(
-    {},
-    overrides.domains[domain] ?? {},
-    overrides.entities[entity.entity_id] ?? {},
-  );
-  return factory(
-    { actions, basicInformation, registry, entity },
-    compatibility,
-    config,
-  );
+  return factory({ entity }, bridge);
 }
 
 const deviceCtrs: Record<
   HomeAssistantDomain,
   (
-    homeAssistant: HomeAssistantBehavior.State,
-    compatibility: CompatibilityMode,
-    config: unknown,
-  ) => MatterDevice | undefined
+    homeAssistant: HomeAssistantEntityBehavior.State,
+    bridge: BridgeData,
+  ) => EndpointType | undefined
 > = {
   light: LightDevice,
   switch: SwitchDevice,

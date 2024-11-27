@@ -1,6 +1,9 @@
 import { BooleanStateServer as Base } from "@matter/main/behaviors/boolean-state";
-import { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import {
+  HomeAssistantEntityInformation,
+  HomeAssistantEntityState,
+} from "@home-assistant-matter-hub/common";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export interface BooleanStateConfig {
@@ -12,13 +15,13 @@ export class BooleanStateServer extends Base {
 
   override async initialize() {
     super.initialize();
-    const homeAssistant = await this.agent.load(HomeAssistantBehavior);
+    const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update(state: HomeAssistantEntityState) {
-    const newState = this.getStateValue(state);
+  private update(entity: HomeAssistantEntityInformation) {
+    const newState = this.getStateValue(entity.state);
     applyPatchState(this.state, { stateValue: newState });
   }
 

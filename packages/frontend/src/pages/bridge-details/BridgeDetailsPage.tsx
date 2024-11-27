@@ -9,6 +9,8 @@ import { useTimer } from "../../hooks/timer.ts";
 import { IconButton, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { Edit, Refresh } from "@mui/icons-material";
+import { BridgeStatusIcon } from "../../components/bridge/BridgeStatusIcon.tsx";
+import { BridgeStatusHint } from "../../components/bridge/BridgeStatusHint.tsx";
 
 const MemoizedBridgeDetails = memo(BridgeDetails);
 const MemoizedDeviceList = memo(DeviceList);
@@ -57,11 +59,15 @@ export const BridgeDetailsPage = () => {
   return (
     <Stack spacing={4} mt={4}>
       <Box display="flex" justifyContent="space-between">
-        <Typography variant="h4">{bridge.name}</Typography>
+        <Typography variant="h4">
+          {bridge.name} <BridgeStatusIcon status={bridge.status} />
+        </Typography>
         <IconButton component={Link} to="./edit">
           <Edit />
         </IconButton>
       </Box>
+
+      <BridgeStatusHint status={bridge.status} reason={bridge.statusReason} />
 
       <MemoizedBridgeDetails bridge={bridge} />
 

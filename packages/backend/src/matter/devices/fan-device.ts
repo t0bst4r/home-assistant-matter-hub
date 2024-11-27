@@ -1,4 +1,3 @@
-import { MatterDevice } from "../matter-device.js";
 import {
   FanDeviceAttributes,
   HomeAssistantEntityState,
@@ -11,7 +10,8 @@ import {
   LevelControlConfig,
   LevelControlServer,
 } from "../behaviors/level-control-server.js";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { EndpointType } from "@matter/main";
 
 const fanLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<FanDeviceAttributes>) => {
@@ -32,12 +32,12 @@ const FanDeviceType = OnOffPlugInUnitDevice.with(
   IdentifyServer,
   BasicInformationServer,
   OnOffServer,
-  HomeAssistantBehavior,
-  LevelControlServer,
+  HomeAssistantEntityBehavior,
+  LevelControlServer.set({ config: fanLevelConfig }),
 );
 
-export function FanDevice(homeAssistant: HomeAssistantBehavior.State) {
-  return new MatterDevice(FanDeviceType, homeAssistant, {
-    levelControl: { config: fanLevelConfig },
-  });
+export function FanDevice(
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+): EndpointType {
+  return FanDeviceType.set({ homeAssistantEntity });
 }

@@ -1,9 +1,8 @@
-import { MatterDevice } from "../matter-device.js";
 import { OnOffPlugInUnitDevice } from "@matter/main/devices";
 import { OnOffServer } from "../behaviors/on-off-server.js";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
-import { HomeAssistantBehavior } from "../custom-behaviors/home-assistant-behavior.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   LevelControlConfig,
   LevelControlServer,
@@ -12,6 +11,7 @@ import {
   HomeAssistantEntityState,
   HumidiferDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
+import { EndpointType } from "@matter/main";
 
 const humidifierLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState) => {
@@ -35,15 +35,13 @@ const humidifierLevelConfig: LevelControlConfig = {
 const HumidifierEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
-  HomeAssistantBehavior,
+  HomeAssistantEntityBehavior,
   OnOffServer,
-  LevelControlServer,
+  LevelControlServer.set({ config: humidifierLevelConfig }),
 );
 
-export function HumidifierDevice(homeAssistant: HomeAssistantBehavior.State) {
-  return new MatterDevice(HumidifierEndpointType, homeAssistant, {
-    levelControl: {
-      config: humidifierLevelConfig,
-    },
-  });
+export function HumidifierDevice(
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+): EndpointType {
+  return HumidifierEndpointType.set({ homeAssistantEntity });
 }
