@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
   BridgeBasicInformation,
+  BridgeData,
   ClimateDeviceAttributes,
   ClimateHvacAction,
   ClimateHvacMode,
@@ -11,6 +12,7 @@ import {
   CoverDeviceAttributes,
   FanDeviceAttributes,
   HomeAssistantDomain,
+  HomeAssistantEntityInformation,
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
   HumidiferDeviceAttributes,
@@ -20,13 +22,12 @@ import {
   SensorDeviceClass,
 } from "@home-assistant-matter-hub/common";
 import { createDevice } from "./create-device.js";
-import { MatterDevice } from "./matter-device.js";
 import _ from "lodash";
-import { HomeAssistantActions } from "../home-assistant/home-assistant-actions.js";
+import { Endpoint, EndpointType } from "@matter/main";
 
 const testEntities: Record<
   HomeAssistantDomain,
-  [HomeAssistantEntityRegistry, HomeAssistantEntityState][]
+  HomeAssistantEntityInformation[]
 > = {
   [HomeAssistantDomain.binary_sensor]: Object.values(
     BinarySensorDeviceClass,
@@ -131,26 +132,23 @@ const basicInformation: BridgeBasicInformation = {
   hardwareVersion: 4,
 };
 
-const mockedActions: HomeAssistantActions = {
-  callAction: vi.fn(),
+const bridgeData: BridgeData = {
+  id: "1",
+  name: "any",
+  port: 5540,
+  basicInformation,
+  filter: { include: [], exclude: [] },
+  compatibility: CompatibilityMode.Matter,
 };
 
 describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
-    const devices = entities.map(([registry, entity]) =>
-      createDevice(
-        mockedActions,
-        basicInformation,
-        { domains: {}, entities: {} },
-        CompatibilityMode.Matter,
-        registry,
-        entity,
-      ),
-    );
+    const devices = entities.map((entity) => createDevice(bridgeData, entity));
     const actual = _.uniq(
       devices
-        .filter((d): d is MatterDevice => d != null)
+        .filter((d): d is EndpointType => d != null)
+        .map((endpointType) => new Endpoint(endpointType))
         .flatMap((d) => Object.keys(d.state)),
     ).sort();
     const expected = Object.keys(ClusterId).sort();
@@ -162,8 +160,8 @@ function createEntity<T extends {} = {}>(
   entityId: string,
   state: string,
   attributes?: T,
-): [HomeAssistantEntityRegistry, HomeAssistantEntityState] {
-  const registry = {
+): HomeAssistantEntityInformation {
+  const registry: HomeAssistantEntityRegistry = {
     categories: {},
     entity_id: entityId,
     has_entity_name: false,
@@ -172,7 +170,7 @@ function createEntity<T extends {} = {}>(
     platform: "test",
     unique_id: entityId,
   };
-  const entity = {
+  const entityState: HomeAssistantEntityState = {
     entity_id: entityId,
     state,
     context: { id: "context" },
@@ -180,5 +178,5 @@ function createEntity<T extends {} = {}>(
     last_updated: "any-update",
     attributes: attributes ?? {},
   };
-  return [registry, entity];
+  return { entity_id: entityId, registry, state: entityState };
 }

@@ -1,3 +1,5 @@
+![Home Assistant Matter Hub](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/assets/hamh-logo-small.png?raw=true)
+
 # Home-Assistant-Matter-Hub
 
 This project simulates bridges to publish your entities from Home

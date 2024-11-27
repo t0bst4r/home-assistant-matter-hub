@@ -1,14 +1,14 @@
-import { Agent, Endpoint, Environment, MaybePromise } from "@matter/main";
+import { Agent, Endpoint, Environment } from "@matter/main";
 import {
   BridgeData,
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { createDevice } from "../create-device.js";
+import { createDevice } from "./create-device.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-registry.js";
 import _, { Dictionary } from "lodash";
-import { matchesEntityFilter } from "../custom-behaviors/matcher/matches-entity-filter.js";
+import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 
 export class BridgeDeviceManager {
   private initialized = false;

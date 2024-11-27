@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { testMatcher } from "./matches-entity-filter.js";
 import {
+  HomeAssistantEntityInformation,
   HomeAssistantEntityRegistry,
+  HomeAssistantEntityState,
   HomeAssistantMatcherType,
 } from "@home-assistant-matter-hub/common";
 
-const entity: HomeAssistantEntityRegistry = {
+const registry: HomeAssistantEntityRegistry = {
   id: "id",
   entity_id: "light.my_entity",
   categories: {},
@@ -14,6 +16,21 @@ const entity: HomeAssistantEntityRegistry = {
   unique_id: "unique_id",
   platform: "hue",
   labels: ["test_label"],
+};
+
+const state: HomeAssistantEntityState = {
+  entity_id: "light.my_entity",
+  state: "on",
+  context: { id: "context" },
+  last_changed: "any-change",
+  last_updated: "any-update",
+  attributes: {},
+};
+
+const entity: HomeAssistantEntityInformation = {
+  entity_id: "light.my_entity",
+  registry,
+  state,
 };
 
 describe("matchEntityFilter.testMatcher", () => {

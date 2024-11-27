@@ -3,17 +3,17 @@ import {
   type HomeAssistantDomain,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
-import { LightDevice } from "./devices/light-device.js";
-import { SwitchDevice } from "./devices/switch-device.js";
-import { LockDevice } from "./devices/lock-device.js";
-import { FanDevice } from "./devices/fan-device.js";
-import { BinarySensorDevice } from "./devices/binary-sensor-device.js";
-import { SensorDevice } from "./devices/sensor-device.js";
-import { CoverDevice } from "./devices/cover-device.js";
-import { ClimateDevice } from "./devices/climate-device.js";
-import { HomeAssistantEntityBehavior } from "./custom-behaviors/home-assistant-entity-behavior.js";
-import { MediaPlayerDevice } from "./devices/media-player-device.js";
-import { HumidifierDevice } from "./devices/humidifier-device.js";
+import { LightDevice } from "../devices/light-device.js";
+import { SwitchDevice } from "../devices/switch-device.js";
+import { LockDevice } from "../devices/lock-device.js";
+import { FanDevice } from "../devices/fan-device.js";
+import { BinarySensorDevice } from "../devices/binary-sensor-device.js";
+import { SensorDevice } from "../devices/sensor-device.js";
+import { CoverDevice } from "../devices/cover-device.js";
+import { ClimateDevice } from "../devices/climate-device.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { MediaPlayerDevice } from "../devices/media-player-device.js";
+import { HumidifierDevice } from "../devices/humidifier-device.js";
 import { EndpointType } from "@matter/main";
 
 export function createDevice(

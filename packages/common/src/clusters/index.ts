@@ -10,10 +10,13 @@ export * from "./thermostat.js";
 export * from "./window-covering.js";
 
 export enum ClusterId {
+  homeAssistantEntity = "homeAssistantEntity",
+
   descriptor = "descriptor",
-  bridgedDeviceBasicInformation = "bridgedDeviceBasicInformation",
   identify = "identify",
   groups = "groups",
+
+  bridgedDeviceBasicInformation = "bridgedDeviceBasicInformation",
 
   booleanState = "booleanState",
   colorControl = "colorControl",

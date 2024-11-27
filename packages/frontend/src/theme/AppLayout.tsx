@@ -1,3 +1,4 @@
+import AppLogo from "../../public/hamh-logo.svg?react";
 import { FC, useMemo } from "react";
 import {
   Outlet,
@@ -58,7 +59,10 @@ export const AppLayout: FC = () => {
     () => ({
       title: (
         <>
-          <Typography variant="inherit" component="span" sx={{ mr: 1 }}>
+          <Box component="span">
+            <AppLogo style={{ height: "1em" }} />
+          </Box>
+          <Typography variant="inherit" component="span" sx={{ mr: 1, ml: 1 }}>
             {appInfo.name.split("-").map(capitalize).join("-")}
           </Typography>
           {isLargeScreen && (

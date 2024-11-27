@@ -65,11 +65,11 @@ const renderer: Record<ClusterId, FC<{ state: unknown }> | null> = {
   [ClusterId.thermostat]: ({ state }) => (
     <ThermostatState state={state as ThermostatClusterState} />
   ),
+  [ClusterId.homeAssistantEntity]: null,
   [ClusterId.descriptor]: null,
   [ClusterId.bridgedDeviceBasicInformation]: null,
   [ClusterId.identify]: null,
   [ClusterId.groups]: null,
-  [ClusterId.homeAssistant]: null,
 };
 
 const ErrorRenderer = (props: { clusterId: string; state: unknown }) => {

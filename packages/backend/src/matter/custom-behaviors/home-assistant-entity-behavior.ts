@@ -1,11 +1,14 @@
 import { Behavior, EventEmitter } from "@matter/main";
-import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
+import {
+  ClusterId,
+  HomeAssistantEntityInformation,
+} from "@home-assistant-matter-hub/common";
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
 
 export class HomeAssistantEntityBehavior extends Behavior {
-  static override readonly id = "homeAssistantEntity";
+  static override readonly id = ClusterId.homeAssistantEntity;
   declare state: HomeAssistantEntityBehavior.State;
   declare events: HomeAssistantEntityBehavior.Events;
 

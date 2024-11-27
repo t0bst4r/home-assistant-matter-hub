@@ -110,7 +110,7 @@ export const EditBridgePage = () => {
       setCompatibility(
         bridge.compatibility ?? CompatibilityMode.MaximumCompatibility,
       );
-      setCurrentConfig({ filter: bridge.filter, overrides: bridge.overrides });
+      setCurrentConfig({ filter: bridge.filter });
     } else if (usedPorts) {
       setPort(nextFreePort(usedPorts));
     }
