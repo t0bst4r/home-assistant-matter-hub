@@ -1,4 +1,4 @@
-import AppLogo from "../../public/hamh-logo.svg?react";
+import AppLogo from "../assets/hamh-logo.svg?react";
 import { FC, useMemo } from "react";
 import {
   Outlet,

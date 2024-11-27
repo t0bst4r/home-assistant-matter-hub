@@ -30,6 +30,7 @@
     "@uiw/react-codemirror": "^4.23.6",
     "@uiw/codemirror-theme-vscode": "^4.23.6",
     "ajv": "^8.17.1",
+    "clipboardy": "^4.0.0",
     "codemirror-json-schema": "^0.7.9",
     "remark-gfm": "^4.0.0",
     "react": "^18.3.1",

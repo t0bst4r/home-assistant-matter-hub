@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { OnOffState } from "./states/OnOffState.tsx";
 import { FC, useEffect, useState } from "react";
-import { Checkbox, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import { ColorControlState } from "./states/ColorControlState.tsx";
 import { LevelControlState } from "./states/LevelControlState.tsx";
 import { DoorLockState } from "./states/DoorLockState.tsx";
@@ -24,6 +24,7 @@ import {
 import { BooleanState } from "./states/BooleanState.tsx";
 import { RelativeHumidityMeasurementState } from "./states/RelativeHumidityMeasurementState.tsx";
 import { ThermostatState } from "./states/ThermostatState.tsx";
+import clipboard from "clipboardy";
 
 export interface ClusterStateProps {
   clusterId: ClusterId | string;
@@ -80,29 +81,19 @@ const ErrorRenderer = (props: { clusterId: string; state: unknown }) => {
   return undefined;
 };
 
-const TooltipContent = ({ clusterId, state }: ClusterStateProps) => {
-  const [showDetails, setShowDetails] = useState(false);
-  return (
-    <>
-      <Box>
-        <span>{clusterId}</span>
-        <span>, show details:</span>
-        <Checkbox
-          value={showDetails}
-          onClick={() => setShowDetails(!showDetails)}
-        />
-      </Box>
-      {showDetails && (
-        <Box maxHeight="300px" sx={{ overflowY: "auto" }}>
-          <pre>{JSON.stringify(state, null, 2)}</pre>
-        </Box>
-      )}
-    </>
-  );
-};
-
 export const ClusterState = ({ clusterId, state }: ClusterStateProps) => {
   const Component = renderer[clusterId as ClusterId];
+  const copyState = async () => {
+    await clipboard.write(JSON.stringify(state, null, 2));
+    setShowCopySuccess(true);
+  };
+  const [showCopySuccess, setShowCopySuccess] = useState(false);
+  useEffect(() => {
+    if (showCopySuccess) {
+      setTimeout(() => setShowCopySuccess(false), 3000);
+    }
+  }, [showCopySuccess]);
+
   if (Component === undefined) {
     return <ErrorRenderer clusterId={clusterId} state={state} />;
   } else if (Component === null) {
@@ -110,10 +101,23 @@ export const ClusterState = ({ clusterId, state }: ClusterStateProps) => {
   } else {
     return (
       <Tooltip
-        title={<TooltipContent clusterId={clusterId} state={state} />}
+        title={
+          !showCopySuccess ? (
+            <>
+              {clusterId}
+              <br />
+              click to copy the state to clipboard
+            </>
+          ) : (
+            <>Copied</>
+          )
+        }
         arrow
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          onClick={copyState}
+        >
           <Component state={state} />
         </Box>
       </Tooltip>

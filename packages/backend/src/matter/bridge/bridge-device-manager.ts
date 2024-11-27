@@ -35,9 +35,18 @@ export class BridgeDeviceManager {
       }),
     ).catch((e) => {
       this.unsubscribe?.();
+      this.reset();
       throw e;
     });
     this.initialized = true;
+  }
+
+  reset() {
+    if (!this.initialized) {
+      return;
+    }
+    this.aggregator.parts.clear();
+    this.initialized = false;
   }
 
   private async createEntities(

@@ -12,7 +12,7 @@
     "pull-request": "nx run-many -t lint,test,build && prettier . --check",
     "release": "nx release --verbose",
     "serve": "nx run-many -t serve --output-style=stream --parallel=100",
-    "serve:production": "nx run home-assistant-matter-hub:start",
+    "serve:production": "nx run home-assistant-matter-hub:start --skip-nx-cache",
     "check-updates": "npx npm-check-updates --workspaces --root"
   },
   "workspaces": [

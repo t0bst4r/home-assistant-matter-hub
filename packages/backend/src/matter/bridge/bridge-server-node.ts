@@ -91,13 +91,13 @@ export class BridgeServerNode {
       return;
     }
     try {
+      this.deviceManager.reset();
       await this.deviceManager.initialize(this.bridgeData);
       await this.serverNode.start();
       this.status = BridgeStatus.Running;
       this.statusReason = undefined;
     } catch (e) {
       this.log.error("Failed to start bridge due to error: %s", e);
-      this.parts.clear();
       await this.serverNode.cancel();
       this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;
