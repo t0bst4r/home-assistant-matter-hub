@@ -26,7 +26,7 @@
     "@mui/material": "^6.1.8",
     "@mui/icons-material": "^6.1.8",
     "@reduxjs/toolkit": "^2.3.0",
-    "@toolpad/core": "^0.9.0",
+    "@toolpad/core": "^0.10.0",
     "@uiw/react-codemirror": "^4.23.6",
     "@uiw/codemirror-theme-vscode": "^4.23.6",
     "ajv": "^8.17.1",
