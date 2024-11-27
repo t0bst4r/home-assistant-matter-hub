@@ -102,6 +102,7 @@ export class BridgeDeviceManager {
     if (!hasChanged) {
       return;
     }
+    await new Promise((resolve) => setTimeout(resolve, 100));
     await device.setStateOf(HomeAssistantEntityBehavior, {
       entity: { ...entity, state },
     });
