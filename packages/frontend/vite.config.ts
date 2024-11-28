@@ -5,6 +5,7 @@ import svgr from "vite-plugin-svgr";
 // https://vitejs.dev/config/
 export default defineConfig({
   clearScreen: false,
+  base: "./",
   server: {
     proxy: {
       "/api": "http://localhost:8482",

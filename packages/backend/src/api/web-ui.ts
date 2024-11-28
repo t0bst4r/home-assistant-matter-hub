@@ -1,16 +1,17 @@
 import express from "express";
-import fs from "node:fs";
 import path from "node:path";
+import fs from "node:fs";
 
 export function webUi(dist?: string) {
   const router = express.Router();
   if (dist) {
+    router.use(express.static(dist));
     router.get(/.*/, (req: express.Request, res: express.Response) => {
-      if (fs.existsSync(path.join(dist, req.path))) {
-        res.sendFile(path.join(dist, req.path));
-      } else {
-        res.sendFile(path.join(dist, "index.html"));
-      }
+      const relative = path.relative(path.join(dist, req.path), dist);
+      const content = fs
+        .readFileSync(path.join(dist, "index.html"), "utf8")
+        .replace("<!-- BASE -->", `<base href='${relative}' />`);
+      res.status(200).contentType("text/html").send(content);
     });
   }
   return router;
