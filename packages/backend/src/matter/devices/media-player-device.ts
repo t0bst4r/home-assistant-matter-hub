@@ -31,7 +31,7 @@ const volumeLevelConfig: LevelControlConfig = {
   moveToLevel: {
     action: "media_player.volume_set",
     data: (value) => {
-      return { volume_level: value / 100 };
+      return { volume_level: value / 254 };
     },
   },
 };
