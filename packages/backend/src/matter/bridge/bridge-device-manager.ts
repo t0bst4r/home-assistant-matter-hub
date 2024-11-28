@@ -9,6 +9,7 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-registry.js";
 import _, { Dictionary } from "lodash";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
+import AsyncLock from "async-lock";
 
 export class BridgeDeviceManager {
   private initialized = false;
@@ -73,7 +74,11 @@ export class BridgeDeviceManager {
       return false;
     }
     const endpointId = this.deviceId(entity.entity_id);
-    const endpointType = createDevice(entity, bridge.featureFlags);
+    const endpointType = createDevice(
+      lockKey(entity),
+      entity,
+      bridge.featureFlags,
+    );
     if (endpointType) {
       const endpoint = new Endpoint(endpointType, {
         id: endpointId,
@@ -86,11 +91,8 @@ export class BridgeDeviceManager {
 
   private async updateEntities(updates: Dictionary<HomeAssistantEntityState>) {
     const states = _.values(updates);
-    const results = [];
-    for (const state of states) {
-      results.push(this.updateEntity(state));
-    }
-    await Promise.all(results);
+    const handles = states.map((state) => this.updateEntity(state));
+    await Promise.all(handles);
   }
 
   private async updateEntity(state: HomeAssistantEntityState) {
@@ -99,13 +101,14 @@ export class BridgeDeviceManager {
     if (!device) {
       return;
     }
-    const { entity, mutex } = device.stateOf(HomeAssistantEntityBehavior);
+    const { entity } = device.stateOf(HomeAssistantEntityBehavior);
     const hasChanged = JSON.stringify(entity.state) !== JSON.stringify(state);
     if (!hasChanged) {
       return;
     }
 
-    await mutex.guard(async () => {
+    const lock = this.environment.get(AsyncLock);
+    await lock.acquire(lockKey(entity), async () => {
       await device.setStateOf(HomeAssistantEntityBehavior, {
         entity: { ...entity, state },
       });
@@ -121,4 +124,8 @@ function isValidEntity(entity: HomeAssistantEntityInformation): boolean {
   return (
     entity.registry?.disabled_by == null && entity.registry?.hidden_by == null
   );
+}
+
+function lockKey(entity: { entity_id: string }): string {
+  return entity.entity_id;
 }

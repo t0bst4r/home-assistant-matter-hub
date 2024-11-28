@@ -6,31 +6,7 @@ import {
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
-
-export class Mutex {
-  private mutex = Promise.resolve();
-
-  private async lock(): Promise<() => void> {
-    let begin: (unlock: () => void) => void = (unlock) => {};
-
-    this.mutex = this.mutex.then(() => {
-      return new Promise(begin);
-    });
-
-    return new Promise<() => void>((res) => {
-      begin = res;
-    });
-  }
-
-  async guard<T>(fn: () => Promise<T>): Promise<T> {
-    const unlock = await this.lock();
-    try {
-      return await fn();
-    } finally {
-      unlock();
-    }
-  }
-}
+import AsyncLock from "async-lock";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;
@@ -56,16 +32,17 @@ export class HomeAssistantEntityBehavior extends Behavior {
     target: HassServiceTarget,
     returnResponse?: boolean,
   ): Promise<T> {
-    return this.state.mutex.guard(() => {
-      const actions = this.env.get(HomeAssistantActions);
+    const lock = this.env.get(AsyncLock);
+    const actions = this.env.get(HomeAssistantActions);
+    return lock.acquire<T>(this.state.lockKey, async () => {
       return actions.callAction(domain, action, data, target, returnResponse);
-    })
+    });
   }
 }
 
 export namespace HomeAssistantEntityBehavior {
   export class State {
-    mutex!: Mutex
+    lockKey!: string;
     entity!: HomeAssistantEntityInformation;
   }
 

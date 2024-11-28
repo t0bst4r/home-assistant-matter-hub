@@ -17,6 +17,7 @@ import { HumidifierDevice } from "../devices/humidifier-device.js";
 import { EndpointType } from "@matter/main";
 
 export function createDevice(
+  lockKey: string,
   entity: HomeAssistantEntityInformation,
   featureFlags?: BridgeFeatureFlags,
 ): EndpointType | undefined {
@@ -25,7 +26,7 @@ export function createDevice(
   if (!factory) {
     return undefined;
   }
-  return factory({ entity }, featureFlags);
+  return factory({ entity, lockKey }, featureFlags);
 }
 
 const deviceCtrs: Record<

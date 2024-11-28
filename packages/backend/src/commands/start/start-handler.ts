@@ -8,6 +8,7 @@ import { createEnvironment } from "../../environment/environment.js";
 import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.js";
 import { BridgeService } from "../../matter/bridge-service.js";
 import { WebApi } from "../../api/web-api.js";
+import AsyncLock from "async-lock";
 
 const basicInformation: BridgeBasicInformation = {
   vendorId: VendorId(0xfff1),
@@ -32,6 +33,7 @@ export async function startHandler(
     mdnsNetworkInterface: options.mdnsNetworkInterface,
     storageLocation: options.storageLocation,
   });
+  environment.set(AsyncLock, new AsyncLock());
 
   new HomeAssistantClient(environment, {
     url: options.homeAssistantUrl,

@@ -128,7 +128,7 @@ describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
     const devices = entities.map((entity) =>
-      createDevice(entity, featureFlags),
+      createDevice("lock_" + entity.entity_id, entity, featureFlags),
     );
     const actual = _.uniq(
       devices
