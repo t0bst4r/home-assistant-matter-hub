@@ -15,6 +15,7 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 import { MediaPlayerDevice } from "../devices/media-player-device.js";
 import { HumidifierDevice } from "../devices/humidifier-device.js";
 import { EndpointType } from "@matter/main";
+import { SceneDevice } from "../devices/scene-device.js";
 
 export function createDevice(
   lockKey: string,
@@ -47,7 +48,7 @@ const deviceCtrs: Record<
   input_boolean: SwitchDevice,
   automation: SwitchDevice,
   script: SwitchDevice,
-  scene: SwitchDevice,
+  scene: SceneDevice,
   media_player: MediaPlayerDevice,
   humidifier: HumidifierDevice,
 };
