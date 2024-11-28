@@ -97,13 +97,16 @@ export class BridgeDeviceManager {
     if (!device) {
       return;
     }
-    const { entity } = device.stateOf(HomeAssistantEntityBehavior);
+    const { entity, mutex } = device.stateOf(HomeAssistantEntityBehavior);
     const hasChanged = JSON.stringify(entity.state) !== JSON.stringify(state);
     if (!hasChanged) {
       return;
     }
-    await device.setStateOf(HomeAssistantEntityBehavior, {
-      entity: { ...entity, state },
+
+    await mutex.guard(async () => {
+      await device.setStateOf(HomeAssistantEntityBehavior, {
+        entity: { ...entity, state },
+      });
     });
   }
 
