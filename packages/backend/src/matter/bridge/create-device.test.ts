@@ -2,13 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  BridgeBasicInformation,
-  BridgeData,
+  BridgeFeatureFlags,
   ClimateDeviceAttributes,
   ClimateHvacAction,
   ClimateHvacMode,
   ClusterId,
-  CompatibilityMode,
   CoverDeviceAttributes,
   FanDeviceAttributes,
   HomeAssistantDomain,
@@ -122,29 +120,16 @@ const testEntities: Record<
   ],
 };
 
-const basicInformation: BridgeBasicInformation = {
-  productId: 1,
-  productLabel: "Test Label",
-  productName: "Test Name",
-  vendorId: 2,
-  vendorName: "Test Vendor",
-  softwareVersion: 3,
-  hardwareVersion: 4,
-};
-
-const bridgeData: BridgeData = {
-  id: "1",
-  name: "any",
-  port: 5540,
-  basicInformation,
-  filter: { include: [], exclude: [] },
-  compatibility: CompatibilityMode.Matter,
+const featureFlags: BridgeFeatureFlags = {
+  matterSpeakers: true,
 };
 
 describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
-    const devices = entities.map((entity) => createDevice(bridgeData, entity));
+    const devices = entities.map((entity) =>
+      createDevice(entity, featureFlags),
+    );
     const actual = _.uniq(
       devices
         .filter((d): d is EndpointType => d != null)

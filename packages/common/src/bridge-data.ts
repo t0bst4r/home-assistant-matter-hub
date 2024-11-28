@@ -1,11 +1,16 @@
 import { HomeAssistantFilter } from "./home-assistant-filter.js";
-import { CompatibilityMode } from "./compatibility-mode.js";
+
+interface AllBridgeFeatureFlags {
+  readonly matterSpeakers: boolean;
+}
+
+export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;
 
 export interface BridgeConfig {
   readonly name: string;
   readonly port: number;
-  readonly compatibility?: CompatibilityMode;
   readonly filter: HomeAssistantFilter;
+  readonly featureFlags?: BridgeFeatureFlags;
 }
 
 export interface CreateBridgeRequest extends BridgeConfig {}

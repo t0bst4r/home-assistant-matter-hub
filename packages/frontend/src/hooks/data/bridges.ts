@@ -35,7 +35,7 @@ export function useUsedPorts() {
   return useAppSelector(selectUsedPorts);
 }
 
-export function useBridge(bridgeId: string | undefined) {
+export function useBridge(bridgeId: string) {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(requireBridges());

@@ -9,4 +9,3 @@ export * from "./domains/index.js";
 export * from "./utils/index.js";
 export * from "./clusters/index.js";
 export * from "./schemas/index.js";
-export * from "./compatibility-mode.js";

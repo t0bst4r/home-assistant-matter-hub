@@ -1,5 +1,5 @@
 import {
-  BridgeData,
+  BridgeFeatureFlags,
   type HomeAssistantDomain,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
@@ -17,22 +17,22 @@ import { HumidifierDevice } from "../devices/humidifier-device.js";
 import { EndpointType } from "@matter/main";
 
 export function createDevice(
-  bridge: BridgeData,
   entity: HomeAssistantEntityInformation,
+  featureFlags?: BridgeFeatureFlags,
 ): EndpointType | undefined {
   const domain = entity.entity_id.split(".")[0] as HomeAssistantDomain;
   const factory = deviceCtrs[domain];
   if (!factory) {
     return undefined;
   }
-  return factory({ entity }, bridge);
+  return factory({ entity }, featureFlags);
 }
 
 const deviceCtrs: Record<
   HomeAssistantDomain,
   (
     homeAssistant: HomeAssistantEntityBehavior.State,
-    bridge: BridgeData,
+    featureFlags?: BridgeFeatureFlags,
   ) => EndpointType | undefined
 > = {
   light: LightDevice,

@@ -73,7 +73,7 @@ export class BridgeDeviceManager {
       return false;
     }
     const endpointId = this.deviceId(entity.entity_id);
-    const endpointType = createDevice(bridge, entity);
+    const endpointType = createDevice(entity, bridge.featureFlags);
     if (endpointType) {
       const endpoint = new Endpoint(endpointType, {
         id: endpointId,

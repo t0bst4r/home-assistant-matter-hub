@@ -4,6 +4,7 @@ import { FundingPage } from "./pages/funding/FundingPage.tsx";
 import { AboutPage } from "./pages/about/AboutPage.tsx";
 import { BridgeDetailsPage } from "./pages/bridge-details/BridgeDetailsPage.tsx";
 import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
+import { CreateBridgePage } from "./pages/edit-bridge/CreateBridgePage.tsx";
 
 export const routes: RouteObject[] = [
   {
@@ -14,7 +15,7 @@ export const routes: RouteObject[] = [
     path: "bridges",
     element: <BridgesPage />,
   },
-  { path: "bridges/create", element: <EditBridgePage /> },
+  { path: "bridges/create", element: <CreateBridgePage /> },
   { path: "bridges/:bridgeId", element: <BridgeDetailsPage /> },
   { path: "bridges/:bridgeId/edit", element: <EditBridgePage /> },
   {

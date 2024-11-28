@@ -29,7 +29,11 @@ export class BridgeStorage implements Environmental.Service {
     );
     this._bridges = bridges
       .filter((b): b is string => b != undefined)
-      .map((bridge) => JSON.parse(bridge) as BridgeData);
+      .map((bridge) => {
+        const b = JSON.parse(bridge);
+        delete b["compatibility"];
+        return b as BridgeData;
+      });
   }
 
   get bridges(): ReadonlyArray<BridgeData> {

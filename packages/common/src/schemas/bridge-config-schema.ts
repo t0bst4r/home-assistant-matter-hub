@@ -1,25 +1,36 @@
 import type { JSONSchema7 } from "json-schema";
 import { HomeAssistantMatcherType } from "../home-assistant-filter.js";
-import { CompatibilityMode } from "../compatibility-mode.js";
 
 const homeAssistantMatcherSchema: JSONSchema7 = {
   type: "object",
+  default: { type: "", value: "" },
   properties: {
-    type: { type: "string", enum: Object.values(HomeAssistantMatcherType) },
-    value: { type: "string", minLength: 1 },
+    type: {
+      title: "Type",
+      type: "string",
+      enum: Object.values(HomeAssistantMatcherType),
+    },
+    value: {
+      title: "Value",
+      type: "string",
+      minLength: 1,
+    },
   },
   required: ["type", "value"],
   additionalProperties: false,
 };
 
 const homeAssistantFilterSchema: JSONSchema7 = {
+  title: "Include or exclude entities",
   type: "object",
   properties: {
     include: {
+      title: "Include",
       type: "array",
       items: homeAssistantMatcherSchema,
     },
     exclude: {
+      title: "Exclude",
       type: "array",
       items: homeAssistantMatcherSchema,
     },
@@ -28,22 +39,36 @@ const homeAssistantFilterSchema: JSONSchema7 = {
   additionalProperties: false,
 };
 
-export const bridgeConfigSchema: JSONSchema7 = {
+const featureFlagSchema: JSONSchema7 = {
+  title: "Feature Flags",
   type: "object",
   properties: {
+    matterSpeakers: {
+      title:
+        "Expose TVs and Speakers as speaker devices (on-off and volume only)",
+      type: "boolean",
+      default: false,
+    },
+  },
+  additionalProperties: false,
+};
+
+export const bridgeConfigSchema: JSONSchema7 = {
+  type: "object",
+  title: "Bridge Config",
+  properties: {
     name: {
+      title: "Name",
       type: "string",
       minLength: 1,
     },
     port: {
+      title: "Port",
       type: "number",
       minimum: 1,
     },
-    compatibility: {
-      type: "string",
-      enum: Object.values(CompatibilityMode),
-    },
     filter: homeAssistantFilterSchema,
+    featureFlags: featureFlagSchema,
   },
   required: ["name", "port", "filter"],
   additionalProperties: false,
