@@ -86,9 +86,11 @@ export class BridgeDeviceManager {
 
   private async updateEntities(updates: Dictionary<HomeAssistantEntityState>) {
     const states = _.values(updates);
+    const results = [];
     for (const state of states) {
-      await this.updateEntity(state);
+      results.push(this.updateEntity(state));
     }
+    await Promise.all(results);
   }
 
   private async updateEntity(state: HomeAssistantEntityState) {
