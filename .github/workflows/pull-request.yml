@@ -16,11 +16,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
       - run: npm ci
-      - run: npm run pull-request
+
+      - run: npx nx run-many -t lint test build
+      - run: npx nx-cloud record -- npm run prettier
