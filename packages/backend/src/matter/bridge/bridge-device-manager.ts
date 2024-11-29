@@ -1,6 +1,7 @@
-import { Agent, Endpoint, Environment } from "@matter/main";
+import { Endpoint, Environment } from "@matter/main";
 import {
   BridgeData,
+  BridgeFeatureFlags,
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
@@ -12,7 +13,6 @@ import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 import AsyncLock from "async-lock";
 
 export class BridgeDeviceManager {
-  private initialized = false;
   private unsubscribe?: () => void;
 
   constructor(
@@ -20,73 +20,76 @@ export class BridgeDeviceManager {
     private readonly aggregator: Endpoint,
   ) {}
 
-  async initialize(bridge: BridgeData) {
-    if (this.initialized) {
-      return;
-    }
+  async loadDevices(bridge: BridgeData) {
     const registry = this.environment.get(HomeAssistantRegistry);
-    await Promise.resolve(
-      this.aggregator.act(async (agent) => {
-        const entityIds = await this.createEntities(agent, registry, bridge);
-        this.unsubscribe?.();
-        this.unsubscribe = await registry.subscribeStates(
-          entityIds,
-          this.updateEntities.bind(this),
-        );
-      }),
-    ).catch((e) => {
+    try {
       this.unsubscribe?.();
-      this.reset();
+      const entityIds = await this.upsertDevices(registry, bridge);
+      this.unsubscribe = await registry.subscribeStates(
+        entityIds,
+        this.updateEntities.bind(this),
+      );
+    } catch (e) {
+      this.unsubscribe?.();
       throw e;
-    });
-    this.initialized = true;
-  }
-
-  reset() {
-    if (!this.initialized) {
-      return;
     }
-    this.aggregator.parts.clear();
-    this.initialized = false;
   }
 
-  private async createEntities(
-    agent: Agent,
+  private async upsertDevices(
     registry: HomeAssistantRegistry,
     bridgeData: BridgeData,
   ): Promise<string[]> {
-    const entities = await registry.allEntities();
-    const entityIds: string[] = [];
-    for (const entity of entities) {
-      if (await this.createEntity(agent, bridgeData, entity)) {
-        entityIds.push(entity.entity_id);
-      }
-    }
-    return entityIds;
+    const allEntities = await registry.allEntities();
+    const entities = allEntities.filter(
+      (entity) =>
+        isValidEntity(entity) && matchesEntityFilter(bridgeData.filter, entity),
+    );
+    const endpointIds = _.fromPairs(
+      entities.map((e) => [e.entity_id, createEndpointId(e.entity_id)]),
+    );
+    const updateEndpoints = this.aggregator.parts.filter((part) =>
+      entities.some((e) => endpointIds[e.entity_id] === part.id),
+    );
+    const removeEndpoints = this.aggregator.parts.filter(
+      (part) => !entities.some((e) => endpointIds[e.entity_id] === part.id),
+    );
+    await Promise.all(removeEndpoints.map((endpoint) => endpoint.delete()));
+    const remainingEndpoints = await Promise.all(
+      entities.map((entity) => {
+        const endpointId = endpointIds[entity.entity_id];
+        return this.upsertDevice(
+          entity,
+          bridgeData.featureFlags ?? {},
+          endpointId,
+          updateEndpoints.find((e) => e.id === endpointId),
+        );
+      }),
+    );
+    return remainingEndpoints.filter((e): e is string => !!e);
   }
 
-  private async createEntity(
-    agent: Agent,
-    bridge: BridgeData,
+  private async upsertDevice(
     entity: HomeAssistantEntityInformation,
-  ) {
-    if (!isValidEntity(entity) || !matchesEntityFilter(bridge.filter, entity)) {
-      return false;
+    featureFlags: BridgeFeatureFlags,
+    endpointId: string,
+    endpoint: Endpoint | undefined,
+  ): Promise<string | undefined> {
+    const endpointType = createDevice(lockKey(entity), entity, featureFlags);
+
+    if (endpoint) {
+      if (endpoint.type.deviceClass === endpointType?.deviceClass) {
+        return entity.entity_id;
+      } else {
+        await endpoint.delete();
+      }
     }
-    const endpointId = this.deviceId(entity.entity_id);
-    const endpointType = createDevice(
-      lockKey(entity),
-      entity,
-      bridge.featureFlags,
-    );
-    if (endpointType) {
-      const endpoint = new Endpoint(endpointType, {
-        id: endpointId,
-      });
-      await agent.endpoint.add(endpoint);
-      return true;
+
+    if (!endpointType) {
+      return;
     }
-    return false;
+
+    await this.aggregator.add(new Endpoint(endpointType, { id: endpointId }));
+    return entity.entity_id;
   }
 
   private async updateEntities(updates: Dictionary<HomeAssistantEntityState>) {
@@ -96,7 +99,7 @@ export class BridgeDeviceManager {
   }
 
   private async updateEntity(state: HomeAssistantEntityState) {
-    const endpointId = this.deviceId(state.entity_id);
+    const endpointId = createEndpointId(state.entity_id);
     const device = this.aggregator.parts.find((p) => p.id === endpointId);
     if (!device) {
       return;
@@ -114,10 +117,6 @@ export class BridgeDeviceManager {
       });
     });
   }
-
-  private deviceId(entityId: string): string {
-    return entityId.replace(/\./g, "_");
-  }
 }
 
 function isValidEntity(entity: HomeAssistantEntityInformation): boolean {
@@ -128,4 +127,8 @@ function isValidEntity(entity: HomeAssistantEntityInformation): boolean {
 
 function lockKey(entity: { entity_id: string }): string {
   return entity.entity_id;
+}
+
+function createEndpointId(entity_id: string): string {
+  return entity_id.replace(/\./g, "_");
 }

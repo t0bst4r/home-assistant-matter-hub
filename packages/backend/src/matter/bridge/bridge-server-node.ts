@@ -91,8 +91,7 @@ export class BridgeServerNode {
       return;
     }
     try {
-      this.deviceManager.reset();
-      await this.deviceManager.initialize(this.bridgeData);
+      await this.deviceManager.loadDevices(this.bridgeData);
       await this.serverNode.start();
       this.status = BridgeStatus.Running;
       this.statusReason = undefined;
@@ -117,15 +116,24 @@ export class BridgeServerNode {
     if (this.bridgeData.id !== update.id) {
       throw new Error("Update request id does not match data id");
     }
-    await this.stop();
     this.bridgeData = { ...this.bridgeData, ...update };
-    await this.start();
+    try {
+      await this.deviceManager.loadDevices(this.bridgeData);
+    } catch (e) {
+      this.log.error("Failed to update bridge due to error: %s", e);
+      await this.serverNode.cancel();
+      this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
+      this.status = BridgeStatus.Failed;
+    }
   }
 
   async factoryReset() {
-    await this.stop();
-    await this.serverNode?.reset();
-    await this.serverNode?.erase();
+    if (this.status !== BridgeStatus.Running) {
+      return;
+    }
+    await this.serverNode.cancel();
+    await this.serverNode.reset();
+    await this.serverNode.erase();
     await this.start();
   }
 
