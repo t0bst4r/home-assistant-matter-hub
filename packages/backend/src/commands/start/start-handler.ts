@@ -43,7 +43,8 @@ export async function startHandler(
   new BridgeService(environment, basicInformation);
 
   new WebApi(environment, {
-    port: options.webPort,
+    port: options.httpPort,
+    whitelist: options.httpIpWhitelist?.map((item) => item.toString()),
     webUiDist,
   });
 

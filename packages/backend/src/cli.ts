@@ -15,7 +15,8 @@ export async function cli(argv: string[]): Promise<void> {
     process.env.NODE_ENV === "development"
       ? undefined
       : path.join(dirname, "../frontend");
-  yargs(hideBin(argv))
+  const cli = yargs(hideBin(argv));
+  cli
     .env("HAMH_")
     .scriptName("home-assistant-matter-hub")
     .version()
@@ -25,6 +26,7 @@ export async function cli(argv: string[]): Promise<void> {
     .help()
     .command(start(webDist))
     .demandCommand()
+    .wrap(Math.min(140, cli.terminalWidth()))
     .parse();
 }
 

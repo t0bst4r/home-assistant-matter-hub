@@ -11,11 +11,12 @@ export function accessLogger(
   return (req, res, next) => {
     res.on("finish", function () {
       logger.debug(
-        "%s %s %s %s",
+        "%s %s %s %s from %s",
         req.method,
         decodeURI(req.originalUrl),
         res.statusCode,
         res.statusMessage,
+        req.socket.remoteAddress,
       );
     });
     next();

@@ -1,9 +1,10 @@
 export interface StartOptions {
   "log-level": string;
-  "web-port": number;
+  "http-port": number;
+  "http-ip-whitelist": (string | number)[] | undefined;
   "disable-log-colors": boolean;
-  "storage-location"?: string;
-  "mdns-network-interface"?: string;
+  "storage-location": string | undefined;
+  "mdns-network-interface": string | undefined;
   "home-assistant-url": string;
   "home-assistant-access-token": string;
 }

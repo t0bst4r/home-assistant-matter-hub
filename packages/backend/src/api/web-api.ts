@@ -8,9 +8,11 @@ import { Environment, Environmental } from "@matter/main";
 import { BridgeService } from "../matter/bridge-service.js";
 import { register } from "../environment/register.js";
 import { proxySupport } from "./proxy-support.js";
+import AccessControl from "express-ip-access-control";
 
 export interface WebApiProps {
   readonly port: number;
+  readonly whitelist: string[] | undefined;
   readonly webUiDist?: string;
 }
 
@@ -38,9 +40,23 @@ export class WebApi implements Environmental.Service {
     const api = express.Router();
     api.use(express.json()).use("/matter", matterApi(bridgeService));
 
+    const middlewares = [this.accessLogger, proxySupport];
+    if (this.props.whitelist && this.props.whitelist.length > 0) {
+      middlewares.push(
+        AccessControl({
+          log: (clientIp, access) => {
+            this.log.silly(
+              `Client ${clientIp} was ${access ? "granted" : "denied"}`,
+            );
+          },
+          mode: "deny",
+          allows: this.props.whitelist,
+        }),
+      );
+    }
+
     this.app = express()
-      .use(this.accessLogger)
-      .use(proxySupport)
+      .use(...middlewares)
       .use("/api", api)
       .use(webUi(this.props.webUiDist));
 

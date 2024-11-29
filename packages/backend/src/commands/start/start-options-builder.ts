@@ -32,14 +32,21 @@ export function startOptionsBuilder(yargs: Argv): Argv<StartOptions> {
       description:
         "Path to a directory where the application should store its data. Defaults to $HOME/.home-assistant-matter-hub",
     })
-    .option("web-port", {
+    .option("http-port", {
+      alias: "web-port",
       type: "number",
-      description: "Port used by the web application",
+      description:
+        "Port used by the web application. 'http-port' is recommended, 'web-port' is deprecated and will be removed in the future.",
       default: 8482,
+    })
+    .option("http-ip-whitelist", {
+      type: "array",
+      description:
+        "Only allow the specified IPv4, IPv6 or CIDR. You can specify this option multiple times. When configured via ENV variables, you can only specify ONE value. Defaults to allow every IP address.",
     })
     .option("mdns-network-interface", {
       type: "string",
-      description: "Limit MDNS to this network interface",
+      description: "Limit mDNS to this network interface",
     })
     .option("home-assistant-url", {
       type: "string",

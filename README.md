@@ -122,27 +122,20 @@ home-assistant-matter-hub start
 start the application
 
 Options:
-  --help                         Show help                                                             [boolean]
-
-  --config                       Provide the path to a configuration JSON file, which can include all of the
-                                 following options. You can use kebabcase ("log-level") or camelcase ("logLevel").
-
-  --log-level                    Set the log level                                                      [string]
-                                 choices: "silly", "debug", "info", "warn", "error"
-                                 default: "info"
-
-  --disable-log-colors           Disable colors in the logs (default: false)                           [boolean]
-
-  --storage-location             Path to a directory where the application should store its data.
-                                 (default: ~/.home-assistant-matter-hub)                                [string]
-
-  --web-port                     Port used by the web application (default: 8482)                       [number]
-
-  --mdns-network-interface       Limit mDNS to this network interface                                   [string]
-
-  --home-assistant-url           The HTTP-URL of your Home Assistant URL                     [string] [required]
-
-  --home-assistant-access-token  A long-lived access token for your Home Assistant Instance  [string] [required]
+  --help                         Show help                                                                                         [boolean]
+  --config                       Provide the path to a configuration JSON file, which can include all the other command options. You can use
+                                  kebabcase ("log-level") or camelcase ("logLevel").
+  --log-level                                                [string] [choices: "silly", "debug", "info", "warn", "error"] [default: "info"]
+  --disable-log-colors                                                                                            [boolean] [default: false]
+  --storage-location             Path to a directory where the application should store its data. Defaults to $HOME/.home-assistant-matter-h
+                                 ub                                                                                                 [string]
+  --http-port, --web-port        Port used by the web application. 'http-port' is recommended, 'web-port' is deprecated and will be removed
+                                 in the future.                                                                     [number] [default: 8482]
+  --http-ip-whitelist            Only allow the specified IPv4, IPv6 or CIDR. You can specify this option multiple times. When configured vi
+                                 a ENV variables, you can only specify ONE value. Defaults to allow every IP address.                [array]
+  --mdns-network-interface       Limit mDNS to this network interface                                                               [string]
+  --home-assistant-url           The HTTP-URL of your Home Assistant URL                                                 [string] [required]
+  --home-assistant-access-token  A long-lived access token for your Home Assistant Instance                              [string] [required]
 ```
 
 Each of those configuration options can be configured via environment variables, too. Simply prefix them with `HAMH_`
