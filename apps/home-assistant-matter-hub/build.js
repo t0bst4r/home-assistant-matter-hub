@@ -16,6 +16,8 @@ await copyDist(
 await copyDist(
   distDir("@home-assistant-matter-hub/backend"),
   path.join(dist, "backend"),
+  250_000,
+  500_000,
 );
 
 await copyFile(
@@ -27,10 +29,18 @@ await copyFile(
   path.join(import.meta.dirname, "LICENSE"),
 );
 
-async function copyDist(source, destination) {
+async function copyDist(source, destination, minSize, maxSize) {
   process.stdout.write(
     `Copy ${path.relative(import.meta.dirname, source)} to ${path.relative(import.meta.dirname, destination)}... `,
   );
+  const sourceSize = getDirSize(source);
+  if (minSize != undefined && sourceSize < minSize) {
+    throw new Error(`${sourceSize} does not satisfy min size (${minSize})`);
+  }
+  if (maxSize != undefined && sourceSize > maxSize) {
+    throw new Error(`${sourceSize} does not satisfy max size (${maxSize})`);
+  }
+
   fs.cpSync(source, destination, {
     recursive: true,
   });
@@ -43,4 +53,22 @@ async function copyFile(source, destination) {
   );
   fs.cpSync(source, destination);
   process.stdout.write("Done\n");
+}
+
+function getDirSize(dirPath) {
+  let size = 0;
+  const files = fs.readdirSync(dirPath);
+
+  for (let i = 0; i < files.length; i++) {
+    const filePath = path.join(dirPath, files[i]);
+    const stats = fs.statSync(filePath);
+
+    if (stats.isFile()) {
+      size += stats.size;
+    } else if (stats.isDirectory()) {
+      size += getDirSize(filePath);
+    }
+  }
+
+  return size;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import own from "../package.json";
-import backend from "@home-assistant-matter-hub/backend/package.json";
-import common from "@home-assistant-matter-hub/common/package.json";
+import own from "../package.json" assert { type: "json" };
+import backend from "@home-assistant-matter-hub/backend/package.json" assert { type: "json" };
+import common from "@home-assistant-matter-hub/common/package.json" assert { type: "json" };
 import _ from "lodash";
 
 describe("home-assistant-matter-hub", () => {
