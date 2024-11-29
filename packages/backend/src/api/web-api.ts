@@ -7,6 +7,7 @@ import { createLogger } from "../logging/create-logger.js";
 import { Environment, Environmental } from "@matter/main";
 import { BridgeService } from "../matter/bridge-service.js";
 import { register } from "../environment/register.js";
+import { proxySupport } from "./proxy-support.js";
 
 export interface WebApiProps {
   readonly port: number;
@@ -39,6 +40,7 @@ export class WebApi implements Environmental.Service {
 
     this.app = express()
       .use(this.accessLogger)
+      .use(proxySupport)
       .use("/api", api)
       .use(webUi(this.props.webUiDist));
 

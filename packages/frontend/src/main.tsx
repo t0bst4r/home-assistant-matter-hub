@@ -22,13 +22,27 @@ import { store } from "./state/store.ts";
 
 IconLibrary.add(faAmazon, faApple, faGoogle);
 
-const router = createBrowserRouter([
+let basename = document
+  .getElementsByTagName("base")[0]
+  ?.href?.replace(/\/$/, "");
+if (basename && basename.startsWith("http")) {
+  basename = new URL(basename).pathname;
+}
+
+console.log(basename);
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AppLayout />,
+      children: routes,
+    },
+  ],
   {
-    path: "/",
-    element: <AppLayout />,
-    children: routes,
+    basename,
   },
-]);
+);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
