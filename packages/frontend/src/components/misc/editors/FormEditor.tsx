@@ -21,7 +21,6 @@ export interface FormEditorProps {
 
 export const FormEditor = (props: FormEditorProps) => {
   const onChange = (data: object, errors: RJSFValidationError[]) => {
-    console.log("onChange", data, errors);
     props.onChange(data, errors.length === 0);
   };
 

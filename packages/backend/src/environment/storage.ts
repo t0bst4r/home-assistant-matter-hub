@@ -4,6 +4,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { StorageBackendJsonFile } from "@matter/nodejs";
 import { ClusterId } from "@home-assistant-matter-hub/common";
+import _ from "lodash";
 
 export function storage(
   environment: Environment,
@@ -25,32 +26,45 @@ function resolveStorageLocation(storageLocation: string | undefined) {
 }
 
 class CustomStorage extends StorageBackendJsonFile {
-  override async initialize() {
-    try {
-      await super.initialize();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        if (error.name !== "SyntaxError") {
-          throw error;
-        }
+  constructor(path: string) {
+    super(path);
+
+    const parser = this as unknown as {
+      fromJson: (json: string) => object;
+      toJson: (object: object) => string;
+    };
+
+    const serialize = parser.toJson.bind(parser);
+    const deserialize = parser.fromJson.bind(parser);
+    parser.fromJson = (json: string) => {
+      if (json.trim().length === 0) {
+        return {};
+      } else {
+        const object = deserialize(json);
+        return this.removeClusters(object, Object.values(ClusterId));
       }
-    }
-    this.applyTemporaryFixes([
-      ClusterId.colorControl,
-      ClusterId.windowCovering,
-    ]);
-    this.isInitialized = true;
+    };
+
+    parser.toJson = (object: object) => {
+      const json = serialize(
+        this.removeClusters(object, [ClusterId.homeAssistantEntity]),
+      );
+      if (json.trim().length === 0) {
+        throw new Error(`Tried to write empty storage to ${path}`);
+      }
+      return json;
+    };
   }
 
-  private applyTemporaryFixes(clusters: ClusterId[]) {
+  private removeClusters(object: object, clusters: ClusterId[]): object {
     if (clusters.length === 0) {
-      return;
+      return object;
     }
-    const buggyKeys = Object.keys(this.store).filter(
+    const keys = Object.keys(object).filter(
       (key) =>
         key.startsWith("root.parts.") &&
         clusters.some((cluster) => key.endsWith(`.${cluster}`)),
     );
-    buggyKeys.forEach((key) => delete this.store[key]);
+    return _.pickBy(object, (_, key) => !keys.includes(key));
   }
 }

@@ -29,8 +29,6 @@ if (basename && basename.startsWith("http")) {
   basename = new URL(basename).pathname;
 }
 
-console.log(basename);
-
 const router = createBrowserRouter(
   [
     {

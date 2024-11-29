@@ -25,14 +25,12 @@ export interface JsonEditorProps {
 }
 
 const parse = (value: string): object | undefined => {
-  console.log("try parse");
   let result: object | undefined;
   try {
     result = JSON.parse(value);
   } catch {
     result = undefined;
   }
-  console.log("done parsing");
   return result;
 };
 
@@ -70,7 +68,6 @@ export const JsonEditor = (props: JsonEditorProps) => {
       const parsedValue = parse(value);
       const errors = validate(parsedValue);
       onChange(parsedValue, errors.length === 0);
-      console.log("set string value");
       setStringValue(value);
       setErrors(errors);
     },
