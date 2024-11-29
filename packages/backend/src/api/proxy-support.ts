@@ -1,6 +1,6 @@
 import express from "express";
 
-const proxyHeaders = ["x-forwarded-prefix", "x-ingress-path"];
+const proxyHeaders = ["x-forwarded-prefix"];
 
 export function proxySupport(
   req: express.Request,

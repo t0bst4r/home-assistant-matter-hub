@@ -22,11 +22,14 @@ function replaceBase(
     if (baseUrl.length === 0) {
       baseUrl = "/";
     }
+    if (!baseUrl.endsWith("/")) {
+      baseUrl += "/";
+    }
     const content = fs
       .readFileSync(path.join(dist, "index.html"), "utf8")
       .replace(
         /<!-- BASE -->[\s\S]*<!-- \/BASE -->/,
-        `<base href='${baseUrl}/' />`,
+        `<base href='${baseUrl}' />`,
       );
     res.status(200).contentType("text/html").send(content);
   };
