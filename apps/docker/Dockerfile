@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:22-slim
 
 ENV HAMH_LOG_LEVEL="info"
 ENV HAMH_DISABLE_LOG_COLORS="false"
