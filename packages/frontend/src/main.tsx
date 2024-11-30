@@ -9,18 +9,9 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import {
-  faAmazon,
-  faApple,
-  faGoogle,
-} from "@fortawesome/free-brands-svg-icons";
-import { library as IconLibrary } from "@fortawesome/fontawesome-svg-core";
-
 import { AppLayout } from "./theme/AppLayout.tsx";
 import { routes } from "./routes.tsx";
 import { store } from "./state/store.ts";
-
-IconLibrary.add(faAmazon, faApple, faGoogle);
 
 let basename = document
   .getElementsByTagName("base")[0]
