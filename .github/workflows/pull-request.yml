@@ -24,4 +24,4 @@ jobs:
       - run: npm ci
 
       - run: npx nx run-many -t lint test build
-      - run: npx nx-cloud record -- npm run prettier
+      - run: npm run prettier
