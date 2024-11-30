@@ -28,7 +28,9 @@ export class LevelControlServer extends Base {
 
   private update({ state }: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
-      currentLevel: this.validValue(this.state.config.getValue(state)) ?? null,
+      currentLevel:
+        this.validValue(this.state.config.getValue(state)) ??
+        this.state.currentLevel,
       minLevel:
         this.validValue(this.state.config.getMinValue?.(state)) ?? undefined,
       maxLevel:

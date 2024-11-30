@@ -1,5 +1,5 @@
 export interface LevelControlClusterState {
-  currentLevel: number;
+  currentLevel: number | null;
   minLevel?: number;
   maxLevel?: number;
 }

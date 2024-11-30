@@ -7,9 +7,17 @@ export interface LevelControlStateProps {
 
 export const LevelControlState = ({ state }: LevelControlStateProps) => {
   const percentage = useMemo(() => {
+    if (state.currentLevel == null) {
+      return null;
+    }
     const min = state.minLevel ?? 0;
     const max = state.maxLevel ?? 254;
     return (state.currentLevel - min) / (max - min);
   }, [state]);
-  return <>{Math.round(percentage * 100)} %</>;
+
+  if (percentage == null) {
+    return <></>;
+  } else {
+    return <>{Math.round(percentage * 100)} %</>;
+  }
 };

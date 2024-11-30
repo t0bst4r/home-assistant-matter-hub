@@ -10,7 +10,7 @@ export const lightLevelControlConfig: LevelControlConfig = {
     if (brightness != null) {
       return (brightness / 255) * 254;
     }
-    return 0;
+    return null;
   },
   moveToLevel: {
     action: "light.turn_on",

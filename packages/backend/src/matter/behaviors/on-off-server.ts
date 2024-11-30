@@ -5,6 +5,7 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { LevelControlServer } from "./level-control-server.js";
 
 export interface OnOffConfig {
   isOn?: (state: HomeAssistantEntityState) => boolean;
@@ -33,6 +34,20 @@ export class OnOffServer extends Base {
   }
 
   override async on() {
+    if (this.agent.has(LevelControlServer)) {
+      const levelControl = this.agent.get(LevelControlServer);
+      const currentLevel = levelControl.state.currentLevel;
+      if (currentLevel != undefined) {
+        await levelControl.moveToLevelWithOnOff({
+          level: currentLevel,
+          transitionTime: null,
+          optionsMask: {},
+          optionsOverride: {},
+        });
+        return;
+      }
+    }
+
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     if (this.isOn(homeAssistant.entity.state)) {
       return;
