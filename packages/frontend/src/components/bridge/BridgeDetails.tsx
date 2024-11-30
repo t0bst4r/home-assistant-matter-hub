@@ -74,7 +74,20 @@ const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
             sx={{ transform: "translate(-50%, -50%) rotate(-45deg)" }}
           >
             <Alert color="success" variant="filled">
-              Commissioned
+              <Typography
+                variant="body2"
+                component="a"
+                sx={{
+                  textDecoration: "underline",
+                  textDecorationStyle: "dashed",
+                  cursor: "help",
+                  color: "inherit",
+                }}
+                href="https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/faq/Connect%20Multiple%20Fabrics.md"
+                target="_blank"
+              >
+                Commissioned
+              </Typography>
             </Alert>
           </Box>
         )}
