@@ -53,7 +53,7 @@ export class WebApi implements Environmental.Service {
               `Client ${clientIp} was ${access ? "granted" : "denied"}`,
             );
           },
-          mode: "deny",
+          mode: "allow",
           allows: this.props.whitelist,
         }),
       );
