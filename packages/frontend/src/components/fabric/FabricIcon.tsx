@@ -18,7 +18,10 @@ const iconsPerKeyword: Record<string, IconDefinition> = {
 };
 
 const vendorIdFallback: Record<number, IconDefinition | undefined> = {
-  24582: faGoogle,
+  0x1217: faAmazon,
+  0x1349: faApple,
+  0x1384: faApple,
+  0x6006: faGoogle,
 };
 
 export const FabricIcon = ({ fabric }: FabricIconProps) => {
