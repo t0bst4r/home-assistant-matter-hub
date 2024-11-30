@@ -1,3 +1,9 @@
+export enum CoverDeviceState {
+  closed = "closed",
+  open = "open",
+  closing = "closing",
+  opening = "opening",
+}
 export interface CoverDeviceAttributes {
   current_position?: number;
   supported_features?: number;

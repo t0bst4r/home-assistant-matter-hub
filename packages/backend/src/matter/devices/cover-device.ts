@@ -12,8 +12,8 @@ import { EndpointType } from "@matter/main";
 
 const CoverDeviceType = (positionAwareLift: boolean) => {
   const windowCoveringServer = positionAwareLift
-    ? WindowCoveringServer.with("Lift", "PositionAwareLift")
-    : WindowCoveringServer.with("Lift");
+    ? WindowCoveringServer.with("Lift", "PositionAwareLift", "AbsolutePosition")
+    : WindowCoveringServer.with("Lift", "PositionAwareLift");
   return WindowCoveringDevice.with(
     BasicInformationServer,
     IdentifyServer,

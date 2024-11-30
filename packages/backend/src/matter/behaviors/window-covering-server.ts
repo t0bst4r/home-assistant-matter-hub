@@ -5,6 +5,7 @@ import {
 } from "@matter/main/behaviors";
 import {
   CoverDeviceAttributes,
+  CoverDeviceState,
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
@@ -13,7 +14,7 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
 
-const FeaturedBase = Base.with("Lift", "PositionAwareLift");
+const FeaturedBase = Base.with("Lift", "PositionAwareLift", "AbsolutePosition");
 
 export class WindowCoveringServerBase extends FeaturedBase {
   declare state: WindowCoveringServerBase.State;
@@ -28,36 +29,45 @@ export class WindowCoveringServerBase extends FeaturedBase {
   private update(entity: HomeAssistantEntityInformation) {
     const state =
       entity.state as HomeAssistantEntityState<CoverDeviceAttributes>;
-    const movementStatus: WindowCovering.MovementStatus | undefined =
-      state.state === "opening"
+    const coverState = state.state as CoverDeviceState;
+    const movementStatus: WindowCovering.MovementStatus =
+      coverState === CoverDeviceState.opening
         ? WindowCovering.MovementStatus.Opening
-        : state.state === "closing"
+        : coverState === CoverDeviceState.closing
           ? WindowCovering.MovementStatus.Closing
           : WindowCovering.MovementStatus.Stopped;
 
     let currentLift = this.convertLiftValue(state.attributes.current_position);
     if (currentLift != null) {
       currentLift *= 100;
+    } else {
+      if (coverState === CoverDeviceState.open) {
+        currentLift = 0;
+      } else if (state.state === "closed") {
+        currentLift = 100_00;
+      }
     }
     applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
       endProductType: WindowCovering.EndProductType.RollerShade,
+      operationalStatus: {
+        global: movementStatus,
+        lift: movementStatus,
+      },
+      ...(this.features.absolutePosition
+        ? {
+            installedOpenLimitLift: 0,
+            installedCloseLimit: 100_00,
+            currentPositionLift: currentLift,
+          }
+        : {}),
       ...(this.features.positionAwareLift
         ? {
             currentPositionLiftPercent100ths: currentLift,
             targetPositionLiftPercent100ths:
               this.state.targetPositionLiftPercent100ths ?? currentLift,
-            operationalStatus: {
-              global: movementStatus,
-              lift: movementStatus,
-            },
           }
-        : {
-            operationalStatus: {
-              global: movementStatus,
-              lift: movementStatus,
-            },
-          }),
+        : {}),
     });
   }
 
@@ -68,12 +78,15 @@ export class WindowCoveringServerBase extends FeaturedBase {
     targetPercent100ths?: number,
   ) {
     if (type === MovementType.Lift) {
-      if (targetPercent100ths != null && this.features.positionAwareLift) {
+      if (targetPercent100ths != null && this.features.absolutePosition) {
         await this.handleGoToPosition(targetPercent100ths);
+      } else if (
+        direction === MovementDirection.Close ||
+        (targetPercent100ths != null && targetPercent100ths > 0)
+      ) {
+        await this.handleClose();
       } else if (direction === MovementDirection.Open) {
         await this.handleOpen();
-      } else if (direction === MovementDirection.Close) {
-        await this.handleClose();
       }
     }
   }
