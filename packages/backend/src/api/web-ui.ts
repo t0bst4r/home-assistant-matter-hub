@@ -19,9 +19,6 @@ function replaceBase(
 ): (req: express.Request, res: express.Response) => void {
   return (req, res) => {
     let baseUrl = req.baseUrl;
-    if (baseUrl.length === 0) {
-      baseUrl = "/";
-    }
     if (!baseUrl.endsWith("/")) {
       baseUrl += "/";
     }

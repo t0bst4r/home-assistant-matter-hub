@@ -1,35 +1,61 @@
 import express from "express";
+import path from "node:path";
 
-const proxyHeaders = ["x-forwarded-prefix"];
+const ingressPath = "x-ingress-path";
+const forwardedPrefix = "x-forwarded-prefix";
 
-export function proxySupport(
+export function supportIngress(
+  req: express.Request,
+  _: express.Response,
+  next: express.NextFunction,
+) {
+  if (!(ingressPath in req.headers)) {
+    return next();
+  }
+  const prefix = req.header(ingressPath);
+  if (!prefix) {
+    return next();
+  }
+  const baseUrl = buildPath(prefix, req.baseUrl);
+  req.baseUrl = baseUrl;
+  req.originalUrl = buildPath(baseUrl, req.url);
+  req.url = buildPath(req.url);
+  next();
+}
+
+export function supportProxyLocation(
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
-): void {
-  const proxyHeader = proxyHeaders.find((header) => header in req.headers);
-  if (proxyHeader) {
-    let proxyPrefix = req.header(proxyHeader);
-    if (proxyPrefix) {
-      if (!proxyPrefix.startsWith("/")) {
-        proxyPrefix = `/${proxyPrefix}`;
-      }
-      if (proxyPrefix.endsWith("/")) {
-        proxyPrefix = proxyPrefix.slice(0, -1);
-      }
-      if (!req.url.startsWith(proxyPrefix)) {
-        res
-          .status(400)
-          .contentType("text/plain")
-          .send(
-            `Request header "${proxyHeader}" included a prefix "${proxyPrefix}" but request url does not match this prefix: ${req.path}`,
-          );
-        return;
-      }
-      req.originalUrl = req.url;
-      req.url = req.url.slice(proxyPrefix.length);
-      req.baseUrl = proxyPrefix;
-    }
+) {
+  if (!(forwardedPrefix in req.headers)) {
+    return next();
   }
+  const prefix = req.header(forwardedPrefix);
+  if (!prefix) {
+    return next();
+  }
+  let baseUrl = buildPath(prefix, req.baseUrl);
+  if (baseUrl.endsWith("/")) {
+    baseUrl = baseUrl.slice(0, -1);
+  }
+  if (!req.url.startsWith(baseUrl + "/")) {
+    res
+      .status(400)
+      .contentType("text/plain")
+      .send(`URL ${req.url} does not match base url ${baseUrl}`);
+    return;
+  }
+  req.baseUrl = baseUrl;
+  req.originalUrl = req.url;
+  req.url = req.url.slice(baseUrl.length);
   next();
+}
+
+function buildPath(...paths: string[]): string {
+  let result = path.posix.join(...paths);
+  if (!result.startsWith("/")) {
+    result = "/" + result;
+  }
+  return result;
 }

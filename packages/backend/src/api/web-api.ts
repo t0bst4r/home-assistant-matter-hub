@@ -7,7 +7,7 @@ import { createLogger } from "../logging/create-logger.js";
 import { Environment, Environmental } from "@matter/main";
 import { BridgeService } from "../matter/bridge-service.js";
 import { register } from "../environment/register.js";
-import { proxySupport } from "./proxy-support.js";
+import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
 
 export interface WebApiProps {
@@ -40,7 +40,11 @@ export class WebApi implements Environmental.Service {
     const api = express.Router();
     api.use(express.json()).use("/matter", matterApi(bridgeService));
 
-    const middlewares = [this.accessLogger, proxySupport];
+    const middlewares: express.Handler[] = [
+      this.accessLogger,
+      supportIngress,
+      supportProxyLocation,
+    ];
     if (this.props.whitelist && this.props.whitelist.length > 0) {
       middlewares.push(
         AccessControl({

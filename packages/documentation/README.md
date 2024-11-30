@@ -36,14 +36,24 @@ This is absolutely possible. Please see [this guide](./faq/Connect%20Multiple%20
 
 ### I have just added / removed a label at an entity, but the change doesn't take effect in the application
 
-When performing changes on entities, like adding or removing a label, you need to restart the matter-hub application for
+When performing changes on entities, like adding or removing a label, you need to reload the affected bridge for
 the changes to take effect.
+
+This happens when either editing the bridge (even without making changes), or when restarting the whole addon.
 
 ---
 
 ### I have just created / removed an entity, but the change doesn't take effect in the application
 
-When performing changes on entities, like adding or removing devices in Home Assistant, you need to restart the matter-hub application for
+When performing changes on entities, like adding or removing devices, you need to reload the affected bridge for
 the changes to take effect.
+
+This happens when either editing the bridge (even without making changes), or when restarting the whole addon.
+
+---
+
+### I'd like to run the app behind a reverse proxy
+
+This is absolutely possible. Please see [this guide](./faq/Running%20behind%20Reverse%20Proxy.md).
 
 ---

@@ -9,6 +9,17 @@ local communication without the need of port forwarding etc.
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/t0bst4r)
 
+## Table of contents
+
+1. [Installation](#1-installation)
+   1. [Native Home-Assistant-AddOn](#11-native-home-assistant-addon)
+   2. [Docker Image](#12-docker-image)
+   3. [Manual Installation using npm](#13-manual-installation-using-npm)
+2. [Configuration](#2-configuration)
+3. [Bridge Configuration](#3-bridge-configuration)
+4. [Frequently Asked Questions & Troubleshooting](#4-frequently-asked-questions--troubleshooting)
+5. [Supported Domains / Device Types](#5-supported-domains--device-types)
+
 ## Prerequisites
 
 To successfully pair the bridge with your Controller (e.g. Alexa, Google Home, Apple Home) it is recommended to have
@@ -214,12 +225,12 @@ rules will be excluded.
 }
 ```
 
-## Frequently Asked Questions & Troubleshooting
+## 4. Frequently Asked Questions & Troubleshooting
 
 Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
 more details and Frequently Asked Questions.
 
-## Supported Domains / Device Types
+## 5. Supported Domains / Device Types
 
 | Domain        | Represented as Device Class                                          | Comment                                                                                                                                                                                                                                            |
 | ------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
