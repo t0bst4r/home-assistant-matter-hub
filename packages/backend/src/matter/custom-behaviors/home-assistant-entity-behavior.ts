@@ -25,18 +25,21 @@ export class HomeAssistantEntityBehavior extends Behavior {
     return this.events.entity$Changed;
   }
 
-  async callAction<T = void>(
+  async callAction(
     domain: string,
     action: string,
     data: object | undefined,
     target: HassServiceTarget,
     returnResponse?: boolean,
-  ): Promise<T> {
+  ) {
     const lock = this.env.get(AsyncLock);
     const actions = this.env.get(HomeAssistantActions);
-    return lock.acquire<T>(this.state.lockKey, async () => {
-      return actions.callAction(domain, action, data, target, returnResponse);
-    });
+    const lockKey = this.state.lockKey;
+    setTimeout(async () => {
+      await lock.acquire(lockKey, async () =>
+        actions.callAction(domain, action, data, target, returnResponse),
+      );
+    }, 0);
   }
 }
 
