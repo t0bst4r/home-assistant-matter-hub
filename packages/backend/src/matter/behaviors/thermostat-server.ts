@@ -19,19 +19,6 @@ export class ThermostatServerBase extends FeaturedBase {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    if (this.features.heating) {
-      this.reactTo(
-        this.events.occupiedHeatingSetpoint$Changed,
-        this.targetTemperatureChanged,
-      );
-    }
-    if (this.features.cooling) {
-      this.reactTo(
-        this.events.occupiedCoolingSetpoint$Changed,
-        this.targetTemperatureChanged,
-      );
-    }
-    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
@@ -100,44 +87,6 @@ export class ThermostatServerBase extends FeaturedBase {
       "climate",
       "set_temperature",
       { temperature },
-      { entity_id: homeAssistant.entityId },
-    );
-  }
-
-  private async targetTemperatureChanged(value: number) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    if (homeAssistant.entity.state.state === "off") {
-      return;
-    }
-    const currentAttributes = homeAssistant.entity.state
-      .attributes as ClimateDeviceAttributes;
-    const current = this.toTemp(currentAttributes.current_temperature);
-    if (value === current) {
-      return;
-    }
-    await homeAssistant.callAction(
-      "climate",
-      "set_temperature",
-      { temperature: value / 100 },
-      { entity_id: homeAssistant.entityId },
-    );
-  }
-
-  private async systemModeChanged(systemMode: Thermostat.SystemMode) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const currentAttributes = homeAssistant.entity.state
-      .attributes as ClimateDeviceAttributes;
-    const current = this.getSystemMode(
-      currentAttributes.hvac_mode,
-      homeAssistant.entity.state.state,
-    );
-    if (systemMode === current) {
-      return;
-    }
-    await homeAssistant.callAction(
-      "climate",
-      "set_hvac_mode",
-      { hvac_mode: this.getHvacMode(systemMode) },
       { entity_id: homeAssistant.entityId },
     );
   }
@@ -239,26 +188,6 @@ export class ThermostatServerBase extends FeaturedBase {
             : { cool: true };
     }
     return {};
-  }
-
-  private getHvacMode(systemMode: Thermostat.SystemMode): ClimateHvacMode {
-    switch (systemMode) {
-      case Thermostat.SystemMode.Auto:
-        return ClimateHvacMode.auto;
-      case Thermostat.SystemMode.Precooling:
-      case Thermostat.SystemMode.Cool:
-        return ClimateHvacMode.cool;
-      case Thermostat.SystemMode.Heat:
-      case Thermostat.SystemMode.EmergencyHeat:
-        return ClimateHvacMode.heat;
-      case Thermostat.SystemMode.FanOnly:
-        return ClimateHvacMode.fan_only;
-      case Thermostat.SystemMode.Dry:
-        return ClimateHvacMode.dry;
-      case Thermostat.SystemMode.Sleep:
-      case Thermostat.SystemMode.Off:
-        return ClimateHvacMode.off;
-    }
   }
 
   private toTemp(
