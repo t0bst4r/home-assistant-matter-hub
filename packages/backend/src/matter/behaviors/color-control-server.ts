@@ -3,6 +3,7 @@ import {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
   LightDeviceAttributes,
+  LightDeviceColorMode,
 } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
@@ -19,8 +20,39 @@ export class ColorControlServerBase extends FeaturedBase {
     await super.initialize();
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
+    const attributes = homeAssistant.entity.state
+      .attributes as LightDeviceAttributes;
+
+    if (this.colorModeFromHomeAssistant(attributes.color_mode) === undefined) {
+      // The color mode of the HA entity was not supported. HA will handle conversion for us, so just pick a supported default value.
+      if (this.features.colorTemperature) {
+        this.state.colorMode = ColorControl.ColorMode.ColorTemperatureMireds;
+      } else if (this.features.hueSaturation) {
+        this.state.colorMode =
+          ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+      } else {
+        throw new Error(
+          "Cannot initialize color mode: Neither colorTemperature nor hueSaturation was supported",
+        );
+      }
+    }
+
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
+  }
+
+  private colorModeFromHomeAssistant(mode: LightDeviceColorMode | undefined) {
+    if (this.features.hueSaturation && mode == LightDeviceColorMode.HS) {
+      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+    } else if (
+      this.features.colorTemperature &&
+      mode == LightDeviceColorMode.COLOR_TEMP
+    ) {
+      return ColorControl.ColorMode.ColorTemperatureMireds;
+    } else if (this.features.xy && mode == LightDeviceColorMode.XY) {
+      return ColorControl.ColorMode.CurrentXAndCurrentY;
+    }
+    return undefined;
   }
 
   private update(entity: HomeAssistantEntityInformation) {
@@ -29,6 +61,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
+      colorMode: this.colorModeFromHomeAssistant(attributes.color_mode),
       ...(this.features.hueSaturation
         ? {
             currentHue: hue,
