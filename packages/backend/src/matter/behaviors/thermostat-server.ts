@@ -111,7 +111,7 @@ export class ThermostatServerBase extends FeaturedBase {
     }
     const currentAttributes = homeAssistant.entity.state
       .attributes as ClimateDeviceAttributes;
-    const current = this.toTemp(currentAttributes.current_temperature);
+    const current = this.toTemp(currentAttributes.temperature);
     if (value === current) {
       return;
     }
