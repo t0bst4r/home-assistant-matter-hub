@@ -19,7 +19,8 @@ import Typography from "@mui/material/Typography";
 import { useAppInfo } from "../hooks/app-info.ts";
 import { capitalize, useMediaQuery } from "@mui/material";
 import { AppBreadcrumbs } from "./AppBreadcrumbs.tsx";
-import { Coffee, Help, Polyline } from "@mui/icons-material";
+import { Coffee, Polyline } from "@mui/icons-material";
+import Logo from "../assets/hamh-logo.svg?react";
 
 const navigation: Navigation = [
   {
@@ -36,7 +37,11 @@ const navigation: Navigation = [
   {
     segment: "about",
     title: "About this project",
-    icon: <Help />,
+    icon: (
+      <div style={{ height: "100%", width: "100%", padding: "0.2em" }}>
+        <Logo />
+      </div>
+    ),
   },
 ];
 

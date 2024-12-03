@@ -1,15 +1,16 @@
-import { Navigate, RouteObject } from "react-router";
+import { RouteObject } from "react-router";
 import { BridgesPage } from "./pages/bridges/BridgesPage.tsx";
 import { FundingPage } from "./pages/funding/FundingPage.tsx";
 import { AboutPage } from "./pages/about/AboutPage.tsx";
 import { BridgeDetailsPage } from "./pages/bridge-details/BridgeDetailsPage.tsx";
 import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
 import { CreateBridgePage } from "./pages/edit-bridge/CreateBridgePage.tsx";
+import { MainPage } from "./pages/main/MainPage.tsx";
 
 export const routes: RouteObject[] = [
   {
     path: "",
-    element: <Navigate to="/bridges" />,
+    element: <MainPage />,
   },
   {
     path: "bridges",
