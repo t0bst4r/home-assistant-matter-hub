@@ -106,7 +106,8 @@ export class ThermostatServerBase extends FeaturedBase {
 
   private async targetTemperatureChanged(value: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    if (homeAssistant.entity.state.state === "off") {
+    const entityState = homeAssistant.entity.state.state;
+    if (entityState == "off" || entityState == "unavailable") {
       return;
     }
     const currentAttributes = homeAssistant.entity.state
