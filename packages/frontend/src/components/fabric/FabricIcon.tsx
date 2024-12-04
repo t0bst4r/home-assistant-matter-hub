@@ -26,6 +26,7 @@ const iconPerVendorId: Record<number, FC<SVGProps<SVGSVGElement>> | undefined> =
     0x1384: AppleIcon,
     0x6006: GoogleIcon,
     0x10e1: SamsungIcon,
+    0x110a: SamsungIcon,
   };
 
 function getIcon(fabric: BridgeFabric) {
