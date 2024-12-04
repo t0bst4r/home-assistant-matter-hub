@@ -66,6 +66,7 @@ const renderer: Record<ClusterId, FC<{ state: unknown }> | null> = {
   [ClusterId.thermostat]: ({ state }) => (
     <ThermostatState state={state as ThermostatClusterState} />
   ),
+  [ClusterId.fanControl]: null,
   [ClusterId.homeAssistantEntity]: null,
   [ClusterId.descriptor]: null,
   [ClusterId.bridgedDeviceBasicInformation]: null,

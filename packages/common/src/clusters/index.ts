@@ -22,6 +22,7 @@ export enum ClusterId {
   colorControl = "colorControl",
   doorLock = "doorLock",
   levelControl = "levelControl",
+  fanControl = "fanControl",
   occupancySensing = "occupancySensing",
   onOff = "onOff",
   relativeHumidityMeasurement = "relativeHumidityMeasurement",
