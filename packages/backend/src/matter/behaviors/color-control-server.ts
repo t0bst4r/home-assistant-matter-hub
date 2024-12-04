@@ -18,41 +18,9 @@ export class ColorControlServerBase extends FeaturedBase {
 
   override async initialize() {
     await super.initialize();
-
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    const attributes = homeAssistant.entity.state
-      .attributes as LightDeviceAttributes;
-
-    if (this.colorModeFromHomeAssistant(attributes.color_mode) === undefined) {
-      // The color mode of the HA entity was not supported. HA will handle conversion for us, so just pick a supported default value.
-      if (this.features.colorTemperature) {
-        this.state.colorMode = ColorControl.ColorMode.ColorTemperatureMireds;
-      } else if (this.features.hueSaturation) {
-        this.state.colorMode =
-          ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
-      } else {
-        throw new Error(
-          "Cannot initialize color mode: Neither colorTemperature nor hueSaturation was supported",
-        );
-      }
-    }
-
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
-  }
-
-  private colorModeFromHomeAssistant(mode: LightDeviceColorMode | undefined) {
-    if (this.features.hueSaturation && mode == LightDeviceColorMode.HS) {
-      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
-    } else if (
-      this.features.colorTemperature &&
-      mode == LightDeviceColorMode.COLOR_TEMP
-    ) {
-      return ColorControl.ColorMode.ColorTemperatureMireds;
-    } else if (this.features.xy && mode == LightDeviceColorMode.XY) {
-      return ColorControl.ColorMode.CurrentXAndCurrentY;
-    }
-    return undefined;
   }
 
   private update(entity: HomeAssistantEntityInformation) {
@@ -61,7 +29,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
-      colorMode: this.colorModeFromHomeAssistant(attributes.color_mode),
+      colorMode: this.getMatterColorMode(attributes.color_mode),
       ...(this.features.hueSaturation
         ? {
             currentHue: hue,
@@ -173,6 +141,28 @@ export class ColorControlServerBase extends FeaturedBase {
       return ColorConverter.toMatterHS(ColorConverter.fromXY(x, y));
     }
     return undefined;
+  }
+
+  private getMatterColorMode(
+    mode: LightDeviceColorMode | undefined,
+  ): ColorControl.ColorMode {
+    // This cluster is only used with HueSaturation, ColorTemperature or Both.
+    // It is never used without any of them.
+    if (this.features.colorTemperature && this.features.hueSaturation) {
+      if (mode === LightDeviceColorMode.COLOR_TEMP) {
+        return ColorControl.ColorMode.ColorTemperatureMireds;
+      } else {
+        return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+      }
+    } else if (this.features.colorTemperature) {
+      return ColorControl.ColorMode.ColorTemperatureMireds;
+    } else if (this.features.hueSaturation) {
+      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+    } else {
+      throw new Error(
+        "ColorControlServer does not support either HueSaturation or ColorTemperature",
+      );
+    }
   }
 }
 
