@@ -1,6 +1,7 @@
 export * from "./boolean-state.js";
 export * from "./color-control.js";
 export * from "./door-lock.js";
+export * from "./fan-control.js";
 export * from "./level-control.js";
 export * from "./occupancy-sensing.js";
 export * from "./on-off.js";

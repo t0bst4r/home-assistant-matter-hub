@@ -13,6 +13,7 @@ import {
   ClusterId,
   ColorControlClusterState,
   DoorLockClusterState,
+  FanControlClusterState,
   LevelControlClusterState,
   OccupancySensingClusterState,
   OnOffClusterState,
@@ -25,6 +26,7 @@ import { BooleanState } from "./states/BooleanState.tsx";
 import { RelativeHumidityMeasurementState } from "./states/RelativeHumidityMeasurementState.tsx";
 import { ThermostatState } from "./states/ThermostatState.tsx";
 import clipboard from "clipboardy";
+import { FanControlState } from "./states/FanControlState.tsx";
 
 export interface ClusterStateProps {
   clusterId: ClusterId | string;
@@ -66,7 +68,9 @@ const renderer: Record<ClusterId, FC<{ state: unknown }> | null> = {
   [ClusterId.thermostat]: ({ state }) => (
     <ThermostatState state={state as ThermostatClusterState} />
   ),
-  [ClusterId.fanControl]: null,
+  [ClusterId.fanControl]: ({ state }) => (
+    <FanControlState state={state as FanControlClusterState} />
+  ),
   [ClusterId.homeAssistantEntity]: null,
   [ClusterId.descriptor]: null,
   [ClusterId.bridgedDeviceBasicInformation]: null,

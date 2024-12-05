@@ -49,6 +49,11 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
+    matterFans: {
+      title: "Expose Fans as fan devices",
+      type: "boolean",
+      default: false,
+    },
   },
   additionalProperties: false,
 };

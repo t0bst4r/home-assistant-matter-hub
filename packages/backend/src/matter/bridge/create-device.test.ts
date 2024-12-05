@@ -122,6 +122,7 @@ const testEntities: Record<
 
 const featureFlags: BridgeFeatureFlags = {
   matterSpeakers: true,
+  matterFans: true,
 };
 
 describe("createDevice", () => {

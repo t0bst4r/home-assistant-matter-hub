@@ -25,6 +25,10 @@ export class HomeAssistantEntityBehavior extends Behavior {
     return this.events.entity$Changed;
   }
 
+  get isAvailable(): boolean {
+    return this.entity.state.state !== "unavailable";
+  }
+
   async callAction(
     domain: string,
     action: string,
