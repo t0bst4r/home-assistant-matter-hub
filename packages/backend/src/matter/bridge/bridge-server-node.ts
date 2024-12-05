@@ -12,13 +12,17 @@ import { BridgeDeviceManager } from "./bridge-device-manager.js";
 import _ from "lodash";
 import { Logger } from "winston";
 import { createLogger } from "../../logging/create-logger.js";
+import { BridgeDataProvider } from "./bridge-data-provider.js";
 
 export type BridgeServerNodeConfig =
   Node.Configuration<ServerNode.RootEndpoint>;
 
 export class BridgeServerNode {
   static async create(environment: Environment, bridgeData: BridgeData) {
-    const node = new BridgeServerNode(environment, bridgeData);
+    const node = new BridgeServerNode(
+      new Environment(bridgeData.id, environment),
+      bridgeData,
+    );
     await node.initialize();
     return node;
   }
@@ -72,6 +76,7 @@ export class BridgeServerNode {
     private bridgeData: BridgeData,
   ) {
     this.log = createLogger(`Bridge / ${bridgeData.id}`);
+    new BridgeDataProvider(environment, bridgeData);
   }
 
   private async initialize() {

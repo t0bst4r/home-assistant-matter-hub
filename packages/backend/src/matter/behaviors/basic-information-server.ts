@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
+import { VendorId } from "@matter/main";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
@@ -13,7 +15,14 @@ export class BasicInformationServer extends Base {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
+    const { basicInformation } = this.env.get(BridgeDataProvider);
     applyPatchState(this.state, {
+      vendorId: VendorId(basicInformation.vendorId),
+      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
+      productName: maxLengthOrHash(basicInformation.productName, 32),
+      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
+      hardwareVersion: basicInformation.hardwareVersion,
+      softwareVersion: basicInformation.softwareVersion,
       nodeLabel: maxLengthOrHash(
         entity.state.attributes.friendly_name ?? entity.entity_id,
         32,
