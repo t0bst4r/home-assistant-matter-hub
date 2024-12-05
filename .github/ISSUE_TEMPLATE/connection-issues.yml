@@ -1,0 +1,63 @@
+name: Connection Issue
+description: You are not able to connect your controller (Alexa, Google Home, Apple Home, ...) with your bridge?
+title: "[Connection Issue]: "
+labels: ["connection-issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this report!
+  - type: input
+    attributes:
+      label: Version
+      description: Which version of Home-Assistant-Matter-Hub are you using?
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Matter Controller
+      description: Which controller are you trying to connect with your bridge?
+      placeholder: e.g. Alexa, Google Home, Apple Home
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Things you tried
+      description: What steps did you exactly do while trying to connect the bridge with your controller?
+      placeholder: Tell us what you did and what happened!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant DEBUG log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: What deployment method do you use?
+      multiple: false
+      options:
+        - Home Assistant AddOn
+        - Docker
+        - Custom
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Did you already check the following?
+      options:
+        - label: Does your network include any VLAN setup?
+        - label: Do you have any special firewall rules / services in place?
+        - label: Is IPv6 enabled in your LOCAL network?
+        - label: "If you are using the docker deployment: Is IPv6 enabled within your docker daemon config?"
+        - label: "If you are using the docker deployment: Do you run the container with host network?"
+  - type: checkboxes
+    attributes:
+      label: "Documentation & Issues"
+      options:
+        - label: I have reviewed the [documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) and the linked troubleshooting guide.
+          required: true
+        - label: I have searched the [issues](https://github.com/t0bst4r/home-assistant-matter-hub/issues) for a similar problem.
+          required: true

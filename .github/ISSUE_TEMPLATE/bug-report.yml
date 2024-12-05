@@ -1,0 +1,46 @@
+name: Bug Report
+description: You are facing any issues with the application? You see any warnings or errors in the logs?
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    attributes:
+      label: Version
+      description: Which version of Home-Assistant-Matter-Hub are you using?
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Matter Controller
+      description: Which controller do you use to control your bridge / devices?
+      placeholder: e.g. Alexa, Google Home, Apple Home
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: What could we do to reproduce this issue?
+      placeholder: Tell us about the entity/device you want to control. Tell us what you did and what happened!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: State and attributes
+      description: Please share the state value and attributes of the entity (Home Assistant -> Developer Tools -> States).
+  - type: textarea
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant DEBUG log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    attributes:
+      label: "Documentation & Issues"
+      options:
+        - label: I have reviewed the [documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) and the linked troubleshooting guide.
+          required: true
+        - label: I have searched the [issues](https://github.com/t0bst4r/home-assistant-matter-hub/issues) for a similar problem.
+          required: true

@@ -1,0 +1,26 @@
+name: Feature Request
+description: You are missing a specific feature?
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+        If you want to request support for a new device class / domain, please use the `Device Type` issue form.
+
+  - type: textarea
+    attributes:
+      label: Requested feature
+      description: Please describe the missing feature as detailed as possible.
+
+  - type: checkboxes
+    attributes:
+      label: "Documentation & Issues"
+      options:
+        - label: I have reviewed the list of [currently supported entities and their limitations](https://github.com/t0bst4r/home-assistant-matter-hub?tab=readme-ov-file#5-supported-domains--device-types).
+          required: true
+        - label: I have searched the [issues](https://github.com/t0bst4r/home-assistant-matter-hub/issues) for a similar requests.
+          required: true
+        - label: I have [checked](https://github.com/project-chip/matter.js/blob/main/docs/ECOSYSTEMS.md) if my controller is known to support the requested device type.
+          required: true
