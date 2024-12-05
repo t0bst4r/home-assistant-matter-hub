@@ -210,36 +210,45 @@ export class ThermostatServerBase extends FeaturedBase {
     currentTemperature: number | undefined,
     targetTemperature: number | undefined,
   ): ThermostatRunningState {
+    const allOff: ThermostatRunningState = {
+      cool: false,
+      fan: false,
+      heat: false,
+      heatStage2: false,
+      coolStage2: false,
+      fanStage2: false,
+      fanStage3: false,
+    };
     switch (hvacAction ?? state) {
       case ClimateHvacAction.preheating:
       case ClimateHvacAction.defrosting:
       case ClimateHvacAction.heating:
       case ClimateHvacMode.heat:
-        return { heat: true };
+        return { ...allOff, heat: true };
       case ClimateHvacAction.cooling:
       case ClimateHvacMode.cool:
-        return { cool: true };
+        return { ...allOff, cool: true };
       case ClimateHvacAction.drying:
       case ClimateHvacMode.dry:
-        return { heat: true, fan: true };
+        return { ...allOff, heat: true, fan: true };
       case ClimateHvacMode.fan_only:
       case ClimateHvacAction.fan:
-        return { fan: true };
+        return { ...allOff, fan: true };
       case ClimateHvacAction.idle:
       case ClimateHvacAction.off:
       case ClimateHvacMode.off:
-        return {};
+        return allOff;
       case ClimateHvacMode.heat_cool:
       case ClimateHvacMode.auto:
         return currentTemperature == undefined ||
           targetTemperature == undefined ||
           currentTemperature === targetTemperature
-          ? {}
+          ? allOff
           : currentTemperature < targetTemperature
-            ? { heat: true }
-            : { cool: true };
+            ? { ...allOff, heat: true }
+            : { ...allOff, cool: true };
     }
-    return {};
+    return allOff;
   }
 
   private getHvacMode(systemMode: Thermostat.SystemMode): ClimateHvacMode {
@@ -283,7 +292,11 @@ export class ThermostatServer extends ThermostatServerBase.for(
 ) {}
 
 interface ThermostatRunningState {
-  heat?: boolean;
-  cool?: boolean;
-  fan?: boolean;
+  heat: boolean;
+  cool: boolean;
+  fan: boolean;
+  heatStage2: false;
+  coolStage2: false;
+  fanStage2: false;
+  fanStage3: false;
 }
