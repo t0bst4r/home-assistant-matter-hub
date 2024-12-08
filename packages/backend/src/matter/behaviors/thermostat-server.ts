@@ -96,12 +96,9 @@ export class ThermostatServerBase extends FeaturedBase {
     }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const temperature = targetTemperature / 100 + request.amount / 10;
-    await homeAssistant.callAction(
-      "climate",
-      "set_temperature",
-      { temperature },
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("climate.set_temperature", {
+      temperature,
+    });
   }
 
   private async targetTemperatureChanged(value: number) {
@@ -116,12 +113,9 @@ export class ThermostatServerBase extends FeaturedBase {
     if (value === current) {
       return;
     }
-    await homeAssistant.callAction(
-      "climate",
-      "set_temperature",
-      { temperature: value / 100 },
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("climate.set_temperature", {
+      temperature: value / 100,
+    });
   }
 
   private async systemModeChanged(systemMode: Thermostat.SystemMode) {
@@ -135,12 +129,9 @@ export class ThermostatServerBase extends FeaturedBase {
     if (systemMode === current) {
       return;
     }
-    await homeAssistant.callAction(
-      "climate",
-      "set_hvac_mode",
-      { hvac_mode: this.getHvacMode(systemMode) },
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("climate.set_hvac_mode", {
+      hvac_mode: this.getHvacMode(systemMode),
+    });
   }
 
   private getSystemMode(

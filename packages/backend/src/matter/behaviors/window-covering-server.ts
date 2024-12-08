@@ -92,30 +92,15 @@ export class WindowCoveringServerBase extends FeaturedBase {
   }
   override async handleStopMovement() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
-      "cover",
-      "stop_cover",
-      {},
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("cover.stop_cover");
   }
   private async handleOpen() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
-      "cover",
-      "open_cover",
-      {},
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("cover.open_cover");
   }
   private async handleClose() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
-      "cover",
-      "close_cover",
-      {},
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("cover.close_cover");
   }
 
   private async handleGoToPosition(targetPercent100ths: number) {
@@ -127,12 +112,9 @@ export class WindowCoveringServerBase extends FeaturedBase {
     if (targetPosition == null || targetPosition === currentPosition) {
       return;
     }
-    await homeAssistant.callAction(
-      "cover",
-      "set_cover_position",
-      { position: targetPosition },
-      { entity_id: homeAssistant.entityId },
-    );
+    await homeAssistant.callAction("cover.set_cover_position", {
+      position: targetPosition,
+    });
   }
 
   private convertLiftValue(

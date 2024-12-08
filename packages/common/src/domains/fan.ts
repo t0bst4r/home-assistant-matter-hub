@@ -18,7 +18,7 @@ export interface FanDeviceAttributes {
   oscillating?: boolean;
   percentage?: number;
   percentage_step?: number;
-  preset_mode?: string;
+  preset_mode?: "Auto" | string;
   preset_modes?: string[];
   speed_count?: number;
   supported_features?: number;

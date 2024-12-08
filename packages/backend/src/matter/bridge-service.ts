@@ -6,7 +6,7 @@ import {
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
-import { Environment, Environmental } from "@matter/main";
+import { asyncNew, Environment, Environmental } from "@matter/main";
 import { BridgeStorage } from "../storage/bridge-storage.js";
 import { BridgeServerNode } from "./bridge/bridge-server-node.js";
 import { register } from "../environment/register.js";
@@ -33,7 +33,7 @@ export class BridgeService implements Environmental.Service {
   }
 
   async [Symbol.asyncDispose]() {
-    await Promise.all(this.bridges.map((bridge) => bridge.stop()));
+    await Promise.all(this.bridges.map((bridge) => bridge.close()));
   }
 
   get(id: string): BridgeServerNode | undefined {
@@ -80,7 +80,11 @@ export class BridgeService implements Environmental.Service {
   }
 
   private async addBridge(bridgeData: BridgeData): Promise<BridgeServerNode> {
-    const bridge = await BridgeServerNode.create(this.environment, bridgeData);
+    const bridge = await asyncNew(
+      BridgeServerNode,
+      this.environment,
+      bridgeData,
+    );
     this.bridges.push(bridge);
     return bridge;
   }
