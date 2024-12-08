@@ -33,16 +33,12 @@ export class LockServer extends Base {
 
   override async lockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("lock", "lock", undefined, {
-      entity_id: homeAssistant.entityId,
-    });
+    await homeAssistant.callAction("lock.lock");
   }
 
   override async unlockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("lock", "unlock", undefined, {
-      entity_id: homeAssistant.entityId,
-    });
+    await homeAssistant.callAction("lock.unlock");
   }
 
   private getMatterLockState(state: HomeAssistantEntityState) {

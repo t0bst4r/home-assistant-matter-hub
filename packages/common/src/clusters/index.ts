@@ -1,6 +1,7 @@
 export * from "./boolean-state.js";
 export * from "./color-control.js";
 export * from "./door-lock.js";
+export * from "./fan-control.js";
 export * from "./level-control.js";
 export * from "./occupancy-sensing.js";
 export * from "./on-off.js";
@@ -22,6 +23,7 @@ export enum ClusterId {
   colorControl = "colorControl",
   doorLock = "doorLock",
   levelControl = "levelControl",
+  fanControl = "fanControl",
   occupancySensing = "occupancySensing",
   onOff = "onOff",
   relativeHumidityMeasurement = "relativeHumidityMeasurement",

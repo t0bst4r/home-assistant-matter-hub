@@ -44,14 +44,9 @@ export class LevelControlServer extends Base {
     if (level === current) {
       return;
     }
-    const [domain, action] = this.state.config.moveToLevel.action.split(".");
     await homeAssistant.callAction(
-      domain,
-      action,
+      this.state.config.moveToLevel.action,
       this.state.config.moveToLevel.data(level),
-      {
-        entity_id: homeAssistant.entityId,
-      },
     );
   }
 
