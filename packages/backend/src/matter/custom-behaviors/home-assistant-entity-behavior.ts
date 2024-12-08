@@ -29,19 +29,17 @@ export class HomeAssistantEntityBehavior extends Behavior {
     return this.entity.state.state !== "unavailable";
   }
 
-  async callAction(
-    domain: string,
-    action: string,
-    data: object | undefined,
-    target: HassServiceTarget,
-    returnResponse?: boolean,
-  ) {
+  async callAction(action: string, data?: object | undefined) {
     const lock = this.env.get(AsyncLock);
     const actions = this.env.get(HomeAssistantActions);
+    const target: HassServiceTarget = {
+      entity_id: this.entityId,
+    };
     const lockKey = this.state.lockKey;
+    const [domain, service] = action.split(".");
     setTimeout(async () => {
       await lock.acquire(lockKey, async () =>
-        actions.callAction(domain, action, data, target, returnResponse),
+        actions.callAction(domain, service, data, target, false),
       );
     }, 0);
   }

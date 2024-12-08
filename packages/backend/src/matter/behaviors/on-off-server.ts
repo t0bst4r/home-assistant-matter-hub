@@ -52,12 +52,8 @@ export class OnOffServer extends Base {
     if (this.isOn(homeAssistant.entity.state)) {
       return;
     }
-    const [domain, action] = (
-      this.state.config?.turnOn?.action ?? "homeassistant.turn_on"
-    ).split(".");
-    await homeAssistant.callAction(domain, action, undefined, {
-      entity_id: homeAssistant.entityId,
-    });
+    const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
+    await homeAssistant.callAction(action);
   }
 
   override async off() {
@@ -65,12 +61,9 @@ export class OnOffServer extends Base {
     if (!this.isOn(homeAssistant.entity.state)) {
       return;
     }
-    const [domain, action] = (
-      this.state.config?.turnOff?.action ?? "homeassistant.turn_off"
-    ).split(".");
-    await homeAssistant.callAction(domain, action, undefined, {
-      entity_id: homeAssistant.entityId,
-    });
+    const action =
+      this.state.config?.turnOff?.action ?? "homeassistant.turn_off";
+    await homeAssistant.callAction(action);
   }
 
   private isOn(state: HomeAssistantEntityState) {

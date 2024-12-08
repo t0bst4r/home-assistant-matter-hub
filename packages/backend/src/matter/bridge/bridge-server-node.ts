@@ -17,31 +17,17 @@ import { BridgeDataProvider } from "./bridge-data-provider.js";
 export type BridgeServerNodeConfig =
   Node.Configuration<ServerNode.RootEndpoint>;
 
-export class BridgeServerNode {
-  static async create(environment: Environment, bridgeData: BridgeData) {
-    const node = new BridgeServerNode(
-      new Environment(bridgeData.id, environment),
-      bridgeData,
-    );
-    await node.initialize();
-    return node;
-  }
-
+export class BridgeServerNode extends ServerNode {
   private readonly log: Logger;
-  private serverNode!: ServerNode;
-  private aggregator!: Endpoint;
-  private deviceManager!: BridgeDeviceManager;
+  private readonly aggregator: Endpoint;
+  private readonly deviceManager: BridgeDeviceManager;
 
   private status: BridgeStatus = BridgeStatus.Stopped;
   private statusReason?: string = "Bridge is not yet started";
 
-  get id() {
-    return this.bridgeData.id;
-  }
-
   get data(): BridgeDataWithMetadata {
     const bridgeData = this.bridgeData;
-    const commissioning = this.serverNode.state.commissioning;
+    const commissioning = this.state.commissioning;
     return {
       ...bridgeData,
       status: this.status,
@@ -67,52 +53,49 @@ export class BridgeServerNode {
     };
   }
 
-  get parts() {
+  get aggregatedParts() {
     return this.aggregator.parts;
   }
 
-  private constructor(
-    private readonly environment: Environment,
+  constructor(
+    env: Environment,
     private bridgeData: BridgeData,
   ) {
+    const environment = new Environment(bridgeData.id, env);
+    const aggregator = new Endpoint(AggregatorEndpoint, { id: "aggregator" });
+    const config = createBridgeServerConfig(environment, bridgeData);
+    super({
+      ...config,
+      parts: [...(config.parts ?? []), aggregator],
+    });
+    new BridgeDataProvider(this.env, bridgeData);
     this.log = createLogger(`Bridge / ${bridgeData.id}`);
-    new BridgeDataProvider(environment, bridgeData);
+    this.aggregator = aggregator;
+    this.deviceManager = new BridgeDeviceManager(this.env, this.aggregator);
   }
 
-  private async initialize() {
-    this.serverNode = await ServerNode.create(
-      createBridgeServerConfig(this.environment, this.bridgeData),
-    );
-    this.aggregator = new Endpoint(AggregatorEndpoint, { id: "aggregator" });
-    await this.serverNode.add(this.aggregator);
-    this.deviceManager = new BridgeDeviceManager(
-      this.environment,
-      this.aggregator,
-    );
-  }
-
-  async start() {
+  override async start() {
     if (this.status === BridgeStatus.Running) {
       return;
     }
     try {
       await this.deviceManager.loadDevices(this.bridgeData);
-      await this.serverNode.start();
+      await super.start();
       this.status = BridgeStatus.Running;
       this.statusReason = undefined;
     } catch (e) {
       this.log.error("Failed to start bridge due to error: %s", e);
-      await this.serverNode.cancel();
+      await super.cancel();
       this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;
     }
   }
 
-  async stop() {
+  override async cancel() {
     if (this.status !== BridgeStatus.Running) {
       return;
     }
-    await this.serverNode.cancel();
+    await super.cancel();
     this.statusReason = "Manually stopped";
     this.status = BridgeStatus.Stopped;
   }
@@ -126,7 +109,7 @@ export class BridgeServerNode {
       await this.deviceManager.loadDevices(this.bridgeData);
     } catch (e) {
       this.log.error("Failed to update bridge due to error: %s", e);
-      await this.serverNode.cancel();
+      await super.cancel();
       this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;
     }
@@ -136,14 +119,9 @@ export class BridgeServerNode {
     if (this.status !== BridgeStatus.Running) {
       return;
     }
-    await this.serverNode.cancel();
-    await this.serverNode.reset();
-    await this.serverNode.erase();
+    await this.cancel();
+    await this.resetStorage();
+    this.status = BridgeStatus.Stopped;
     await this.start();
-  }
-
-  async delete() {
-    await this.stop();
-    await this.serverNode.delete();
   }
 }

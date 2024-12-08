@@ -71,16 +71,9 @@ export class ColorControlServerBase extends FeaturedBase {
       return;
     }
 
-    await homeAssistant.callAction(
-      "light",
-      "turn_on",
-      {
-        color_temp_kelvin: targetKelvin,
-      },
-      {
-        entity_id: homeAssistant.entityId,
-      },
-    );
+    await homeAssistant.callAction("light.turn_on", {
+      color_temp_kelvin: targetKelvin,
+    });
   }
 
   override async moveToHueLogic(targetHue: number) {
@@ -109,16 +102,9 @@ export class ColorControlServerBase extends FeaturedBase {
     }
     const color = ColorConverter.fromMatterHS(targetHue, targetSaturation);
     const [hue, saturation] = ColorConverter.toHomeAssistantHS(color);
-    await homeAssistant.callAction(
-      "light",
-      "turn_on",
-      {
-        hs_color: [hue, saturation],
-      },
-      {
-        entity_id: homeAssistant.entityId,
-      },
-    );
+    await homeAssistant.callAction("light.turn_on", {
+      hs_color: [hue, saturation],
+    });
   }
 
   private getMatterColor(

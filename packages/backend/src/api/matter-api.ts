@@ -97,7 +97,9 @@ export function matterApi(bridgeService: BridgeService): express.Router {
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
-      res.status(200).json(Array.from(bridge.parts).map(deviceToJson));
+      res
+        .status(200)
+        .json(Array.from(bridge.aggregatedParts).map(deviceToJson));
     } else {
       res.status(404).send("Not Found");
     }

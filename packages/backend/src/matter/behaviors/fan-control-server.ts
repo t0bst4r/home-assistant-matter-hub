@@ -2,16 +2,20 @@ import { FanControlServer as Base } from "@matter/main/behaviors";
 import { FanControl } from "@matter/main/clusters";
 import {
   FanDeviceAttributes,
-  FanDeviceDirection,
-  FanDeviceFeature,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { testBit } from "../../utils/test-bit.js";
 import { ClusterType } from "@matter/main/types";
+import utils from "./fan-control-server-utils.js";
+import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 
-const FeaturedBase = Base.with("MultiSpeed", "AirflowDirection", "Auto");
+const FeaturedBase = Base.with(
+  "Step",
+  "MultiSpeed",
+  "AirflowDirection",
+  "Auto",
+);
 
 export class FanControlServerBase extends FeaturedBase {
   declare state: FanControlServerBase.State;
@@ -41,32 +45,40 @@ export class FanControlServerBase extends FeaturedBase {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
+    const { matterFans } = this.env.get(BridgeDataProvider).featureFlags;
+
     const attributes = entity.state.attributes as FanDeviceAttributes;
-    const fanMode = this.getMatterFanMode(entity);
-    const isAuto = fanMode == FanControl.FanMode.Auto;
-    const percent = attributes.percentage ?? 0;
-    const speedMax = this.getSpeedMax(entity);
-    const speed = Math.ceil(speedMax * (percent * 0.01));
+    const percentage = attributes.percentage ?? 0;
+    const speedMax = Math.round(100 / (attributes.percentage_step ?? 100));
+    const speed = Math.ceil(speedMax * (percentage * 0.01));
+
+    const fanModeSequence = utils.getMatterFanModeSequence({
+      auto: this.features.auto,
+      multiSpeed: this.features.multiSpeed && matterFans === true,
+    });
 
     applyPatchState(this.state, {
-      percentSetting: isAuto ? 0 : percent,
-      percentCurrent: percent,
-      fanMode: fanMode,
-      fanModeSequence: this.features.auto
-        ? FanControl.FanModeSequence.OffHighAuto
-        : FanControl.FanModeSequence.OffHigh,
+      percentSetting: percentage,
+      percentCurrent: percentage,
+      fanMode: utils.getMatterFanMode(
+        entity.state.state,
+        attributes.percentage,
+        attributes.preset_mode,
+        fanModeSequence,
+      ),
 
       ...(this.features.multiSpeed
         ? {
             speedMax: speedMax,
-            speedSetting: isAuto ? 0 : speed,
+            speedSetting: speed,
             speedCurrent: speed,
+            fanModeSequence: fanModeSequence,
           }
         : {}),
 
       ...(this.features.airflowDirection
         ? {
-            airflowDirection: this.getMatterAirflowDirection(
+            airflowDirection: utils.getMatterAirflowDirection(
               attributes.current_direction,
             ),
           }
@@ -74,8 +86,17 @@ export class FanControlServerBase extends FeaturedBase {
     });
   }
 
+  override async step(request: FanControl.StepRequest) {
+    const next = utils.getNextStepValue(
+      this.state.speedCurrent,
+      this.state.speedMax,
+      request,
+    );
+    await this.targetSpeedSettingChanged(next);
+  }
+
   private async targetSpeedSettingChanged(speed: number | null) {
-    if (speed === null) {
+    if (speed == null) {
       return;
     }
     const percentSetting = Math.floor((speed / this.state.speedMax) * 100);
@@ -83,7 +104,7 @@ export class FanControlServerBase extends FeaturedBase {
   }
 
   private async targetPercentSettingChanged(percentage: number | null) {
-    if (percentage === null) {
+    if (percentage == null) {
       return;
     }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
@@ -96,11 +117,12 @@ export class FanControlServerBase extends FeaturedBase {
     if (current == percentage) {
       return;
     }
-    const method = percentage == 0 ? "turn_off" : "turn_on";
-    const payload = percentage == 0 ? {} : { percentage: percentage };
-    await homeAssistant.callAction("fan", method, payload, {
-      entity_id: homeAssistant.entityId,
-    });
+
+    if (percentage == 0) {
+      await homeAssistant.callAction("fan.turn_off");
+    } else {
+      await homeAssistant.callAction("fan.turn_on", { percentage });
+    }
   }
 
   private async targetFanModeChanged(fanMode: FanControl.FanMode) {
@@ -108,23 +130,44 @@ export class FanControlServerBase extends FeaturedBase {
     if (!homeAssistant.isAvailable) {
       return;
     }
-    const current = this.getMatterFanMode(homeAssistant.entity);
-    if (current == fanMode) {
+
+    let validMode = fanMode;
+    if (validMode === FanControl.FanMode.On) {
+      validMode = FanControl.FanMode.High;
+    }
+    if (validMode === FanControl.FanMode.Smart) {
+      validMode = FanControl.FanMode.Auto;
+    }
+    if (validMode === FanControl.FanMode.Auto && !this.features.auto) {
+      validMode = FanControl.FanMode.High;
+    }
+
+    const attributes = homeAssistant.entity.state
+      .attributes as FanDeviceAttributes;
+    const current = utils.getMatterFanMode(
+      homeAssistant.entity.state.state,
+      attributes.percentage,
+      attributes.preset_mode,
+      this.state.fanModeSequence,
+    );
+
+    if (validMode === current) {
       return;
     }
-    const method = fanMode == FanControl.FanMode.Off ? "turn_off" : "turn_on";
-    const data =
-      this.features.auto &&
-      [FanControl.FanMode.Auto, FanControl.FanMode.Smart].includes(fanMode)
-        ? { preset_mode: "Auto" }
-        : {};
-    await homeAssistant.callAction("fan", method, data, {
-      entity_id: homeAssistant.entityId,
-    });
+
+    if (validMode === FanControl.FanMode.Auto) {
+      await homeAssistant.callAction("fan.turn_on", { preset_mode: "Auto" });
+    } else {
+      const percentage = utils.getSpeedPercentFromMatterFanMode(
+        validMode,
+        this.state.fanModeSequence,
+      );
+      await this.targetPercentSettingChanged(percentage);
+    }
   }
 
   private async targetAirflowDirectionChanged(
-    direction: FanControl.AirflowDirection,
+    airflowDirection: FanControl.AirflowDirection,
   ) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     if (!homeAssistant.isAvailable) {
@@ -133,64 +176,12 @@ export class FanControlServerBase extends FeaturedBase {
 
     const currentAttributes = homeAssistant.entity.state
       .attributes as FanDeviceAttributes;
-    const current = this.getMatterAirflowDirection(
-      currentAttributes.current_direction,
-    );
+    const current = currentAttributes.current_direction;
+    const direction = utils.getDirectionFromMatter(airflowDirection);
     if (current == direction) {
       return;
     }
-    await homeAssistant.callAction(
-      "fan",
-      "set_direction",
-      { direction: this.getDirectionFromMatter(direction) },
-      { entity_id: homeAssistant.entityId },
-    );
-  }
-
-  private getMatterFanMode(
-    entity: HomeAssistantEntityInformation,
-  ): FanControl.FanMode {
-    const attributes = entity.state.attributes as FanDeviceAttributes;
-    if (entity.state.state == "off") {
-      return FanControl.FanMode.Off;
-    } else if (this.features.auto && attributes.preset_mode == "Auto") {
-      return FanControl.FanMode.Auto;
-    }
-    return FanControl.FanMode.High;
-  }
-
-  private getMatterAirflowDirection(
-    direction?: FanDeviceDirection,
-  ): FanControl.AirflowDirection | undefined {
-    if (direction == FanDeviceDirection.FORWARD) {
-      return FanControl.AirflowDirection.Forward;
-    } else if (direction == FanDeviceDirection.REVERSE) {
-      return FanControl.AirflowDirection.Reverse;
-    }
-    return undefined;
-  }
-
-  private getDirectionFromMatter(
-    direction: FanControl.AirflowDirection,
-  ): FanDeviceDirection {
-    if (direction == FanControl.AirflowDirection.Forward) {
-      return FanDeviceDirection.FORWARD;
-    }
-    return FanDeviceDirection.REVERSE;
-  }
-
-  private getSpeedMax(entity: HomeAssistantEntityInformation): number {
-    const attributes = entity.state.attributes as FanDeviceAttributes;
-    const supportedFeatures = attributes.supported_features ?? 0;
-
-    if (!testBit(supportedFeatures, FanDeviceFeature.SET_SPEED)) {
-      // Speed is not controllable, return a single speed level
-      return 1;
-    } else if (attributes.percentage_step) {
-      // Speed resolution is advertised, use it
-      return Math.round(100 / attributes.percentage_step);
-    }
-    return 100;
+    await homeAssistant.callAction("fan.set_direction", { direction });
   }
 }
 

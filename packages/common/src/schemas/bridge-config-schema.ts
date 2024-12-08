@@ -46,11 +46,15 @@ const featureFlagSchema: JSONSchema7 = {
     matterSpeakers: {
       title:
         "Expose TVs and Speakers as speaker devices (on-off and volume only)",
+      description:
+        "Some controllers like Alexa don't support speakers via Matter",
       type: "boolean",
       default: false,
     },
     matterFans: {
-      title: "Expose Fans as fan devices",
+      title: "Full matter conformance for fans",
+      description:
+        "Most controllers only support 'off' and 'high', but not 'low' or 'medium'.",
       type: "boolean",
       default: false,
     },
