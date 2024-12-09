@@ -66,13 +66,13 @@ export class FanControlServerBase extends FeaturedBase {
         attributes.preset_mode,
         fanModeSequence,
       ),
+      fanModeSequence: fanModeSequence,
 
       ...(this.features.multiSpeed
         ? {
             speedMax: speedMax,
             speedSetting: speed,
             speedCurrent: speed,
-            fanModeSequence: fanModeSequence,
           }
         : {}),
 
