@@ -13,6 +13,9 @@ import {
   HumidityMeasurementServer,
 } from "../behaviors/humidity-measurement-server.js";
 import { EndpointType } from "@matter/main";
+import { FeatureSelection } from "../../utils/feature-selection.js";
+import { Thermostat } from "@matter/main/clusters";
+import { ClusterType } from "@matter/main/types";
 
 const humidityConfig: HumidityMeasurementConfig = {
   getValue(entity: HomeAssistantEntityState) {
@@ -25,27 +28,35 @@ const humidityConfig: HumidityMeasurementConfig = {
   },
 };
 
+function thermostatFeatures(
+  supportsCooling: boolean,
+  supportsHeating: boolean,
+) {
+  const features: FeatureSelection<ClusterType.Of<Thermostat.Complete>> = [];
+  if (supportsCooling) {
+    features.push("Cooling");
+  }
+  if (supportsHeating) {
+    features.push("Heating");
+  }
+  if (supportsHeating && supportsCooling) {
+    features.push("AutoMode");
+  }
+  return features;
+}
+
 const ClimateDeviceType = (
   supportsCooling: boolean,
   supportsHeating: boolean,
-  supportsAuto: boolean,
   supportsHumidity: boolean,
 ) => {
-  const thermostatServer = supportsAuto
-    ? ThermostatServer.with("Cooling", "Heating", "AutoMode")
-    : supportsCooling && supportsHeating
-      ? ThermostatServer.with("Cooling", "Heating")
-      : supportsCooling
-        ? ThermostatServer.with("Cooling")
-        : supportsHeating
-          ? ThermostatServer.with("Heating")
-          : ThermostatServer;
-
   const device = ThermostatDevice.with(
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    thermostatServer,
+    ThermostatServer.with(
+      ...thermostatFeatures(supportsCooling, supportsHeating),
+    ),
   );
 
   if (supportsHumidity) {
@@ -65,10 +76,6 @@ const heatingModes: ClimateHvacMode[] = [
   ClimateHvacMode.heat_cool,
   ClimateHvacMode.heat,
 ];
-const autoModes: ClimateHvacMode[] = [
-  ClimateHvacMode.heat_cool,
-  ClimateHvacMode.auto,
-];
 
 export function ClimateDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
@@ -81,15 +88,11 @@ export function ClimateDevice(
   const supportsHeating = heatingModes.some((mode) =>
     attributes.hvac_modes.includes(mode),
   );
-  const supportsAuto = autoModes.some((mode) =>
-    attributes.hvac_modes.includes(mode),
-  );
   const supportsHumidity = attributes.current_humidity !== undefined;
 
   return ClimateDeviceType(
     supportsCooling,
     supportsHeating,
-    supportsAuto,
     supportsHumidity,
   ).set({ homeAssistantEntity });
 }

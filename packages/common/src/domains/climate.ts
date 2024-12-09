@@ -21,11 +21,14 @@ export enum ClimateHvacAction {
 
 export interface ClimateDeviceAttributes {
   hvac_action: ClimateHvacAction | undefined;
-  hvac_mode: ClimateHvacMode | undefined;
+  hvac_mode?: ClimateHvacMode | undefined;
   hvac_modes: ClimateHvacMode[];
   min_temp?: number | string | null | undefined;
   max_temp?: number | string | null | undefined;
   current_temperature?: number | string | null | undefined;
   current_humidity?: number | string | null | undefined;
   temperature?: number | string | null | undefined;
+  target_temperature?: number | string | null | undefined;
+  target_temp_low?: number | string | null | undefined;
+  target_temp_high?: number | string | null | undefined;
 }
