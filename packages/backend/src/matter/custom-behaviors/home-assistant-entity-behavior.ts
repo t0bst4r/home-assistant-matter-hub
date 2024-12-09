@@ -7,11 +7,18 @@ import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.j
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
 import AsyncLock from "async-lock";
+import { Logger } from "winston";
+import { createLogger } from "../../logging/create-logger.js";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;
+  declare internal: HomeAssistantEntityBehavior.Internal;
   declare state: HomeAssistantEntityBehavior.State;
   declare events: HomeAssistantEntityBehavior.Events;
+
+  override async initialize() {
+    this.internal.logger = createLogger(`HomeAssistant / ${this.entityId}`);
+  }
 
   get entityId(): string {
     return this.entity.entity_id;
@@ -30,22 +37,30 @@ export class HomeAssistantEntityBehavior extends Behavior {
   }
 
   async callAction(action: string, data?: object | undefined) {
-    const lock = this.env.get(AsyncLock);
     const actions = this.env.get(HomeAssistantActions);
+    const lock = this.env.get(AsyncLock);
+    const lockKey = this.state.lockKey;
+    const log = this.internal.logger;
+
     const target: HassServiceTarget = {
       entity_id: this.entityId,
     };
-    const lockKey = this.state.lockKey;
     const [domain, service] = action.split(".");
     setTimeout(async () => {
       await lock.acquire(lockKey, async () =>
-        actions.callAction(domain, service, data, target, false),
+        actions
+          .callAction(domain, service, data, target, false)
+          .catch((error) => log.error(error)),
       );
     }, 0);
   }
 }
 
 export namespace HomeAssistantEntityBehavior {
+  export class Internal {
+    logger!: Logger;
+  }
+
   export class State {
     lockKey!: string;
     entity!: HomeAssistantEntityInformation;
