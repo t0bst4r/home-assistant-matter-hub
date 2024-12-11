@@ -1,10 +1,13 @@
-import { LevelControlConfig } from "../../behaviors/level-control-server.js";
+import {
+  LevelControlConfig,
+  LevelControlServer,
+} from "../../behaviors/level-control-server.js";
 import {
   HomeAssistantEntityState,
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 
-export const lightLevelControlConfig: LevelControlConfig = {
+const levelControlConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<LightDeviceAttributes>) => {
     const brightness = state.attributes.brightness;
     if (brightness != null) {
@@ -17,3 +20,8 @@ export const lightLevelControlConfig: LevelControlConfig = {
     data: (brightness) => ({ brightness: (brightness / 254) * 255 }),
   },
 };
+
+export const LightLevelControlServer = LevelControlServer.with(
+  "OnOff",
+  "Lighting",
+).set({ config: levelControlConfig });
