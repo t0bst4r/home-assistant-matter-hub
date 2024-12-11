@@ -5,6 +5,8 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { ClusterType } from "@matter/main/types";
+import { LevelControl } from "@matter/main/clusters";
 
 export interface LevelControlConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
@@ -16,8 +18,8 @@ export interface LevelControlConfig {
   };
 }
 
-export class LevelControlServer extends Base {
-  declare state: LevelControlServer.State;
+export class LevelControlServerBase extends Base {
+  declare state: LevelControlServerBase.State;
 
   override async initialize() {
     super.initialize();
@@ -60,8 +62,12 @@ export class LevelControlServer extends Base {
   }
 }
 
-export namespace LevelControlServer {
+export namespace LevelControlServerBase {
   export class State extends Base.State {
     config!: LevelControlConfig;
   }
 }
+
+export class LevelControlServer extends LevelControlServerBase.for(
+  ClusterType(LevelControl.Base),
+).with("OnOff") {}
