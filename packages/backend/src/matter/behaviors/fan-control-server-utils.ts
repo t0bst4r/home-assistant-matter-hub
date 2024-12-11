@@ -13,7 +13,7 @@ export interface FanControlFeatures {
  * Select best fan mode sequence based on supported features
  * @param features The supported features
  */
-function getMatterFanModeSequence(
+export function getMatterFanModeSequence(
   features: FanControlFeatures,
 ): FanControl.FanModeSequence {
   if (features.multiSpeed) {
@@ -34,7 +34,7 @@ function getMatterFanModeSequence(
  * @param presetMode The current preset_mode. Used to determine "auto"
  * @param fanModeSequence The supported sequence / supported modes
  */
-function getMatterFanMode(
+export function getMatterFanMode(
   state: "off" | string,
   percentage: FanDeviceAttributes["percentage"],
   presetMode: FanDeviceAttributes["preset_mode"],
@@ -56,7 +56,7 @@ function getMatterFanMode(
  * @param mode The fan mode
  * @param fanModeSequence The supported sequence
  */
-function getSpeedPercentFromMatterFanMode(
+export function getSpeedPercentFromMatterFanMode(
   mode:
     | FanControl.FanMode.Off
     | FanControl.FanMode.Low
@@ -80,7 +80,7 @@ function getSpeedPercentFromMatterFanMode(
  * Convert Fan Direction from Home Assistant to the matter enum
  * @param direction The fan direction
  */
-function getMatterAirflowDirection(
+export function getMatterAirflowDirection(
   direction?: FanDeviceDirection,
 ): FanControl.AirflowDirection | undefined {
   if (direction == FanDeviceDirection.FORWARD) {
@@ -95,7 +95,7 @@ function getMatterAirflowDirection(
  * Convert Fan Direction from matter to the Home Assistant enum
  * @param direction The fan direction
  */
-function getDirectionFromMatter(
+export function getDirectionFromMatter(
   direction: FanControl.AirflowDirection,
 ): FanDeviceDirection {
   if (direction == FanControl.AirflowDirection.Forward) {
@@ -110,7 +110,7 @@ function getDirectionFromMatter(
  * @param speedMax The max speed
  * @param request The step request
  */
-function getNextStepValue(
+export function getNextStepValue(
   speed: number,
   speedMax: number,
   request: FanControl.StepRequest,
@@ -174,12 +174,3 @@ function _autoSupported(sequence: FanControl.FanModeSequence): boolean {
       return false;
   }
 }
-
-export default {
-  getMatterFanModeSequence,
-  getMatterFanMode,
-  getSpeedPercentFromMatterFanMode,
-  getMatterAirflowDirection,
-  getDirectionFromMatter,
-  getNextStepValue,
-};
