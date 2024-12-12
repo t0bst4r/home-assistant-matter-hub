@@ -1,7 +1,7 @@
 import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import Box from "@mui/material/Box";
 import { Alert, Chip, Paper, Stack, Typography } from "@mui/material";
-import QRCode from "react-qr-code";
+import { QRCodeSVG } from "qrcode.react";
 import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -98,7 +98,7 @@ const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
             paddingBottom: "2.6px",
           }}
         >
-          <QRCode
+          <QRCodeSVG
             value={props.bridge.commissioning.qrPairingCode}
             style={{ width: "100%", height: "100%" }}
           />

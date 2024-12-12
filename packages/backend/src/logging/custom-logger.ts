@@ -1,7 +1,8 @@
 import { createLogger as createWinstonLogger, Logger } from "winston";
-import { Logger as MatterLogger } from "@matter/main";
+import { Logger as MatterLogger } from "@matter/general";
 import { consoleTransport } from "./console-transport.js";
 import { matterJsLogger } from "./matter-js-logger.js";
+import { LogFormat } from "@matter/main";
 
 const logger = createWinstonLogger({
   transports: [consoleTransport],
@@ -15,6 +16,7 @@ export const customLogger = {
     logger.defaultMeta.colorize = useColors;
 
     MatterLogger.level = "debug";
+    MatterLogger.format = LogFormat.PLAIN;
     MatterLogger.log = matterJsLogger(createChildLogger(logger, "Matter"));
   },
 };

@@ -1,15 +1,21 @@
 import { LogLevel } from "@matter/main";
-import stripColor from "strip-color";
 import { Logger } from "winston";
+
+const messageRegexp =
+  /^(?<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) (?<logLevel>\w+) (?<service>\w+) (?<message>.*)$/s;
 
 export function matterJsLogger(
   logger: Logger,
 ): (level: LogLevel, formattedLog: string) => void {
   return (enumLevel: LogLevel, formattedLog: string) => {
-    formattedLog = stripColor(formattedLog);
+    const match = messageRegexp.exec(formattedLog);
 
-    const service = formattedLog.substring(31, 52).trim();
-    const message = formattedLog.substring(52);
+    if (!match) {
+      logger.warn("Could not parse the following log message");
+    }
+
+    const service = match?.groups?.service ?? "Unknown";
+    const message = match?.groups?.message ?? formattedLog;
 
     if (
       service === "ExchangeManager" &&
