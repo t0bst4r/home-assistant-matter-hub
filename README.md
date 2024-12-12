@@ -194,7 +194,7 @@ rules will be excluded.
 
 > [!WARNING]
 > When performing changes on entities, like adding or removing a label, you need to restart the matter-hub application
-> for the changes to take effect.
+> for the changes to take effect, or you can edit the bridge and save it without any changes.
 
 ```json
 {
@@ -224,6 +224,15 @@ rules will be excluded.
   }
 }
 ```
+
+> [!WARNING]
+>
+> - Labels in Home Assistant are technically represented by their "slugs".
+> - Slugs are technical identifiers used in the background.
+> - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an underscore.
+> - Even when renaming a label, the slug doesn't change. Never.
+>
+> All available/existing labels can be checked using the `{{ labels() }}` or `{{ labels("light.my_entity") }}` template in Home Assistant.
 
 ## 4. Frequently Asked Questions & Troubleshooting
 
