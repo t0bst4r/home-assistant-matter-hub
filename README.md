@@ -90,7 +90,7 @@ docker compose up -d
 In the docker image the application stores its data in `/data`, so you can mount a volume there to
 persist it, but you could change that by setting the `HAMH_STORAGE_LOCATION` variable.
 
-Additionally, you can also run the container as follows:
+Alternatively, you can also run the container as follows:
 
 ```bash
 docker run -d \
