@@ -62,16 +62,35 @@ Simply add the following GitHub Repository URL to your Home Assistant AddOn Stor
 
 ### 1.2 Docker Image
 
-This repository builds a docker image for every release. You can simply pull it with
+This repository builds a docker image for every release. You can simply run it by using following 'docker-compose.yaml':
 
 ```bash
-docker pull ghcr.io/t0bst4r/home-assistant-matter-hub:latest
+services:
+  matter-hub:
+    hostname: matter-hub
+    container_name: matter-hub
+    environment:
+      - HAMH_HOME_ASSISTANT_URL=http://192.168.178.123:8123/
+      - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=ey...ZI
+      - HAMH_LOG_LEVEL=info
+      - HAMH_WEB_PORT=8482
+    volumes:
+      - $PWD/home-assistant-matter-hub:/data
+    network_mode: host
+    restart: always
+    image: ghcr.io/t0bst4r/home-assistant-matter-hub:latest
+```
+
+After creating the file you can run
+
+```bash
+docker compose up -d
 ```
 
 In the docker image the application stores its data in `/data`, so you can mount a volume there to
 persist it, but you could change that by setting the `HAMH_STORAGE_LOCATION` variable.
 
-Additionally, you have to configure the container as follows:
+Additionally, you can also run the container as follows:
 
 ```bash
 docker run -d \
