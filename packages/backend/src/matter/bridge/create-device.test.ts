@@ -109,6 +109,7 @@ const testEntities: Record<
   [HomeAssistantDomain.input_boolean]: [
     createEntity("input_boolean.input_boolean1", "on"),
   ],
+  [HomeAssistantDomain.input_button]: [createEntity("input_button.ib1", "any")],
   [HomeAssistantDomain.media_player]: [createEntity("media_player.m1", "on")],
   [HomeAssistantDomain.humidifier]: [
     createEntity<HumidiferDeviceAttributes>("humidifier.h1", "on", {

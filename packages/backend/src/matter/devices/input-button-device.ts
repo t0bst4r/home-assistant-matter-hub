@@ -1,23 +1,19 @@
 import { OnOffPlugInUnitDevice } from "@matter/main/devices";
-import { OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { EndpointType } from "@matter/main";
+import { AutoOffServer } from "../behaviors/auto-off-server.js";
 
-const sceneOnOffConfig: OnOffConfig = {
-  isOn: () => false,
-};
-
-const SceneEndpointType = OnOffPlugInUnitDevice.with(
+const InputButtonEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer.set({ config: sceneOnOffConfig }),
+  AutoOffServer,
 );
 
-export function SceneDevice(
+export function InputButtonDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
 ): EndpointType {
-  return SceneEndpointType.set({ homeAssistantEntity });
+  return InputButtonEndpointType.set({ homeAssistantEntity });
 }
