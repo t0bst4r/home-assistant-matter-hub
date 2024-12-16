@@ -186,6 +186,7 @@ The `type` can be one of:
 - `domain` - the domain you want to include or exclude
 - `platform` - the integration you want to include or exclude
 - `label` - the slug of a label you want to include or exclude
+- `area` - the slug of an area you want to include or exclude
 
 The `value` property is a string containing the corresponding value. You can add multiple include or exclude rules which
 are then combined.
@@ -227,12 +228,15 @@ rules will be excluded.
 
 > [!WARNING]
 >
-> - Labels in Home Assistant are technically represented by their "slugs".
+> - Labels and areas in Home Assistant are technically represented by their "slugs".
 > - Slugs are technical identifiers used in the background.
 > - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an underscore.
-> - Even when renaming a label, the slug doesn't change. Never.
+> - Even when renaming a label or area, the slug doesn't change. Never.
 >
-> All available/existing labels can be checked using the `{{ labels() }}` or `{{ labels("light.my_entity") }}` template in Home Assistant.
+> You can retrieve the slug using the followiung templates in Home Assistant:
+> - `{{ labels() }}` - returns all labels
+> - `{{ labels("light.my_entity") }}` - returns the labels of a specific entity
+> - `{{ areas() }}` - returns all areas
 
 ## 4. Frequently Asked Questions & Troubleshooting
 
