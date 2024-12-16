@@ -234,6 +234,7 @@ rules will be excluded.
 > - Even when renaming a label or area, the slug doesn't change. Never.
 >
 > You can retrieve the slug using the followiung templates in Home Assistant:
+>
 > - `{{ labels() }}` - returns all labels
 > - `{{ labels("light.my_entity") }}` - returns the labels of a specific entity
 > - `{{ areas() }}` - returns all areas
