@@ -33,6 +33,8 @@ export function testMatcher(
       return entity.registry?.platform === matcher.value;
     case "pattern":
       return patternToRegex(matcher.value).test(entity.entity_id);
+    case "area":
+      return entity.registry?.area_id === matcher.value;
   }
   return false;
 }
