@@ -3,6 +3,7 @@ export enum HomeAssistantMatcherType {
   Domain = "domain",
   Platform = "platform",
   Label = "label",
+  Area = "area",
 }
 
 export interface HomeAssistantMatcher {
