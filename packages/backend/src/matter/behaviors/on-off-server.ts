@@ -34,18 +34,12 @@ export class OnOffServer extends Base {
 
   override async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    if (this.isOn(homeAssistant.entity.state)) {
-      return;
-    }
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
     await homeAssistant.callAction(action);
   }
 
   override async off() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    if (!this.isOn(homeAssistant.entity.state)) {
-      return;
-    }
     const action =
       this.state.config?.turnOff?.action ?? "homeassistant.turn_off";
     await homeAssistant.callAction(action);
