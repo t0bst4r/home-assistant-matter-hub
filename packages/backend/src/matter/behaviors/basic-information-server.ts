@@ -28,6 +28,7 @@ export class BasicInformationServer extends Base {
         32,
       ),
       reachable: entity.state.state !== "unavailable",
+      serialNumber: maxLengthOrHash(entity.entity_id, 32),
     });
   }
 }
