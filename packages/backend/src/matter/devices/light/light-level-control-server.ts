@@ -19,6 +19,7 @@ const levelControlConfig: LevelControlConfig = {
     action: "light.turn_on",
     data: (brightness) => ({ brightness: (brightness / 254) * 255 }),
   },
+  expandMinMaxForValue: true,
 };
 
 export const LightLevelControlServer = LevelControlServer.with(

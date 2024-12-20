@@ -12,6 +12,7 @@ export interface LevelControlConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
   getMinValue?: (state: HomeAssistantEntityState) => number | undefined;
   getMaxValue?: (state: HomeAssistantEntityState) => number | undefined;
+  expandMinMaxForValue?: boolean;
   moveToLevel: {
     action: string;
     data: (value: number) => object;
@@ -29,14 +30,27 @@ export class LevelControlServerBase extends Base {
   }
 
   private update({ state }: HomeAssistantEntityInformation) {
+    let minLevel =
+      this.validValue(this.state.config.getMinValue?.(state)) ?? undefined;
+    let maxLevel =
+      this.validValue(this.state.config.getMaxValue?.(state)) ?? undefined;
+    const currentLevel =
+      this.validValue(this.state.config.getValue(state)) ??
+      this.state.currentLevel;
+
+    if (this.state.config?.expandMinMaxForValue == true) {
+      if (minLevel != null) {
+        minLevel = Math.min(minLevel, currentLevel ?? Infinity);
+      }
+      if (maxLevel != null) {
+        maxLevel = Math.max(maxLevel, currentLevel ?? -Infinity);
+      }
+    }
+
     applyPatchState(this.state, {
-      currentLevel:
-        this.validValue(this.state.config.getValue(state)) ??
-        this.state.currentLevel,
-      minLevel:
-        this.validValue(this.state.config.getMinValue?.(state)) ?? undefined,
-      maxLevel:
-        this.validValue(this.state.config.getMaxValue?.(state)) ?? undefined,
+      currentLevel: currentLevel,
+      minLevel: minLevel,
+      maxLevel: maxLevel,
     });
   }
 
