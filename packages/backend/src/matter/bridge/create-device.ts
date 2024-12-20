@@ -16,6 +16,9 @@ import { MediaPlayerDevice } from "../devices/media-player-device.js";
 import { HumidifierDevice } from "../devices/humidifier-device.js";
 import { EndpointType } from "@matter/main";
 import { InputButtonDevice } from "../devices/input-button-device.js";
+import { AutomationDevice } from "../devices/automation-device.js";
+import { ScriptDevice } from "../devices/script-device.js";
+import { SceneDevice } from "../devices/scene-device.js";
 
 export function createDevice(
   lockKey: string,
@@ -47,9 +50,9 @@ const deviceCtrs: Record<
   climate: ClimateDevice,
   input_boolean: SwitchDevice,
   input_button: InputButtonDevice,
-  automation: SwitchDevice,
-  script: SwitchDevice,
-  scene: InputButtonDevice,
+  automation: AutomationDevice,
+  script: ScriptDevice,
+  scene: SceneDevice,
   media_player: MediaPlayerDevice,
   humidifier: HumidifierDevice,
 };

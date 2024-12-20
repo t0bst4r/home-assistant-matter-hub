@@ -3,8 +3,8 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 
 export interface AutoOffConfig {
   turnOn?: {
-    action: string;
-    timeout: number;
+    action?: string;
+    timeout?: number;
   };
 }
 
