@@ -9,6 +9,15 @@ local communication without the need of port forwarding etc.
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/t0bst4r)
 
+# 🎅 Taking a Holiday Break – See You in the New Year! 🎄
+
+As the holiday season approaches and my main job keeps me busy, I haven’t been able to dedicate as much time to this project as I’d like. Over the holidays, I’ll be taking a well-deserved break to recharge.
+
+That said, if an opportunity arises, I’ll try to answer a few questions or review a pull request via my phone. I’m looking forward to returning refreshed and motivated in the new year.
+
+Thank you for your understanding and continued support!  
+**Happy holidays!** 🎄
+
 ## Table of contents
 
 1. [Installation](#1-installation)
