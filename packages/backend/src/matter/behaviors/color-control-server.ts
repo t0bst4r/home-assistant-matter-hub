@@ -13,6 +13,10 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
 
+export interface ColorControlConfig {
+  expandMinMaxForValue?: boolean;
+}
+
 export class ColorControlServerBase extends FeaturedBase {
   declare state: ColorControlServerBase.State;
 
@@ -25,8 +29,12 @@ export class ColorControlServerBase extends FeaturedBase {
 
   private update(entity: HomeAssistantEntityInformation) {
     const attributes = entity.state.attributes as LightDeviceAttributes;
-    const minKelvin = attributes.min_color_temp_kelvin ?? 1500;
-    const maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
+    let minKelvin = attributes.min_color_temp_kelvin ?? 1500;
+    let maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
+    if (this.state.config?.expandMinMaxForValue == true) {
+      minKelvin = Math.min(minKelvin, currentLevel ?? Infinity);
+      maxKelvin = Math.max(maxKelvin, currentLevel ?? -Infinity);
+    }
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
       colorMode: this.getMatterColorMode(attributes.color_mode),
@@ -153,7 +161,9 @@ export class ColorControlServerBase extends FeaturedBase {
 }
 
 export namespace ColorControlServerBase {
-  export class State extends FeaturedBase.State {}
+  export class State extends FeaturedBase.State {
+    config?: ColorControlConfig;
+  }
 }
 
 export class ColorControlServer extends ColorControlServerBase.for(
