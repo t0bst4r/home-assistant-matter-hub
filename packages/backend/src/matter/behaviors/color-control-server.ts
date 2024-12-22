@@ -61,9 +61,7 @@ export class ColorControlServerBase extends FeaturedBase {
                 currentKelvin ?? maxKelvin,
               ),
             colorTemperatureMireds: currentKelvin
-              ? ColorConverter.temperatureKelvinToMireds(
-                  currentKelvin,
-                )
+              ? ColorConverter.temperatureKelvinToMireds(currentKelvin)
               : undefined,
           }
         : {}),
