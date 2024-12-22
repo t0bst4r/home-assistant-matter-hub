@@ -8,7 +8,11 @@ import { LightLevelControlServer } from "./light-level-control-server.js";
 
 export const ExtendedColorLightType = (supportsTemperature: boolean) => {
   const colorControlServer = supportsTemperature
-    ? ColorControlServer.with("HueSaturation", "ColorTemperature")
+    ? ColorControlServer.with("HueSaturation", "ColorTemperature").set({
+        config: {
+          expandMinMaxTemperature: true,
+        },
+      })
     : ColorControlServer.with("HueSaturation");
   return Device.with(
     IdentifyServer,
