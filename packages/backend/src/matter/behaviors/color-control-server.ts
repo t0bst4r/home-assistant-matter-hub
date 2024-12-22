@@ -14,7 +14,7 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
 
 export interface ColorControlConfig {
-  expandMinMaxForValue?: boolean;
+  expandMinMaxTemperature?: boolean;
 }
 
 export class ColorControlServerBase extends FeaturedBase {
@@ -31,7 +31,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const attributes = entity.state.attributes as LightDeviceAttributes;
     let minKelvin = attributes.min_color_temp_kelvin ?? 1500;
     let maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
-    if (this.state.config?.expandMinMaxForValue == true) {
+    if (this.state.config?.expandMinMaxTemperature == true) {
       minKelvin = Math.min(minKelvin, currentLevel ?? Infinity);
       maxKelvin = Math.max(maxKelvin, currentLevel ?? -Infinity);
     }
