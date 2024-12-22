@@ -14,7 +14,7 @@ export const ColorTemperatureLightType = Device.with(
   LightLevelControlServer,
   ColorControlServer.with("ColorTemperature").set({
     config: {
-      expandMinMaxTemperature: true
-    }
+      expandMinMaxTemperature: true,
+    },
   }),
 );
