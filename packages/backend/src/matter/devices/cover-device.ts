@@ -9,16 +9,39 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { testBit } from "../../utils/test-bit.js";
 import { EndpointType } from "@matter/main";
+import { FeatureSelection } from "../../utils/feature-selection.js";
+import { WindowCovering } from "@matter/main/clusters";
 
-const CoverDeviceType = (positionAwareLift: boolean) => {
-  const windowCoveringServer = positionAwareLift
-    ? WindowCoveringServer.with("Lift", "PositionAwareLift", "AbsolutePosition")
-    : WindowCoveringServer.with("Lift", "PositionAwareLift");
+const CoverDeviceType = (supportedFeatures: number) => {
+  const features: FeatureSelection<WindowCovering.Complete> = new Set();
+  if (testBit(supportedFeatures, CoverSupportedFeatures.support_open)) {
+    features.add("Lift");
+    features.add("PositionAwareLift");
+    if (
+      testBit(supportedFeatures, CoverSupportedFeatures.support_set_position)
+    ) {
+      features.add("AbsolutePosition");
+    }
+  }
+
+  if (testBit(supportedFeatures, CoverSupportedFeatures.support_open_tilt)) {
+    features.add("Tilt");
+    features.add("PositionAwareTilt");
+    if (
+      testBit(
+        supportedFeatures,
+        CoverSupportedFeatures.support_set_tilt_position,
+      )
+    ) {
+      features.add("AbsolutePosition");
+    }
+  }
+
   return WindowCoveringDevice.with(
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    windowCoveringServer,
+    WindowCoveringServer.with(...features),
   );
 };
 
@@ -27,10 +50,7 @@ export function CoverDevice(
 ): EndpointType {
   const attributes = homeAssistantEntity.entity.state
     .attributes as CoverDeviceAttributes;
-  const supportedFeatures = attributes.supported_features ?? 0;
-  const positionAwareLift = testBit(
-    supportedFeatures,
-    CoverSupportedFeatures.support_set_position,
-  );
-  return CoverDeviceType(positionAwareLift).set({ homeAssistantEntity });
+  return CoverDeviceType(attributes.supported_features ?? 0).set({
+    homeAssistantEntity,
+  });
 }

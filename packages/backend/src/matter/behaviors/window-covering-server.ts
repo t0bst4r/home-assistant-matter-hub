@@ -14,7 +14,13 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
 
-const FeaturedBase = Base.with("Lift", "PositionAwareLift", "AbsolutePosition");
+const FeaturedBase = Base.with(
+  "Lift",
+  "PositionAwareLift",
+  "AbsolutePosition",
+  "Tilt",
+  "PositionAwareTilt",
+);
 
 export class WindowCoveringServerBase extends FeaturedBase {
   declare state: WindowCoveringServerBase.State;
@@ -37,28 +43,35 @@ export class WindowCoveringServerBase extends FeaturedBase {
           ? WindowCovering.MovementStatus.Closing
           : WindowCovering.MovementStatus.Stopped;
 
-    let currentLift = this.convertLiftValue(state.attributes.current_position);
-    if (currentLift != null) {
-      currentLift *= 100;
-    } else {
-      if (coverState === CoverDeviceState.open) {
-        currentLift = 0;
-      } else if (state.state === "closed") {
-        currentLift = 100_00;
-      }
-    }
+    const currentLift = this.getCurrentPosition(
+      state.attributes.current_position,
+      coverState,
+    );
+    const currentTilt = this.getCurrentPosition(
+      state.attributes.current_tilt_position,
+      coverState,
+    );
+
     applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type: WindowCovering.WindowCoveringType.Rollershade,
       endProductType: WindowCovering.EndProductType.RollerShade,
       operationalStatus: {
         global: movementStatus,
-        lift: movementStatus,
+        ...(this.features.lift ? { lift: movementStatus } : {}),
+        ...(this.features.tilt ? { tilt: movementStatus } : {}),
       },
-      ...(this.features.absolutePosition
+      ...(this.features.absolutePosition && this.features.lift
         ? {
             installedOpenLimitLift: 0,
-            installedCloseLimit: 100_00,
+            installedClosedLimitLift: 100_00,
             currentPositionLift: currentLift,
+          }
+        : {}),
+      ...(this.features.absolutePosition && this.features.tilt
+        ? {
+            installedOpenLimitTilt: 0,
+            installedClosedLimitTilt: 100_00,
+            currentPositionTilt: currentLift,
           }
         : {}),
       ...(this.features.positionAwareLift
@@ -68,7 +81,31 @@ export class WindowCoveringServerBase extends FeaturedBase {
               this.state.targetPositionLiftPercent100ths ?? currentLift,
           }
         : {}),
+      ...(this.features.positionAwareTilt
+        ? {
+            currentPositionTiltPercent100ths: currentTilt,
+            targetPositionTiltPercent100ths:
+              this.state.targetPositionTiltPercent100ths ?? currentTilt,
+          }
+        : {}),
     });
+  }
+
+  private getCurrentPosition(
+    percentage: number | undefined,
+    coverState: CoverDeviceState,
+  ) {
+    let currentValue = this.invertValue(percentage);
+    if (currentValue != null) {
+      currentValue *= 100;
+    } else {
+      if (coverState === CoverDeviceState.open) {
+        currentValue = 0;
+      } else if (coverState === CoverDeviceState.closed) {
+        currentValue = 100_00;
+      }
+    }
+    return currentValue;
   }
 
   override async handleMovement(
@@ -79,14 +116,25 @@ export class WindowCoveringServerBase extends FeaturedBase {
   ) {
     if (type === MovementType.Lift) {
       if (targetPercent100ths != null && this.features.absolutePosition) {
-        await this.handleGoToPosition(targetPercent100ths);
+        await this.handleGoToLiftPosition(targetPercent100ths);
       } else if (
         direction === MovementDirection.Close ||
         (targetPercent100ths != null && targetPercent100ths > 0)
       ) {
-        await this.handleClose();
+        await this.handleLiftClose();
       } else if (direction === MovementDirection.Open) {
-        await this.handleOpen();
+        await this.handleLiftOpen();
+      }
+    } else if (type === MovementType.Tilt) {
+      if (targetPercent100ths != null && this.features.absolutePosition) {
+        await this.handleGoToTiltPosition(targetPercent100ths);
+      } else if (
+        direction === MovementDirection.Close ||
+        (targetPercent100ths != null && targetPercent100ths > 0)
+      ) {
+        await this.handleTiltClose();
+      } else if (direction === MovementDirection.Open) {
+        await this.handleTiltOpen();
       }
     }
   }
@@ -94,21 +142,21 @@ export class WindowCoveringServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction("cover.stop_cover");
   }
-  private async handleOpen() {
+
+  private async handleLiftOpen() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction("cover.open_cover");
   }
-  private async handleClose() {
+  private async handleLiftClose() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     await homeAssistant.callAction("cover.close_cover");
   }
-
-  private async handleGoToPosition(targetPercent100ths: number) {
+  private async handleGoToLiftPosition(targetPercent100ths: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const attributes = homeAssistant.entity.state
       .attributes as CoverDeviceAttributes;
     const currentPosition = attributes.current_position;
-    const targetPosition = this.convertLiftValue(targetPercent100ths / 100);
+    const targetPosition = this.invertValue(targetPercent100ths / 100);
     if (targetPosition == null || targetPosition === currentPosition) {
       return;
     }
@@ -117,9 +165,29 @@ export class WindowCoveringServerBase extends FeaturedBase {
     });
   }
 
-  private convertLiftValue(
-    percentage: number | undefined | null,
-  ): number | null {
+  private async handleTiltOpen() {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    await homeAssistant.callAction("cover.open_cover_tilt");
+  }
+  private async handleTiltClose() {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    await homeAssistant.callAction("cover.close_cover_tilt");
+  }
+  private async handleGoToTiltPosition(targetPercent100ths: number) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const attributes = homeAssistant.entity.state
+      .attributes as CoverDeviceAttributes;
+    const currentPosition = attributes.current_tilt_position;
+    const targetPosition = this.invertValue(targetPercent100ths / 100);
+    if (targetPosition == null || targetPosition === currentPosition) {
+      return;
+    }
+    await homeAssistant.callAction("cover.set_cover_tilt_position", {
+      tilt_position: targetPosition,
+    });
+  }
+
+  private invertValue(percentage: number | undefined | null): number | null {
     if (percentage == null) {
       return null;
     }

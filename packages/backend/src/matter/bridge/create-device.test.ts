@@ -61,7 +61,9 @@ const testEntities: Record<
     }),
   ],
   [HomeAssistantDomain.cover]: [
-    createEntity<CoverDeviceAttributes>("cover.co1", "on", {}),
+    createEntity<CoverDeviceAttributes>("cover.co1", "on", {
+      supported_features: 15,
+    }),
   ],
   [HomeAssistantDomain.fan]: [
     createEntity<FanDeviceAttributes>("fan.f1", "on"),

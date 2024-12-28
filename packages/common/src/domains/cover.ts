@@ -6,6 +6,7 @@ export enum CoverDeviceState {
 }
 export interface CoverDeviceAttributes {
   current_position?: number;
+  current_tilt_position?: number;
   supported_features?: number;
 }
 

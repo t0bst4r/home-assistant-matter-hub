@@ -19,15 +19,16 @@ const fanOnOffConfig: OnOffConfig = {
 };
 
 const FanControlFeatures = (supportedFeatures: number) => {
-  const features: FeatureSelection<FanControl.Cluster> = [];
+  const features: FeatureSelection<FanControl.Cluster> = new Set();
   if (testBit(supportedFeatures, FanDeviceFeature.SET_SPEED)) {
-    features.push("MultiSpeed", "Step");
+    features.add("MultiSpeed");
+    features.add("Step");
   }
   if (testBit(supportedFeatures, FanDeviceFeature.PRESET_MODE)) {
-    features.push("Auto");
+    features.add("Auto");
   }
   if (testBit(supportedFeatures, FanDeviceFeature.DIRECTION)) {
-    features.push("AirflowDirection");
+    features.add("AirflowDirection");
   }
   return features;
 };

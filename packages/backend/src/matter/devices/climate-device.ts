@@ -32,15 +32,16 @@ function thermostatFeatures(
   supportsCooling: boolean,
   supportsHeating: boolean,
 ) {
-  const features: FeatureSelection<ClusterType.Of<Thermostat.Complete>> = [];
+  const features: FeatureSelection<ClusterType.Of<Thermostat.Complete>> =
+    new Set();
   if (supportsCooling) {
-    features.push("Cooling");
+    features.add("Cooling");
   }
   if (supportsHeating) {
-    features.push("Heating");
+    features.add("Heating");
   }
   if (supportsHeating && supportsCooling) {
-    features.push("AutoMode");
+    features.add("AutoMode");
   }
   return features;
 }

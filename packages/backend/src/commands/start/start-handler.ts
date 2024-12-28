@@ -9,7 +9,6 @@ import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.
 import { BridgeService } from "../../matter/bridge-service.js";
 import { WebApi } from "../../api/web-api.js";
 import AsyncLock from "async-lock";
-import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 
 const basicInformation: BridgeBasicInformation = {
   vendorId: VendorId(0xfff1),
