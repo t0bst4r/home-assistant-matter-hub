@@ -7,6 +7,8 @@ import {
 } from "home-assistant-js-websocket";
 import { Environment, Environmental } from "@matter/main";
 import { register } from "../environment/register.js";
+import { Logger } from "winston";
+import { createLogger } from "../logging/create-logger.js";
 
 export interface HomeAssistantClientProps {
   readonly url: string;
@@ -14,6 +16,7 @@ export interface HomeAssistantClientProps {
 }
 
 export class HomeAssistantClient implements Environmental.Service {
+  private readonly log: Logger;
   readonly construction: Promise<void>;
   public connection!: Connection;
 
@@ -21,36 +24,42 @@ export class HomeAssistantClient implements Environmental.Service {
     environment: Environment,
     private readonly props: HomeAssistantClientProps,
   ) {
+    this.log = createLogger("HomeAssistantClient");
     register(environment, HomeAssistantClient, this);
     this.construction = this.initialize();
   }
 
-  private async initialize() {
-    this.connection = await createConnection({
-      auth: createLongLivedTokenAuth(
-        this.props.url.replace(/\/$/, ""),
-        this.props.accessToken,
-      ),
-    }).catch((reason) => {
-      throw this.parseError(reason);
-    });
+  private async initialize(): Promise<void> {
+    try {
+      this.connection?.close();
+      this.connection = await createConnection({
+        auth: createLongLivedTokenAuth(
+          this.props.url.replace(/\/$/, ""),
+          this.props.accessToken,
+        ),
+      });
+    } catch (reason: unknown) {
+      return this.handleInitializationError(reason);
+    }
+  }
+
+  private async handleInitializationError(reason: unknown): Promise<void> {
+    if (reason === ERR_CANNOT_CONNECT) {
+      this.log.error(
+        `Unable to connect to home assistant with url: ${this.props.url}. Retrying in 5 seconds...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return this.initialize();
+    } else if (reason === ERR_INVALID_AUTH) {
+      throw new Error(
+        "Authentication failed while connecting to home assistant",
+      );
+    } else {
+      throw new Error(`Unable to connect to home assistant: ${reason}`);
+    }
   }
 
   async [Symbol.asyncDispose]() {
     this.connection?.close();
-  }
-
-  private parseError(reason: unknown): Error {
-    if (reason === ERR_CANNOT_CONNECT) {
-      return new Error(
-        `Unable to connect to home assistant with url: ${this.props.url}`,
-      );
-    } else if (reason === ERR_INVALID_AUTH) {
-      return new Error(
-        "Authentication failed while connecting to home assistant",
-      );
-    } else {
-      return new Error(`Unable to connect to home assistant: ${reason}`);
-    }
   }
 }
