@@ -111,15 +111,17 @@ describe("ThermostatServerUtils", () => {
 
   describe("toMatterTemperature", () => {
     it.each([
-      [100, 100_00],
-      [85, 85_00],
-      [23.4581, 23_46],
-      ["22.212", 22_21],
-      ["not a number", undefined],
-      [undefined, undefined],
-      [null, undefined],
-    ])("should convert '%s' to '%s'", (temperature, expected) => {
-      expect(toMatterTemperature(temperature)).toEqual(expected);
+      [100, "°C", 100_00],
+      [85, "°C", 85_00],
+      [294.15, "K", 21_00],
+      [70, "°F", 21_11],
+      [23.4581, "°C", 23_46],
+      ["22.212", "°C", 22_21],
+      ["not a number", "°C", undefined],
+      [undefined, "°C", undefined],
+      [null, "°C", undefined],
+    ])("should convert '%s %s' to '%s'", (temperature, unit, expected) => {
+      expect(toMatterTemperature(temperature, unit)).toEqual(expected);
     });
   });
 });

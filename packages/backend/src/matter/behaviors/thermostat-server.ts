@@ -7,16 +7,21 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import * as utils from "./thermostat-server-utils.js";
+import * as utils from "./utils/thermostat-server-utils.js";
+import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
 export class ThermostatServerBase extends FeaturedBase {
   declare state: ThermostatServerBase.State;
+  declare internal: ThermostatServerBase.Internal;
 
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
+    const config = await this.env.load(HomeAssistantConfig);
+    this.internal.homeAssistantUnit = config.unitSystem.temperature;
+
     this.update(homeAssistant.entity);
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     if (this.features.cooling) {
@@ -36,12 +41,19 @@ export class ThermostatServerBase extends FeaturedBase {
 
   private update(entity: HomeAssistantEntityInformation) {
     const attributes = entity.state.attributes as ClimateDeviceAttributes;
-    const minSetpointLimit = utils.toMatterTemperature(attributes.min_temp);
-    const maxSetpointLimit = utils.toMatterTemperature(attributes.max_temp);
+    const unit = this.internal.homeAssistantUnit;
+    const minSetpointLimit = utils.toMatterTemperature(
+      attributes.min_temp,
+      unit,
+    );
+    const maxSetpointLimit = utils.toMatterTemperature(
+      attributes.max_temp,
+      unit,
+    );
 
     applyPatchState(this.state, {
       localTemperature:
-        utils.toMatterTemperature(attributes.current_temperature) ?? null,
+        utils.toMatterTemperature(attributes.current_temperature, unit) ?? null,
       systemMode: utils.getMatterSystemMode(
         attributes.hvac_mode ?? entity.state.state,
         this.features,
@@ -184,6 +196,7 @@ export class ThermostatServerBase extends FeaturedBase {
       attributes.target_temp_low ??
         attributes.target_temperature ??
         attributes.temperature,
+      this.internal.homeAssistantUnit,
     );
   }
 
@@ -192,12 +205,17 @@ export class ThermostatServerBase extends FeaturedBase {
       attributes.target_temp_high ??
         attributes.target_temperature ??
         attributes.temperature,
+      this.internal.homeAssistantUnit,
     );
   }
 }
 
 export namespace ThermostatServerBase {
   export class State extends FeaturedBase.State {}
+
+  export class Internal extends FeaturedBase.Internal {
+    homeAssistantUnit!: string;
+  }
 }
 
 export class ThermostatServer extends ThermostatServerBase.for(

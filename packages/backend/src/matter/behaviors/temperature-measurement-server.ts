@@ -5,6 +5,7 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { convertTemperatureToCelsius } from "./utils/temperature-utils.js";
 
 export interface TemperatureMeasurementConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
@@ -32,21 +33,11 @@ export class TemperatureMeasurementServer extends Base {
   private getTemperature(entity: HomeAssistantEntityState): number | null {
     const value = this.state.config.getValue(entity);
     const unitOfMeasurement = this.state.config.getUnitOfMeasurement?.(entity);
-    if (value == null) {
+    const celsius = convertTemperatureToCelsius(value, unitOfMeasurement);
+    if (celsius == null) {
       return null;
-    }
-    switch (unitOfMeasurement) {
-      case "°F":
-        return (value - 32) * (5 / 9) * 100;
-      case "K":
-        return (value - 273.15) * 100;
-      case "°C":
-      case "":
-      case null:
-      case undefined:
-        return value * 100;
-      default:
-        return null;
+    } else {
+      return celsius * 100;
     }
   }
 }

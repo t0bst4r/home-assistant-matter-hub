@@ -3,6 +3,7 @@ import {
   ClimateHvacMode,
 } from "@home-assistant-matter-hub/common";
 import { Thermostat } from "@matter/main/clusters";
+import { convertTemperatureToCelsius } from "./temperature-utils.js";
 
 export interface ThermostatFeatures {
   autoMode: boolean;
@@ -151,15 +152,18 @@ export function getMatterSystemMode(
 
 /**
  * Convert the temperature from home assistant to matter compatible values
- * @param value
+ * @param value the temperature from home assistant
+ * @param unitOfMeasurement unit of measurement of the given temperature
  */
 export function toMatterTemperature(
   value: number | string | null | undefined,
+  unitOfMeasurement: string,
 ): number | undefined {
   const current = value != null ? +value : null;
-  if (current == null || isNaN(current)) {
+  const celsius = convertTemperatureToCelsius(current, unitOfMeasurement);
+  if (celsius == null) {
     return undefined;
   } else {
-    return Math.round(current * 100);
+    return Math.round(celsius * 100);
   }
 }

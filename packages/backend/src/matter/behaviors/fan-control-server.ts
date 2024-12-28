@@ -7,7 +7,7 @@ import {
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
-import * as utils from "./fan-control-server-utils.js";
+import * as utils from "./utils/fan-control-server-utils.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 
 const FeaturedBase = Base.with(
