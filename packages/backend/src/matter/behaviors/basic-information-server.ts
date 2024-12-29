@@ -6,6 +6,16 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 import { VendorId } from "@matter/main";
 
+const ellipsize = (
+  str: string | undefined,
+  len: number,
+): string | undefined => {
+  if (!str || str.length <= len) {
+    return str;
+  }
+  return str.slice(0, len - 3) + "...";
+};
+
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
@@ -16,18 +26,36 @@ export class BasicInformationServer extends Base {
 
   private update(entity: HomeAssistantEntityInformation) {
     const { basicInformation } = this.env.get(BridgeDataProvider);
+    const device = entity.deviceRegistry;
     applyPatchState(this.state, {
+      // The correct vendor name is in `device?.manufacturer`, but most
+      // controllers are currently unable to show this for bridged devices, and
+      // as Alexa Media Player relies on a check for a t0bst4r vendor to avoid
+      // loops, we keep it like this for now.
+      // See: https://github.com/alandtse/alexa_media_player/pull/2730
       vendorId: VendorId(basicInformation.vendorId),
       vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
-      productName: maxLengthOrHash(basicInformation.productName, 32),
-      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
+      productName:
+        (device?.model_id
+          ? ellipsize(device?.model_id, 32)
+          : ellipsize(device?.model, 32)) ??
+        maxLengthOrHash(basicInformation.productName, 32),
+      productLabel:
+        ellipsize(device?.model, 64) ??
+        maxLengthOrHash(basicInformation.productLabel, 64),
       hardwareVersion: basicInformation.hardwareVersion,
       softwareVersion: basicInformation.softwareVersion,
-      nodeLabel: maxLengthOrHash(
+      hardwareVersionString: ellipsize(device?.hw_version, 64) ?? undefined,
+      softwareVersionString: ellipsize(device?.sw_version, 64) ?? undefined,
+      nodeLabel: ellipsize(
         entity.state.attributes.friendly_name ?? entity.entity_id,
         32,
       ),
       reachable: entity.state.state !== "unavailable",
+
+      // The device serial number is available in `device?.serial_number`, but
+      // we're keeping it as the entity ID for now to avoid breaking existing
+      // deployments.
       serialNumber: maxLengthOrHash(entity.entity_id, 32),
     });
   }
