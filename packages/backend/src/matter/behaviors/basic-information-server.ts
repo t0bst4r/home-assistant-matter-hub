@@ -6,6 +6,16 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 import { VendorId } from "@matter/main";
 
+const ellipsize = (
+  str: string | undefined,
+  len: number,
+): string | undefined => {
+  if (!str || str.length <= len) {
+    return str;
+  }
+  return str.slice(0, len - 3) + "...";
+};
+
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
@@ -16,19 +26,32 @@ export class BasicInformationServer extends Base {
 
   private update(entity: HomeAssistantEntityInformation) {
     const { basicInformation } = this.env.get(BridgeDataProvider);
+    const device = entity.deviceRegistry;
     applyPatchState(this.state, {
       vendorId: VendorId(basicInformation.vendorId),
-      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
-      productName: maxLengthOrHash(basicInformation.productName, 32),
-      productLabel: maxLengthOrHash(basicInformation.productLabel, 64),
+      vendorName:
+        ellipsize(device?.manufacturer, 32) ??
+        maxLengthOrHash(basicInformation.vendorName, 32),
+      productName:
+        (device?.model_id
+          ? ellipsize(device?.model_id, 32)
+          : ellipsize(device?.model, 32)) ??
+        maxLengthOrHash(basicInformation.productName, 32),
+      productLabel:
+        ellipsize(device?.model, 64) ??
+        maxLengthOrHash(basicInformation.productLabel, 64),
       hardwareVersion: basicInformation.hardwareVersion,
       softwareVersion: basicInformation.softwareVersion,
+      hardwareVersionString: ellipsize(device?.hw_version, 64) ?? undefined,
+      softwareVersionString: ellipsize(device?.sw_version, 64) ?? undefined,
       nodeLabel: maxLengthOrHash(
         entity.state.attributes.friendly_name ?? entity.entity_id,
         32,
       ),
       reachable: entity.state.state !== "unavailable",
-      serialNumber: maxLengthOrHash(entity.entity_id, 32),
+      serialNumber:
+        ellipsize(device?.serial_number, 32) ??
+        maxLengthOrHash(entity.entity_id, 32),
     });
   }
 }
