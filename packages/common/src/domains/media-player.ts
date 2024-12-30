@@ -8,4 +8,5 @@ export enum MediaPlayerDeviceClass {
 export interface MediaPlayerDeviceAttributes {
   device_class?: MediaPlayerDeviceClass;
   volume_level?: number;
+  is_volume_muted?: boolean;
 }

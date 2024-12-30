@@ -6,13 +6,27 @@ import {
 import { SpeakerDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
-import { OnOffServer } from "../behaviors/on-off-server.js";
+import { OnOffServer, OnOffConfig } from "../behaviors/on-off-server.js";
 import {
   LevelControlConfig,
   LevelControlServer,
 } from "../behaviors/level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { OnOffPlugInUnitDevice } from "@matter/main/devices";
+
+const muteOnOffConfig: OnOffConfig = {
+  turnOn: {
+    action: "media_player.volume_mute",
+    data: { is_volume_muted: false },
+  },
+  turnOff: {
+    action: "media_player.volume_mute",
+    data: { is_volume_muted: true },
+  },
+  isOn: (state: HomeAssistantEntityState<MediaPlayerDeviceAttributes>) => {
+    return !state.attributes.is_volume_muted;
+  },
+};
 
 const FallbackEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
@@ -40,7 +54,7 @@ const MediaPlayerEndpointType = SpeakerDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer,
+  OnOffServer.set({ config: muteOnOffConfig }),
   LevelControlServer.set({ config: volumeLevelConfig }),
 );
 
