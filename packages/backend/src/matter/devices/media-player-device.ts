@@ -38,14 +38,16 @@ const FallbackEndpointType = OnOffPlugInUnitDevice.with(
 const volumeLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<MediaPlayerDeviceAttributes>) => {
     if (state.attributes.volume_level != null) {
-      return state.attributes.volume_level * 254;
+      return state.attributes.volume_level * 100;
     }
     return 0;
   },
+  getMinValue: (_: HomeAssistantEntityState) => 0,
+  getMaxValue: (_: HomeAssistantEntityState) => 100,
   moveToLevel: {
     action: "media_player.volume_set",
     data: (value) => {
-      return { volume_level: value / 254 };
+      return { volume_level: value / 100 };
     },
   },
 };
