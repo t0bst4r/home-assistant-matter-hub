@@ -10,9 +10,11 @@ export interface OnOffConfig {
   isOn?: (state: HomeAssistantEntityState) => boolean;
   turnOn?: {
     action: string;
+    data?: object;
   };
   turnOff?: {
     action: string;
+    data?: object;
   };
 }
 
@@ -35,14 +37,16 @@ export class OnOffServer extends Base {
   override async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
-    await homeAssistant.callAction(action);
+    const data = this.state.config?.turnOn?.data;
+    await homeAssistant.callAction(action, data);
   }
 
   override async off() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action =
       this.state.config?.turnOff?.action ?? "homeassistant.turn_off";
-    await homeAssistant.callAction(action);
+    const data = this.state.config?.turnOff?.data;
+    await homeAssistant.callAction(action, data);
   }
 
   private isOn(state: HomeAssistantEntityState) {
