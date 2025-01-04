@@ -29,6 +29,8 @@ export function testMatcher(
         !!entity.registry?.labels &&
         entity.registry.labels.includes(matcher.value)
       );
+    case "entity_category":
+      return entity.registry?.entity_category === matcher.value;
     case "platform":
       return entity.registry?.platform === matcher.value;
     case "pattern":

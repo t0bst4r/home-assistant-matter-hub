@@ -4,6 +4,7 @@ export enum HomeAssistantMatcherType {
   Platform = "platform",
   Label = "label",
   Area = "area",
+  EntityCategory = "entity_category",
 }
 
 export interface HomeAssistantMatcher {

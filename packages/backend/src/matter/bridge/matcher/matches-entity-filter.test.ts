@@ -14,6 +14,7 @@ const registry: HomeAssistantEntityRegistry = {
   has_entity_name: true,
   original_name: "any",
   unique_id: "unique_id",
+  entity_category: "diagnostic",
   platform: "hue",
   labels: ["test_label"],
 };
@@ -81,6 +82,23 @@ describe("matchEntityFilter.testMatcher", () => {
       testMatcher(entity, {
         type: HomeAssistantMatcherType.Platform,
         value: "not_hue",
+      }),
+    ).toBeFalsy();
+  });
+
+  it("should match the entity category", () => {
+    expect(
+      testMatcher(entity, {
+        type: HomeAssistantMatcherType.EntityCategory,
+        value: "diagnostic",
+      }),
+    ).toBeTruthy();
+  });
+  it("should not match the entity category", () => {
+    expect(
+      testMatcher(entity, {
+        type: HomeAssistantMatcherType.EntityCategory,
+        value: "configuration",
       }),
     ).toBeFalsy();
   });
