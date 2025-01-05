@@ -9,6 +9,7 @@ export * from "./relative-humidity-measurement.js";
 export * from "./temperature-measurement.js";
 export * from "./thermostat.js";
 export * from "./window-covering.js";
+export * from "./media-input.js";
 
 export enum ClusterId {
   homeAssistantEntity = "homeAssistantEntity",
@@ -30,4 +31,5 @@ export enum ClusterId {
   temperatureMeasurement = "temperatureMeasurement",
   thermostat = "thermostat",
   windowCovering = "windowCovering",
+  mediaInput = "mediaInput",
 }

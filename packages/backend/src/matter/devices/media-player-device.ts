@@ -2,6 +2,7 @@ import {
   BridgeFeatureFlags,
   HomeAssistantEntityState,
   MediaPlayerDeviceAttributes,
+  MediaPlayerDeviceFeature,
 } from "@home-assistant-matter-hub/common";
 import { SpeakerDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
@@ -13,6 +14,8 @@ import {
 } from "../behaviors/level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { OnOffPlugInUnitDevice } from "@matter/main/devices";
+import { MediaInputServer } from "../behaviors/media-input-server.js";
+import { testBit } from "../../utils/test-bit.js";
 
 const muteOnOffConfig: OnOffConfig = {
   turnOn: {
@@ -35,6 +38,12 @@ const FallbackEndpointType = OnOffPlugInUnitDevice.with(
   OnOffServer,
 );
 
+const SpeakerEndpointType = SpeakerDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantEntityBehavior,
+);
+
 const volumeLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<MediaPlayerDeviceAttributes>) => {
     if (state.attributes.volume_level != null) {
@@ -52,21 +61,28 @@ const volumeLevelConfig: LevelControlConfig = {
   },
 };
 
-const MediaPlayerEndpointType = SpeakerDevice.with(
-  BasicInformationServer,
-  IdentifyServer,
-  HomeAssistantEntityBehavior,
-  OnOffServer.set({ config: muteOnOffConfig }),
-  LevelControlServer.set({ config: volumeLevelConfig }),
-);
-
 export function MediaPlayerDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
   featureFlags?: BridgeFeatureFlags,
 ) {
-  if (featureFlags?.matterSpeakers) {
-    return MediaPlayerEndpointType.set({ homeAssistantEntity });
-  } else {
+  if (!featureFlags?.matterSpeakers) {
     return FallbackEndpointType.set({ homeAssistantEntity });
   }
+  const attributes = homeAssistantEntity.entity.state
+    .attributes as MediaPlayerDeviceAttributes;
+  const supportedFeatures = attributes.supported_features ?? 0;
+
+  // TODO: Support power control, which needs to be implemented as another
+  // OnOffServer on a separate endpoint for this device.
+  let device = SpeakerEndpointType;
+  if (testBit(supportedFeatures, MediaPlayerDeviceFeature.VOLUME_MUTE)) {
+    device = device.with(OnOffServer.set({ config: muteOnOffConfig }));
+  }
+  if (testBit(supportedFeatures, MediaPlayerDeviceFeature.VOLUME_SET)) {
+    device = device.with(LevelControlServer.set({ config: volumeLevelConfig }));
+  }
+  if (testBit(supportedFeatures, MediaPlayerDeviceFeature.SELECT_SOURCE)) {
+    device = device.with(MediaInputServer);
+  }
+  return device.set({ homeAssistantEntity });
 }

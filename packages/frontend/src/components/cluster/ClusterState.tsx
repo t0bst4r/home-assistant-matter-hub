@@ -8,6 +8,7 @@ import { DoorLockState } from "./states/DoorLockState.tsx";
 import { WindowCoveringState } from "./states/WindowCoveringState.tsx";
 import { TemperatureMeasurementState } from "./states/TemperatureMeasurementState.tsx";
 import { OccupancySensingState } from "./states/OccupancySensingState.tsx";
+import { MediaInputState } from "./states/MediaInputState.tsx";
 import {
   BooleanStateClusterState,
   ClusterId,
@@ -21,6 +22,7 @@ import {
   TemperatureMeasurementClusterState,
   ThermostatClusterState,
   WindowCoveringClusterState,
+  MediaInputClusterState,
 } from "@home-assistant-matter-hub/common";
 import { BooleanState } from "./states/BooleanState.tsx";
 import { RelativeHumidityMeasurementState } from "./states/RelativeHumidityMeasurementState.tsx";
@@ -70,6 +72,9 @@ const renderer: Record<ClusterId, FC<{ state: unknown }> | null> = {
   ),
   [ClusterId.fanControl]: ({ state }) => (
     <FanControlState state={state as FanControlClusterState} />
+  ),
+  [ClusterId.mediaInput]: ({ state }) => (
+    <MediaInputState state={state as MediaInputClusterState} />
   ),
   [ClusterId.homeAssistantEntity]: null,
   [ClusterId.descriptor]: null,

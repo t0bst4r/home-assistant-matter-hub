@@ -18,6 +18,7 @@ import {
   LightDeviceColorMode,
   SensorDeviceAttributes,
   SensorDeviceClass,
+  MediaPlayerDeviceFeature,
 } from "@home-assistant-matter-hub/common";
 import { createDevice } from "./create-device.js";
 import _ from "lodash";
@@ -112,7 +113,11 @@ const testEntities: Record<
     createEntity("input_boolean.input_boolean1", "on"),
   ],
   [HomeAssistantDomain.input_button]: [createEntity("input_button.ib1", "any")],
-  [HomeAssistantDomain.media_player]: [createEntity("media_player.m1", "on")],
+  [HomeAssistantDomain.media_player]: [
+    createEntity("media_player.m1", "on", {
+      supported_features: MediaPlayerDeviceFeature.SELECT_SOURCE,
+    }),
+  ],
   [HomeAssistantDomain.humidifier]: [
     createEntity<HumidiferDeviceAttributes>("humidifier.h1", "on", {
       min_humidity: 15,
