@@ -62,30 +62,24 @@ Simply add the following GitHub Repository URL to your Home Assistant AddOn Stor
 
 ### 1.2 Docker Image
 
-This repository builds a docker image for every release. You can simply run it by using following 'docker-compose.yaml':
+This repository builds a docker image for every release. You can simply run it by using `docker-compose`:
 
-```bash
+```yaml
 services:
   matter-hub:
-    hostname: matter-hub
-    container_name: matter-hub
-    environment:
+    image: ghcr.io/t0bst4r/home-assistant-matter-hub:latest
+    restart: unless-stopped
+    network_mode: host
+    environment: # more options can be found in the configuration section
       - HAMH_HOME_ASSISTANT_URL=http://192.168.178.123:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=ey...ZI
       - HAMH_LOG_LEVEL=info
-      - HAMH_WEB_PORT=8482
+      - HAMH_HTTP_PORT=8482
     volumes:
       - $PWD/home-assistant-matter-hub:/data
-    network_mode: host
-    restart: always
-    image: ghcr.io/t0bst4r/home-assistant-matter-hub:latest
 ```
 
-After creating the file you can run
-
-```bash
-docker compose up -d
-```
+Then you can simply run `docker compose up -d` to start the container.
 
 In the docker image the application stores its data in `/data`, so you can mount a volume there to
 persist it, but you could change that by setting the `HAMH_STORAGE_LOCATION` variable.
@@ -94,6 +88,7 @@ Alternatively, you can also run the container as follows:
 
 ```bash
 docker run -d \
+  # more options can be found in the configuration section
   # required: the address of your home assistant instance
   -e HAMH_HOME_ASSISTANT_URL="http://192.168.178.123:8123/" \
   # required: a long lived access token for your home assistant instance
@@ -103,7 +98,7 @@ docker run -d \
   -e HAMH_LOG_LEVEL="info" \
   # optional: the port to use for the web ui
   # default: 8482
-  -e HAMH_WEB_PORT=8482 \
+  -e HAMH_HTTP_PORT=8482 \
   # recommended: persist the configuration and application data
   -v $PWD/home-assistant-matter-hub:/data \
   # required due to restrictions in matter
@@ -142,7 +137,7 @@ home-assistant-matter-hub start \
   # optional: the port to use for the web ui
   # default: 8482
   # can be replaced with an environment variable: HAMH_WEB_PORT
-  --web-port=8482
+  --http-port=8482
 ```
 
 The application will store its data in `$HOME/.home-assistant-matter-hub`. You can configure the storage path by
