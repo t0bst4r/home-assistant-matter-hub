@@ -36,6 +36,8 @@ export class ColorControlServerBase extends FeaturedBase {
       minKelvin = Math.min(minKelvin, currentKelvin ?? Infinity);
       maxKelvin = Math.max(maxKelvin, currentKelvin ?? -Infinity);
     }
+    minKelvin = Math.min(Math.max(minKelvin, 0), 65279);
+    maxKelvin = Math.min(Math.max(maxKelvin, 0), 65279);
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
       colorMode: this.getMatterColorMode(attributes.color_mode),
