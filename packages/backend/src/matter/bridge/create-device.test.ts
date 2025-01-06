@@ -126,6 +126,7 @@ const testEntities: Record<
       current_humidity: 45,
     }),
   ],
+  [HomeAssistantDomain.vacuum]: [createEntity("vacuum.vc1", "idle")],
 };
 
 const featureFlags: BridgeFeatureFlags = {
