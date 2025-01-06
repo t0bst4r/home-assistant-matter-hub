@@ -3,6 +3,7 @@ import { HomeAssistantFilter } from "./home-assistant-filter.js";
 interface AllBridgeFeatureFlags {
   readonly matterSpeakers: boolean;
   readonly matterFans: boolean;
+  readonly mimicHaCoverPercentage: boolean;
 }
 
 export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;

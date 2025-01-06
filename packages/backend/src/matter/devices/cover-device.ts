@@ -4,6 +4,7 @@ import { IdentifyServer } from "../behaviors/identify-server.js";
 import { WindowCoveringServer } from "../behaviors/window-covering-server.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
+  BridgeFeatureFlags,
   CoverDeviceAttributes,
   CoverSupportedFeatures,
 } from "@home-assistant-matter-hub/common";
@@ -12,7 +13,7 @@ import { EndpointType } from "@matter/main";
 import { FeatureSelection } from "../../utils/feature-selection.js";
 import { WindowCovering } from "@matter/main/clusters";
 
-const CoverDeviceType = (supportedFeatures: number) => {
+const CoverDeviceType = (supportedFeatures: number, mimicHa: boolean) => {
   const features: FeatureSelection<WindowCovering.Complete> = new Set();
   if (testBit(supportedFeatures, CoverSupportedFeatures.support_open)) {
     features.add("Lift");
@@ -41,16 +42,25 @@ const CoverDeviceType = (supportedFeatures: number) => {
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    WindowCoveringServer.with(...features),
+    WindowCoveringServer.with(...features).set({
+      config: {
+        invertPercentage: !mimicHa,
+        swapOpenAndClose: mimicHa,
+      },
+    }),
   );
 };
 
 export function CoverDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
+  featureFlags?: BridgeFeatureFlags,
 ): EndpointType {
   const attributes = homeAssistantEntity.entity.state
     .attributes as CoverDeviceAttributes;
-  return CoverDeviceType(attributes.supported_features ?? 0).set({
+  return CoverDeviceType(
+    attributes.supported_features ?? 0,
+    featureFlags?.mimicHaCoverPercentage ?? false,
+  ).set({
     homeAssistantEntity,
   });
 }

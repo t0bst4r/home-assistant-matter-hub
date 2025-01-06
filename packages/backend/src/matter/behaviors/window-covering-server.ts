@@ -13,6 +13,12 @@ import { WindowCovering } from "@matter/main/clusters";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
+import { convertCoverValue } from "./utils/window-covering-server-utils.js";
+
+export interface WindowCoveringConfig {
+  invertPercentage?: boolean;
+  swapOpenAndClose?: boolean;
+}
 
 const FeaturedBase = Base.with(
   "Lift",
@@ -95,7 +101,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     percentage: number | undefined,
     coverState: CoverDeviceState,
   ) {
-    let currentValue = this.invertValue(percentage);
+    let currentValue = this.convertValue(percentage);
     if (currentValue != null) {
       currentValue *= 100;
     } else {
@@ -156,7 +162,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     const attributes = homeAssistant.entity.state
       .attributes as CoverDeviceAttributes;
     const currentPosition = attributes.current_position;
-    const targetPosition = this.invertValue(targetPercent100ths / 100);
+    const targetPosition = this.convertValue(targetPercent100ths / 100);
     if (targetPosition == null || targetPosition === currentPosition) {
       return;
     }
@@ -178,7 +184,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     const attributes = homeAssistant.entity.state
       .attributes as CoverDeviceAttributes;
     const currentPosition = attributes.current_tilt_position;
-    const targetPosition = this.invertValue(targetPercent100ths / 100);
+    const targetPosition = this.convertValue(targetPercent100ths / 100);
     if (targetPosition == null || targetPosition === currentPosition) {
       return;
     }
@@ -187,16 +193,22 @@ export class WindowCoveringServerBase extends FeaturedBase {
     });
   }
 
-  private invertValue(percentage: number | undefined | null): number | null {
-    if (percentage == null) {
-      return null;
+  private convertValue(percentage: number | undefined | null): number | null {
+    if (percentage == -1) {
+      percentage = 0;
     }
-    return 100 - percentage;
+    return convertCoverValue(
+      percentage,
+      this.state.config?.invertPercentage == true,
+      this.state.config?.swapOpenAndClose == true,
+    );
   }
 }
 
 export namespace WindowCoveringServerBase {
-  export class State extends FeaturedBase.State {}
+  export class State extends FeaturedBase.State {
+    config?: WindowCoveringConfig;
+  }
 }
 
 export class WindowCoveringServer extends WindowCoveringServerBase.for(

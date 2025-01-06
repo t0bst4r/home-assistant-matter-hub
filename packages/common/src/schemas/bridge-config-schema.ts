@@ -58,6 +58,13 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
+    mimicHaCoverPercentage: {
+      title: "Mimic Cover Percentage from Home Assistant",
+      description:
+        "This will NOT invert percentages (=> HA = Matter), but it will swap 0% and 100% because those are used for 'open' and 'close' commands.",
+      type: "boolean",
+      default: false,
+    },
   },
   additionalProperties: false,
 };

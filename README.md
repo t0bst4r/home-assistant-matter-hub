@@ -11,9 +11,11 @@ local communication without the need of port forwarding etc.
 
 # 🎅 Taking a Holiday Break – See You in the New Year! 🎄
 
-As the holiday season approaches and my main job keeps me busy, I haven’t been able to dedicate as much time to this project as I’d like. Over the holidays, I’ll be taking a well-deserved break to recharge.
+As the holiday season approaches and my main job keeps me busy, I haven’t been able to dedicate as much time to this
+project as I’d like. Over the holidays, I’ll be taking a well-deserved break to recharge.
 
-That said, if an opportunity arises, I’ll try to answer a few questions or review a pull request via my phone. I’m looking forward to returning refreshed and motivated in the new year.
+That said, if an opportunity arises, I’ll try to answer a few questions or review a pull request via my phone. I’m
+looking forward to returning refreshed and motivated in the new year.
 
 Thank you for your understanding and continued support!  
 **Happy holidays!** 🎄
@@ -21,9 +23,9 @@ Thank you for your understanding and continued support!
 ## Table of contents
 
 1. [Installation](#1-installation)
-   1. [Native Home-Assistant-AddOn](#11-native-home-assistant-addon)
-   2. [Docker Image](#12-docker-image)
-   3. [Manual Installation using npm](#13-manual-installation-using-npm)
+    1. [Native Home-Assistant-AddOn](#11-native-home-assistant-addon)
+    2. [Docker Image](#12-docker-image)
+    3. [Manual Installation using npm](#13-manual-installation-using-npm)
 2. [Configuration](#2-configuration)
 3. [Bridge Configuration](#3-bridge-configuration)
 4. [Frequently Asked Questions & Troubleshooting](#4-frequently-asked-questions--troubleshooting)
@@ -208,7 +210,9 @@ The `type` can be one of:
 - `pattern` - a pattern matching your entity ids
 - `domain` - the domain you want to include or exclude
 - `platform` - the integration you want to include or exclude
-- `entity_category` - the [entity category](https://developers.home-assistant.io/docs/core/entity/#registry-properties) (`configuration` / `diagnostic`) you want to include or exclude
+- `entity_category` -
+  the [entity category](https://developers.home-assistant.io/docs/core/entity/#registry-properties) (`configuration` /
+  `diagnostic`) you want to include or exclude
 - `label` - the slug of a label you want to include or exclude
 - `area` - the slug of an area you want to include or exclude
 
@@ -258,7 +262,8 @@ rules will be excluded.
 >
 > - Labels and areas in Home Assistant are technically represented by their "slugs".
 > - Slugs are technical identifiers used in the background.
-> - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an underscore.
+> - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an
+    underscore.
 > - Even when renaming a label or area, the slug doesn't change. Never.
 >
 > You can retrieve the slug using the followiung templates in Home Assistant:
@@ -269,13 +274,14 @@ rules will be excluded.
 
 ## 4. Frequently Asked Questions & Troubleshooting
 
-Please review the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
+Please review
+the [Documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) for
 more details and Frequently Asked Questions.
 
 ## 5. Supported Domains / Device Types
 
 | Domain        | Represented as Device Class                                          | Comment                                                                                                                                                                                                                                             |
-| ------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | light         | OnOffLight, DimmableLight, ColorTemperatureLight, ExtendedColorLight | Depends on the supported features attribute of the device.                                                                                                                                                                                          |
 | switch        | OnOffPlugInUnit                                                      |                                                                                                                                                                                                                                                     |
 | lock          | DoorLock                                                             |                                                                                                                                                                                                                                                     |
