@@ -6,3 +6,4 @@ export * from "./humidifer.js";
 export * from "./light.js";
 export * from "./sensor.js";
 export * from "./media-player.js";
+export * from "./vacuum.js";

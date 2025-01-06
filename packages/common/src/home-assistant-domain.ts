@@ -14,4 +14,5 @@ export enum HomeAssistantDomain {
   scene = "scene",
   media_player = "media_player",
   humidifier = "humidifier",
+  vacuum = "vacuum",
 }

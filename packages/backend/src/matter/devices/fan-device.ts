@@ -42,8 +42,8 @@ export function FanDevice(
   const device = Device.with(
     IdentifyServer,
     BasicInformationServer,
-    OnOffServer.set({ config: fanOnOffConfig }),
     HomeAssistantEntityBehavior,
+    OnOffServer.set({ config: fanOnOffConfig }),
     FanControlServer.with(...FanControlFeatures(supportedFeatures)),
   );
   return device.set({ homeAssistantEntity });
