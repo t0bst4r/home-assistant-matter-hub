@@ -20,17 +20,19 @@ export class MediaInputServer extends Base {
   private update(entity: HomeAssistantEntityInformation) {
     const attributes = entity.state.attributes as MediaPlayerDeviceAttributes;
     let source_idx = 0;
-    const sources = attributes.source_list?.map((source) => ({
+    const inputList = attributes.source_list?.map((source) => ({
       index: source_idx++,
-      inputType: MediaInput.InputType.Hdmi,
+      inputType: MediaInput.InputType.Other,
       name: source,
       description: source,
     }));
     let currentInput = attributes.source_list?.indexOf(attributes.source ?? "");
-    currentInput = currentInput == -1 ? 0 : currentInput;
+    if (currentInput === -1) {
+      currentInput = 0;
+    }
     applyPatchState(this.state, {
-      inputList: sources,
-      currentInput: currentInput,
+      inputList,
+      currentInput,
     });
   }
 
