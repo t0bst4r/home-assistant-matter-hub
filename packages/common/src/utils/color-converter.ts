@@ -143,10 +143,24 @@ export abstract class ColorConverter {
   /**
    * Convert Color Tempareture from Kelvin to Mireds
    * @param temperatureKelvin Temperature in Kelvin
+   * @param rounding Whether to floor or to ceil after conversion
+   * @param boundaries Min and Max Boundaries to apply
    * @return Temperature in Mireds
    */
-  public static temperatureKelvinToMireds(temperatureKelvin: number): number {
-    return 1_000_000 / temperatureKelvin;
+  public static temperatureKelvinToMireds(
+    temperatureKelvin: number,
+    rounding: "floor" | "ceil" | "none" = "none",
+    boundaries: [min: number, max: number] = [0, 65279],
+  ): number {
+    let result = 1_000_000 / temperatureKelvin;
+    const [min, max] = boundaries;
+    result = Math.min(Math.max(result, min), max);
+    if (rounding === "floor") {
+      result = Math.floor(result);
+    } else if (rounding === "ceil") {
+      result = Math.ceil(result);
+    }
+    return result;
   }
 
   public static temperatureKelvinToColor(temperatureKelvin: number): Color {

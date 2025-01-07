@@ -3,13 +3,13 @@ import {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
   LightDeviceAttributes,
-  LightDeviceColorMode,
 } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { getMatterColorMode } from "./utils/color-control-server-utils.js";
 
 const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
 
@@ -36,11 +36,9 @@ export class ColorControlServerBase extends FeaturedBase {
       minKelvin = Math.min(minKelvin, currentKelvin ?? Infinity);
       maxKelvin = Math.max(maxKelvin, currentKelvin ?? -Infinity);
     }
-    minKelvin = Math.min(Math.max(minKelvin, 0), 65279);
-    maxKelvin = Math.min(Math.max(maxKelvin, 0), 65279);
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
-      colorMode: this.getMatterColorMode(attributes.color_mode),
+      colorMode: getMatterColorMode(attributes.color_mode, this.features),
       ...(this.features.hueSaturation
         ? {
             currentHue: hue,
@@ -49,15 +47,12 @@ export class ColorControlServerBase extends FeaturedBase {
         : {}),
       ...(this.features.colorTemperature
         ? {
-            coupleColorTempToLevelMinMireds: Math.floor(
-              ColorConverter.temperatureKelvinToMireds(maxKelvin),
-            ),
-            colorTempPhysicalMinMireds: Math.floor(
-              ColorConverter.temperatureKelvinToMireds(maxKelvin),
-            ),
-            colorTempPhysicalMaxMireds: Math.ceil(
-              ColorConverter.temperatureKelvinToMireds(minKelvin),
-            ),
+            coupleColorTempToLevelMinMireds:
+              ColorConverter.temperatureKelvinToMireds(maxKelvin, "floor"),
+            colorTempPhysicalMinMireds:
+              ColorConverter.temperatureKelvinToMireds(maxKelvin, "floor"),
+            colorTempPhysicalMaxMireds:
+              ColorConverter.temperatureKelvinToMireds(minKelvin, "ceil"),
             startUpColorTemperatureMireds:
               ColorConverter.temperatureKelvinToMireds(
                 currentKelvin ?? maxKelvin,
@@ -136,28 +131,6 @@ export class ColorControlServerBase extends FeaturedBase {
       return ColorConverter.toMatterHS(ColorConverter.fromXY(x, y));
     }
     return undefined;
-  }
-
-  private getMatterColorMode(
-    mode: LightDeviceColorMode | undefined,
-  ): ColorControl.ColorMode {
-    // This cluster is only used with HueSaturation, ColorTemperature or Both.
-    // It is never used without any of them.
-    if (this.features.colorTemperature && this.features.hueSaturation) {
-      if (mode === LightDeviceColorMode.COLOR_TEMP) {
-        return ColorControl.ColorMode.ColorTemperatureMireds;
-      } else {
-        return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
-      }
-    } else if (this.features.colorTemperature) {
-      return ColorControl.ColorMode.ColorTemperatureMireds;
-    } else if (this.features.hueSaturation) {
-      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
-    } else {
-      throw new Error(
-        "ColorControlServer does not support either HueSaturation or ColorTemperature",
-      );
-    }
   }
 }
 
