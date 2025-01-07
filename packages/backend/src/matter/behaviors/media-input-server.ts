@@ -8,8 +8,6 @@ import { MediaInput } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 export class MediaInputServer extends Base {
-  declare state: MediaInputServer.State;
-
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
@@ -27,7 +25,7 @@ export class MediaInputServer extends Base {
       description: source,
     }));
     let currentInput = attributes.source_list?.indexOf(attributes.source ?? "");
-    if (currentInput === -1) {
+    if (currentInput === -1 || currentInput == null) {
       currentInput = 0;
     }
     applyPatchState(this.state, {
@@ -46,8 +44,4 @@ export class MediaInputServer extends Base {
 
   override async showInputStatus() {}
   override async hideInputStatus() {}
-}
-
-export namespace MediaInputServer {
-  export class State extends Base.State {}
 }
