@@ -1,8 +1,7 @@
 import { BridgeDetails } from "../../components/bridge/BridgeDetails.tsx";
-import { Link, useParams } from "react-router";
+import { Link as RouterLink, useParams } from "react-router";
 import { useBridge } from "../../hooks/data/bridges.ts";
 import { memo, useCallback, useEffect, useState } from "react";
-import { useNotifications } from "@toolpad/core";
 import { useDevices } from "../../hooks/data/devices.ts";
 import { DeviceList } from "../../components/device/DeviceList.tsx";
 import { useTimer } from "../../hooks/timer.ts";
@@ -11,6 +10,8 @@ import Box from "@mui/material/Box";
 import { Edit, Refresh } from "@mui/icons-material";
 import { BridgeStatusIcon } from "../../components/bridge/BridgeStatusIcon.tsx";
 import { BridgeStatusHint } from "../../components/bridge/BridgeStatusHint.tsx";
+import { useNotifications } from "../../components/notifications/use-notifications.ts";
+import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
 
 const MemoizedBridgeDetails = memo(BridgeDetails);
 const MemoizedDeviceList = memo(DeviceList);
@@ -38,13 +39,16 @@ export const BridgeDetailsPage = () => {
 
   useEffect(() => {
     if (bridgeError) {
-      notifications.show(bridgeError.message, { severity: "error" });
+      notifications.show({
+        message: bridgeError.message ?? "Failed to load Bridge details",
+        severity: "error",
+      });
     }
   }, [bridgeError, notifications]);
 
   useEffect(() => {
     if (devicesError) {
-      notifications.show(devicesError.message, { severity: "error" });
+      notifications.show({ message: devicesError.message, severity: "error" });
     }
   }, [devicesError, notifications]);
 
@@ -57,12 +61,19 @@ export const BridgeDetailsPage = () => {
   }
 
   return (
-    <Stack spacing={4} mt={4}>
+    <Stack spacing={4}>
+      <Breadcrumbs
+        items={[
+          { name: "Bridges", to: "/" },
+          { name: bridge.name, to: `/bridges/${bridgeId}` },
+        ]}
+      />
+
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h4">
           {bridge.name} <BridgeStatusIcon status={bridge.status} />
         </Typography>
-        <IconButton component={Link} to="./edit">
+        <IconButton component={RouterLink} to="./edit">
           <Edit />
         </IconButton>
       </Box>
