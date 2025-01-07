@@ -59,7 +59,12 @@ export class WindowCoveringServerBase extends FeaturedBase {
     );
 
     applyPatchState<WindowCoveringServerBase.State>(this.state, {
-      type: WindowCovering.WindowCoveringType.Rollershade,
+      type:
+        this.features.lift && this.features.tilt
+          ? WindowCovering.WindowCoveringType.TiltBlindLift
+          : this.features.tilt
+            ? WindowCovering.WindowCoveringType.TiltBlindTiltOnly
+            : WindowCovering.WindowCoveringType.Rollershade,
       endProductType: WindowCovering.EndProductType.RollerShade,
       operationalStatus: {
         global: movementStatus,
