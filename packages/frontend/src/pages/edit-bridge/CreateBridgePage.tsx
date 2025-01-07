@@ -1,10 +1,11 @@
-import { Container } from "@mui/material";
 import { useMemo } from "react";
 import { useCreateBridge, useUsedPorts } from "../../hooks/data/bridges.ts";
 import { useNavigate } from "react-router";
-import { useNotifications } from "@toolpad/core";
 import { BridgeConfig } from "@home-assistant-matter-hub/common";
 import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
+import { useNotifications } from "../../components/notifications/use-notifications.ts";
+import { Stack } from "@mui/material";
+import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
 
 const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
@@ -46,10 +47,12 @@ export const CreateBridgePage = () => {
 
   const saveAction = async (config: BridgeConfig) => {
     await createBridge({ ...config })
-      .then(() => notifications.show("Bridge saved", { severity: "success" }))
+      .then(() =>
+        notifications.show({ message: "Bridge saved", severity: "success" }),
+      )
       .then(() => cancelAction())
       .catch((err: Error) =>
-        notifications.show(err.message, { severity: "error" }),
+        notifications.show({ message: err.message, severity: "error" }),
       );
   };
 
@@ -58,13 +61,20 @@ export const CreateBridgePage = () => {
   }
 
   return (
-    <Container>
+    <Stack spacing={4}>
+      <Breadcrumbs
+        items={[
+          { name: "Bridges", to: "/" },
+          { name: "Create New", to: "/bridges/create" },
+        ]}
+      />
+
       <BridgeConfigEditor
         bridge={bridgeConfig}
         usedPorts={usedPorts}
         onSave={saveAction}
         onCancel={cancelAction}
       />
-    </Container>
+    </Stack>
   );
 };

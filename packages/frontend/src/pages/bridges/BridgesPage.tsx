@@ -4,13 +4,13 @@ import {
   useResetBridge,
 } from "../../hooks/data/bridges";
 import { BridgeList } from "../../components/bridge/BridgeList";
-import { Backdrop, CircularProgress, IconButton, Stack } from "@mui/material";
+import { Backdrop, Button, CircularProgress, Stack } from "@mui/material";
 import { useEffect } from "react";
 import Box from "@mui/material/Box";
 import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import { Add } from "@mui/icons-material";
-import { useNotifications } from "@toolpad/core";
 import { Link, useNavigate } from "react-router";
+import { useNotifications } from "../../components/notifications/use-notifications.ts";
 
 export const BridgesPage = () => {
   const notifications = useNotifications();
@@ -22,12 +22,15 @@ export const BridgesPage = () => {
   const { content: bridges, isLoading, error: bridgeError } = useBridges();
 
   const setSelectedBridge = (bridge: BridgeDataWithMetadata) => {
-    navigate(`${bridge.id}`);
+    navigate(`./bridges/${bridge.id}`);
   };
 
   useEffect(() => {
     if (bridgeError) {
-      notifications.show(bridgeError.message, { severity: "error" });
+      notifications.show({
+        message: bridgeError.message ?? "Could not load bridges",
+        severity: "error",
+      });
     }
   }, [bridgeError, notifications]);
 
@@ -42,11 +45,20 @@ export const BridgesPage = () => {
 
       <Stack spacing={4}>
         {bridges && (
-          <Box>
-            <Box display="flex" justifyContent="end">
-              <IconButton component={Link} to="./create">
-                <Add />
-              </IconButton>
+          <>
+            <Box
+              display="flex"
+              justifyContent="end"
+              paddingTop={{ xs: 1, sm: 0 }}
+            >
+              <Button
+                component={Link}
+                to="./bridges/create"
+                endIcon={<Add />}
+                variant="outlined"
+              >
+                Create new bridge
+              </Button>
             </Box>
 
             <BridgeList
@@ -55,7 +67,7 @@ export const BridgesPage = () => {
               onDelete={(b) => deleteBridge(b.id)}
               onReset={(b) => resetBridge(b.id)}
             />
-          </Box>
+          </>
         )}
       </Stack>
     </>
