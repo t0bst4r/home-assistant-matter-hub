@@ -6,16 +6,6 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 import { VendorId } from "@matter/main";
 
-const ellipsize = (
-  str: string | undefined,
-  len: number,
-): string | undefined => {
-  if (!str || str.length <= len) {
-    return str;
-  }
-  return str.slice(0, len - 3) + "...";
-};
-
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
@@ -34,52 +24,62 @@ export class BasicInformationServer extends Base {
       // loops, we keep it like this for now.
       // See: https://github.com/alandtse/alexa_media_player/pull/2730
       vendorId: VendorId(basicInformation.vendorId),
-      vendorName: maxLengthOrHash(basicInformation.vendorName, 32),
+      vendorName: hash(32, basicInformation.vendorName),
       productName:
-        (device?.model_id
-          ? ellipsize(device?.model_id, 32)
-          : ellipsize(device?.model, 32)) ??
-        maxLengthOrHash(basicInformation.productName, 32),
+        ellipse(32, device?.model_id) ??
+        ellipse(32, device?.model) ??
+        hash(32, basicInformation.productName),
       productLabel:
-        ellipsize(device?.model, 64) ??
-        maxLengthOrHash(basicInformation.productLabel, 64),
+        ellipse(64, device?.model) ?? hash(64, basicInformation.productLabel),
       hardwareVersion: basicInformation.hardwareVersion,
       softwareVersion: basicInformation.softwareVersion,
-      hardwareVersionString: ellipsize(device?.hw_version, 64) ?? undefined,
-      softwareVersionString: ellipsize(device?.sw_version, 64) ?? undefined,
-      nodeLabel: ellipsize(
-        entity.state.attributes.friendly_name ?? entity.entity_id,
-        32,
-      ),
+      hardwareVersionString: ellipse(64, device?.hw_version),
+      softwareVersionString: ellipse(64, device?.sw_version),
+      nodeLabel:
+        ellipse(32, entity.state.attributes.friendly_name) ??
+        ellipse(32, entity.entity_id),
       reachable: entity.state.state !== "unavailable",
-
       // The device serial number is available in `device?.serial_number`, but
       // we're keeping it as the entity ID for now to avoid breaking existing
       // deployments.
-      serialNumber: maxLengthOrHash(entity.entity_id, 32),
+      serialNumber: hash(32, entity.entity_id),
     });
   }
 }
 
-function maxLengthOrHash(
-  value: string | undefined,
+function ellipse(maxLength: number, value?: string) {
+  return trimToLength(value, maxLength, "ellipsis");
+}
+
+function hash(maxLength: number, value?: string) {
+  return trimToLength(value, maxLength, "hash");
+}
+
+function trimToLength(
+  value: string | null | undefined,
   maxLength: number,
+  type: "ellipsis" | "hash",
 ): string | undefined {
-  if (value == undefined) {
+  if (!value?.trim().length) {
     return undefined;
-  }
-  const hashLength = 4;
-  if (maxLength < 16) {
-    throw new Error("MaxLength cannot be shorter than 16");
   }
   if (value.length <= maxLength) {
     return value;
   } else {
-    const hash = crypto
+    const suffix = createSuffix(value, type);
+    return value.substring(0, maxLength - suffix.length) + suffix;
+  }
+}
+
+function createSuffix(value: string, type: "ellipsis" | "hash") {
+  if (type === "hash") {
+    const hashLength = 4;
+    return crypto
       .createHash("md5")
       .update(value)
       .digest("hex")
       .substring(0, hashLength);
-    return value.substring(0, maxLength - hashLength) + hash;
+  } else {
+    return "...";
   }
 }
