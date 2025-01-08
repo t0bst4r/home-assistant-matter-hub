@@ -36,7 +36,10 @@ export function testMatcher(
     case "pattern":
       return patternToRegex(matcher.value).test(entity.entity_id);
     case "area":
-      return entity.registry?.area_id === matcher.value;
+      return (
+        (entity.registry?.area_id ?? entity.deviceRegistry?.area_id) ===
+        matcher.value
+      );
   }
   return false;
 }

@@ -5,6 +5,7 @@ import {
   HomeAssistantEntityRegistry,
   HomeAssistantEntityState,
   HomeAssistantMatcherType,
+  HomeAssistantDeviceRegistry,
 } from "@home-assistant-matter-hub/common";
 
 const registry: HomeAssistantEntityRegistry = {
@@ -19,6 +20,8 @@ const registry: HomeAssistantEntityRegistry = {
   labels: ["test_label"],
 };
 
+const registryWithArea = { ...registry, area_id: "area_id" };
+
 const state: HomeAssistantEntityState = {
   entity_id: "light.my_entity",
   state: "on",
@@ -28,11 +31,19 @@ const state: HomeAssistantEntityState = {
   attributes: {},
 };
 
+const deviceRegistry: HomeAssistantDeviceRegistry = {
+  area_id: "area_id",
+};
+
 const entity: HomeAssistantEntityInformation = {
   entity_id: "light.my_entity",
   registry,
   state,
 };
+
+const entityWithArea = { ...entity, registry: registryWithArea };
+
+const entityWithDevice = { ...entity, deviceRegistry };
 
 describe("matchEntityFilter.testMatcher", () => {
   it("should match the domain", () => {
@@ -86,6 +97,54 @@ describe("matchEntityFilter.testMatcher", () => {
     ).toBeFalsy();
   });
 
+  it("should match the area", () => {
+    expect(
+      testMatcher(entityWithArea, {
+        type: HomeAssistantMatcherType.Area,
+        value: "area_id",
+      }),
+    ).toBeTruthy();
+  });
+  it("should not match the area", () => {
+    expect(
+      testMatcher(entityWithArea, {
+        type: HomeAssistantMatcherType.Area,
+        value: "another_area_id",
+      }),
+    ).toBeFalsy();
+  });
+  it("should match the device area when entity has no area", () => {
+    expect(
+      testMatcher(entityWithDevice, {
+        type: HomeAssistantMatcherType.Area,
+        value: "area_id",
+      }),
+    ).toBeTruthy();
+  });
+  it("should not match the device area when entity has no area", () => {
+    expect(
+      testMatcher(entityWithDevice, {
+        type: HomeAssistantMatcherType.Area,
+        value: "another_area_id",
+      }),
+    ).toBeFalsy();
+  });
+  it("should match when entity and device are in different areas", () => {
+    expect(
+      testMatcher(entityWithArea, {
+        type: HomeAssistantMatcherType.Area,
+        value: "area_id",
+      }),
+    ).toBeTruthy();
+  });
+  it("should not match when entity and device are in different areas", () => {
+    expect(
+      testMatcher(entityWithArea, {
+        type: HomeAssistantMatcherType.Area,
+        value: "another_area_id",
+      }),
+    ).toBeFalsy();
+  });
   it("should match the entity category", () => {
     expect(
       testMatcher(entity, {
