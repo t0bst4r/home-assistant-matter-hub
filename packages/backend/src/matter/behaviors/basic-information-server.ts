@@ -60,7 +60,7 @@ function trimToLength(
   maxLength: number,
   type: "ellipsis" | "hash",
 ): string | undefined {
-  if (!value?.trim().length) {
+  if (!value?.toString().trim().length) {
     return undefined;
   }
   if (value.length <= maxLength) {
