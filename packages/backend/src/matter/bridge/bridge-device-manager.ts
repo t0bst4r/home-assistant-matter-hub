@@ -1,4 +1,4 @@
-import { Endpoint, Environment } from "@matter/main";
+import { Endpoint, EndpointType, Environment } from "@matter/main";
 import {
   BridgeData,
   BridgeFeatureFlags,
@@ -11,8 +11,10 @@ import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-regis
 import _, { Dictionary } from "lodash";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 import AsyncLock from "async-lock";
+import { createLogger } from "../../logging/create-logger.js";
 
 export class BridgeDeviceManager {
+  private readonly log = createLogger("BridgeDeviceManager");
   private unsubscribe?: () => void;
 
   constructor(
@@ -74,7 +76,17 @@ export class BridgeDeviceManager {
     endpointId: string,
     endpoint: Endpoint | undefined,
   ): Promise<string | undefined> {
-    const endpointType = createDevice(lockKey(entity), entity, featureFlags);
+    let endpointType: EndpointType | undefined;
+    try {
+      endpointType = createDevice(lockKey(entity), entity, featureFlags);
+    } catch (e) {
+      this.log.error(
+        "Failed to create device %s. Entity information: %s",
+        entity?.entity_id,
+        entity,
+      );
+      throw e;
+    }
 
     if (endpoint) {
       if (endpoint.type.deviceClass === endpointType?.deviceClass) {

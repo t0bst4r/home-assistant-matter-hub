@@ -22,5 +22,10 @@ const formatPrint: Format = format.printf((transformableInfo) => {
 });
 
 export const consoleTransport = new transports.Console({
-  format: format.combine(format.timestamp({}), format.splat(), formatPrint),
+  format: format.combine(
+    format.errors({ stack: true }),
+    format.timestamp({}),
+    format.splat(),
+    formatPrint,
+  ),
 });
