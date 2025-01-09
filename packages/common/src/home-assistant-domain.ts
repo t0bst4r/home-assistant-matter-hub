@@ -9,6 +9,7 @@ export enum HomeAssistantDomain {
   climate = "climate",
   input_boolean = "input_boolean",
   input_button = "input_button",
+  button = "button",
   script = "script",
   automation = "automation",
   scene = "scene",

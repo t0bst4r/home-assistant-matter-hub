@@ -113,6 +113,7 @@ const testEntities: Record<
     createEntity("input_boolean.input_boolean1", "on"),
   ],
   [HomeAssistantDomain.input_button]: [createEntity("input_button.ib1", "any")],
+  [HomeAssistantDomain.button]: [createEntity("button.b1", "any")],
   [HomeAssistantDomain.media_player]: [
     createEntity("media_player.m1", "on", {
       supported_features: MediaPlayerDeviceFeature.SELECT_SOURCE,
