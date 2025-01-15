@@ -11,13 +11,15 @@ const levelControlConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<LightDeviceAttributes>) => {
     const brightness = state.attributes.brightness;
     if (brightness != null) {
-      return (brightness / 255) * 254;
+      return Math.round((brightness / 255) * 254);
     }
     return null;
   },
   moveToLevel: {
     action: "light.turn_on",
-    data: (brightness) => ({ brightness: (brightness / 254) * 255 }),
+    data: (brightness) => ({
+      brightness: Math.round((brightness / 254) * 255),
+    }),
   },
   expandMinMaxForValue: true,
 };

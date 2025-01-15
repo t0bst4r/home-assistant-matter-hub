@@ -2,9 +2,9 @@ import Color from "color";
 
 /*
  * Matter:
- *    Brightness: 0-255
- *    Hue: 0-255
- *    Saturation: 0-255
+ *    Brightness: 0-254
+ *    Hue: 0-254
+ *    Saturation: 0-254
  *    colorTemperatureMireds: Samples 147 - 454
  *
  * Home Assistant:
@@ -37,7 +37,11 @@ export abstract class ColorConverter {
    * @return Color
    */
   public static fromMatterHS(hue: number, saturation: number): Color {
-    return Color.hsv((hue / 254) * 360, (saturation / 254) * 100, 100);
+    return Color.hsv(
+      Math.round((hue / 254) * 360),
+      Math.round((saturation / 254) * 100),
+      100,
+    );
   }
 
   /**
@@ -128,7 +132,7 @@ export abstract class ColorConverter {
    */
   public static toMatterHS(color: Color): [hue: number, saturation: number] {
     const [h, s] = color.hsv().array();
-    return [(h / 360) * 254, (s / 100) * 254];
+    return [Math.round((h / 360) * 254), Math.round((s / 100) * 254)];
   }
 
   /**
