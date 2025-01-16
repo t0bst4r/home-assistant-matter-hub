@@ -35,6 +35,9 @@ export class ColorControlServerBase extends FeaturedBase {
     if (this.state.config?.expandMinMaxTemperature == true) {
       minKelvin = Math.min(minKelvin, currentKelvin ?? Infinity);
       maxKelvin = Math.max(maxKelvin, currentKelvin ?? -Infinity);
+      if (minKelvin > maxKelvin) {
+        [minKelvin, maxKelvin] = [maxKelvin, minKelvin];
+      }
     }
     const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
     applyPatchState(this.state, {
