@@ -36,9 +36,10 @@ export class BasicInformationServer extends Base {
       hardwareVersionString: ellipse(64, device?.hw_version),
       softwareVersionString: ellipse(64, device?.sw_version),
       nodeLabel:
-        ellipse(32, entity.state.attributes.friendly_name) ??
+        ellipse(32, entity.state?.attributes?.friendly_name) ??
         ellipse(32, entity.entity_id),
-      reachable: entity.state.state !== "unavailable",
+      reachable:
+        entity.state?.state != null && entity.state.state !== "unavailable",
       // The device serial number is available in `device?.serial_number`, but
       // we're keeping it as the entity ID for now to avoid breaking existing
       // deployments.
@@ -60,7 +61,8 @@ function trimToLength(
   maxLength: number,
   type: "ellipsis" | "hash",
 ): string | undefined {
-  if (!value?.toString().trim().length) {
+  value = value?.toString();
+  if (!value?.trim().length) {
     return undefined;
   }
   if (value.length <= maxLength) {
