@@ -34,9 +34,9 @@ export function LightDevice(
   const supportsBrightness = supportedColorModes.some((mode) =>
     brightnessModes.includes(mode),
   );
-  const supportsColorControl = supportedColorModes.some((mode) =>
-    colorModes.includes(mode),
-  );
+  const supportsColorControl =
+    !!attributes.hs_color ||
+    supportedColorModes.some((mode) => colorModes.includes(mode));
   const supportsColorTemperature = supportedColorModes.includes(
     LightDeviceColorMode.COLOR_TEMP,
   );
