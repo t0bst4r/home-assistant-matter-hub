@@ -3,12 +3,14 @@ import { Thermostat } from "@matter/main/clusters";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   ClimateDeviceAttributes,
+  ClimateDeviceFeature,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
 import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import * as utils from "./utils/thermostat-server-utils.js";
 import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
+import { testBit } from "../../utils/test-bit.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
@@ -143,6 +145,14 @@ export class ThermostatServerBase extends FeaturedBase {
     });
   }
 
+  private supportsTempRange(attributes: ClimateDeviceAttributes) {
+    const supportedFeatures = attributes.supported_features ?? 0;
+    return testBit(
+      supportedFeatures,
+      ClimateDeviceFeature.TARGET_TEMPERATURE_RANGE,
+    );
+  }
+
   private async heatingSetpointChanged(value: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const attributes = homeAssistant.entity.state
@@ -153,7 +163,9 @@ export class ThermostatServerBase extends FeaturedBase {
     }
     await this.setTemperatureFromMatter(
       value,
-      this.state.occupiedCoolingSetpoint,
+      this.supportsTempRange(attributes)
+        ? this.state.occupiedCoolingSetpoint
+        : undefined,
     );
   }
 
@@ -166,7 +178,9 @@ export class ThermostatServerBase extends FeaturedBase {
       return;
     }
     await this.setTemperatureFromMatter(
-      this.state.occupiedHeatingSetpoint,
+      this.supportsTempRange(attributes)
+        ? this.state.occupiedHeatingSetpoint
+        : undefined,
       value,
     );
   }
