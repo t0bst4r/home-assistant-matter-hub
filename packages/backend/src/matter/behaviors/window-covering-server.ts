@@ -65,7 +65,12 @@ export class WindowCoveringServerBase extends FeaturedBase {
           : this.features.tilt
             ? WindowCovering.WindowCoveringType.TiltBlindTiltOnly
             : WindowCovering.WindowCoveringType.Rollershade,
-      endProductType: WindowCovering.EndProductType.RollerShade,
+      endProductType:
+        this.features.lift && this.features.tilt
+          ? WindowCovering.EndProductType.SheerShade
+          : this.features.tilt
+            ? WindowCovering.EndProductType.TiltOnlyInteriorBlind
+            : WindowCovering.EndProductType.RollerShade,
       operationalStatus: {
         global: movementStatus,
         ...(this.features.lift ? { lift: movementStatus } : {}),

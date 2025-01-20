@@ -17,7 +17,7 @@ Make sure to also look at the [additional references](#additional-references)!
 
 ##### Alexa
 
-- Alexa cannot pair with a bridge which has too many devices attached. It seems to have a limit of 
+- Alexa cannot pair with a bridge which has too many devices attached. It seems to have a limit of
   about 80-100 devices
 - Alexa needs at least one Amazon device which supports Matter to pair with a Matter device.
   If you only have a third party smart speaker which supports Alexa, this isn't enough.
