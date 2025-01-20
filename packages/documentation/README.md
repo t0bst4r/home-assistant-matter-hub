@@ -8,8 +8,31 @@ If you are missing something feel free to create a pull request to add it to the
 
 ### I cannot pair my controller with my Bridge
 
-Matter is a standardized communication protocol mainly used for Smart Home devices.
-This protocol is designed to work best with IPv6 within your local network. At the moment some manufacturers
+Matter is a standardized communication protocol mainly used for Smart Home devices. Anyway not every vendor
+implements Matter as specified. Therefore, we have several points where matter can break.
+
+#### Known issues and limitations
+
+Make sure to also look at the [additional references](#additional-references)!
+
+##### Alexa
+
+- Alexa cannot pair with a bridge which has too many devices attached. It seems to have a limit of 
+  about 80-100 devices
+- Alexa needs at least one Amazon device which supports Matter to pair with a Matter device.
+  If you only have a third party smart speaker which supports Alexa, this isn't enough.
+
+##### Google Home
+
+- Google Home needs an actual Google Hub to connect a Matter device. Just using the GH app isn't enough.
+- Google Home can deny the Matter device under certain conditions because it is not a certified Matter
+  device. You need to follow
+  [this guide](https://github.com/project-chip/matter.js/blob/main/docs/ECOSYSTEMS.md#google-home-ecosystem)
+  to register your hub.
+
+#### Network issues
+
+The Matter protocol is designed to work best with IPv6 within your local network. At the moment some manufacturers
 built their controllers to be compatible with IPv4, too, but this can break at any time with any update.
 
 > [!WARNING]
@@ -20,6 +43,8 @@ built their controllers to be compatible with IPv4, too, but this can break at a
 > In addition, the matter protocol relies on a stable communication over TCP and UDP on port 5353 for mDNS and the
 > configured Matter-port of your bridge. Make sure that there is no firewall or VLAN setup in place blocking the
 > communication between the bridge and your controller.
+
+#### Additional references
 
 This project is based on `matter.js`, which implements the Matter protocol natively in JavaScript.
 If you are facing issues pairing your controller, make sure to read the
