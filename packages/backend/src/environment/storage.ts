@@ -5,6 +5,7 @@ import fs from "node:fs";
 import { StorageBackendJsonFile } from "@matter/nodejs";
 import { ClusterId } from "@home-assistant-matter-hub/common";
 import _ from "lodash";
+import { createLogger } from "../logging/create-logger.js";
 
 export function storage(
   environment: Environment,
@@ -26,6 +27,8 @@ function resolveStorageLocation(storageLocation: string | undefined) {
 }
 
 class CustomStorage extends StorageBackendJsonFile {
+  private readonly log = createLogger("CustomStorage");
+
   constructor(path: string) {
     super(path);
 
@@ -40,8 +43,17 @@ class CustomStorage extends StorageBackendJsonFile {
       if (json.trim().length === 0) {
         return {};
       } else {
-        const object = deserialize(json);
-        return this.removeClusters(object, Object.values(ClusterId));
+        try {
+          const object = deserialize(json);
+          return this.removeClusters(object, Object.values(ClusterId));
+        } catch (e) {
+          this.log.error(
+            "Failed to parse json file '%s' with content: \n\n%s\n\n",
+            path,
+            json,
+          );
+          throw e;
+        }
       }
     };
 
