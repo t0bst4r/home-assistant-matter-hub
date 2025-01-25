@@ -1,41 +1,14 @@
 import {
   AppBar,
   Button,
-  capitalize,
   Container,
   IconButton,
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { useAppInfo } from "../hooks/app-info.ts";
-import AppLogo from "../assets/hamh-logo.svg?react";
 import BuyMeACoffeeLogo from "../assets/bmc-button.svg?react";
 import Link from "@mui/material/Link";
-
-const Logo = (props: { large: boolean }) => {
-  const appInfo = useAppInfo();
-
-  return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent={props.large ? "flex-start" : "center"}
-      flexGrow={1}
-    >
-      <AppLogo style={{ height: "100%" }} />
-      <Typography variant="inherit" component="span" sx={{ mr: 1, ml: 1 }}>
-        {appInfo.name.split("-").map(capitalize).join("-")}
-      </Typography>
-      {props.large && (
-        <Typography variant="caption" component="span">
-          {appInfo.version}
-        </Typography>
-      )}
-    </Box>
-  );
-};
+import { AppLogo } from "./AppLogo.tsx";
 
 const Funding = (props: { large: boolean }) => {
   if (!props.large) {
@@ -81,7 +54,7 @@ export const AppTopBar = () => {
             justifyContent: "space-between",
           }}
         >
-          <Logo large={isLargeScreen} />
+          <AppLogo large={isLargeScreen} />
           <Funding large={isLargeScreen} />
         </Container>
       </Toolbar>

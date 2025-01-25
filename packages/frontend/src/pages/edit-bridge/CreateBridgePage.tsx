@@ -6,6 +6,7 @@ import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.t
 import { useNotifications } from "../../components/notifications/use-notifications.ts";
 import { Stack } from "@mui/material";
 import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
+import { navigation } from "../../routes.tsx";
 
 const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
@@ -64,8 +65,8 @@ export const CreateBridgePage = () => {
     <Stack spacing={4}>
       <Breadcrumbs
         items={[
-          { name: "Bridges", to: "/" },
-          { name: "Create New", to: "/bridges/create" },
+          { name: "Bridges", to: navigation.bridges() },
+          { name: "Create New", to: navigation.createBridge() },
         ]}
       />
 

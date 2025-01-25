@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useMemo } from "react";
 import {
   BridgeDataWithMetadata,
   CreateBridgeRequest,
@@ -13,34 +13,22 @@ import {
 import {
   createBridge,
   deleteBridge,
-  requireBridges,
   resetBridge,
   updateBridge,
 } from "../../state/bridges/bridge-actions.ts";
 import { useAppDispatch, useAppSelector } from "../../state/hooks.ts";
 
 export function useBridges() {
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(requireBridges());
-  }, [dispatch]);
   return useAppSelector(selectBridges);
 }
 
 export function useUsedPorts() {
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(requireBridges());
-  }, [dispatch]);
   return useAppSelector(selectUsedPorts);
 }
 
 export function useBridge(bridgeId: string) {
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(requireBridges());
-  }, [dispatch]);
-  return useAppSelector(selectBridge(bridgeId));
+  const selector = useMemo(() => selectBridge(bridgeId), [bridgeId]);
+  return useAppSelector(selector);
 }
 
 export function useCreateBridge(): (

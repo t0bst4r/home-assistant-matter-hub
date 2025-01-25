@@ -1,29 +1,17 @@
-import {
-  useBridges,
-  useDeleteBridge,
-  useResetBridge,
-} from "../../hooks/data/bridges";
+import { useBridges } from "../../hooks/data/bridges";
 import { BridgeList } from "../../components/bridge/BridgeList";
 import { Backdrop, Button, CircularProgress, Stack } from "@mui/material";
 import { useEffect } from "react";
 import Box from "@mui/material/Box";
-import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import { Add } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useNotifications } from "../../components/notifications/use-notifications.ts";
+import { navigation } from "../../routes.tsx";
 
 export const BridgesPage = () => {
   const notifications = useNotifications();
-  const navigate = useNavigate();
-
-  const deleteBridge = useDeleteBridge();
-  const resetBridge = useResetBridge();
 
   const { content: bridges, isLoading, error: bridgeError } = useBridges();
-
-  const setSelectedBridge = (bridge: BridgeDataWithMetadata) => {
-    navigate(`./bridges/${bridge.id}`);
-  };
 
   useEffect(() => {
     if (bridgeError) {
@@ -53,7 +41,7 @@ export const BridgesPage = () => {
             >
               <Button
                 component={Link}
-                to="./bridges/create"
+                to={navigation.createBridge()}
                 endIcon={<Add />}
                 variant="outlined"
               >
@@ -61,12 +49,7 @@ export const BridgesPage = () => {
               </Button>
             </Box>
 
-            <BridgeList
-              bridges={bridges}
-              onSelect={setSelectedBridge}
-              onDelete={(b) => deleteBridge(b.id)}
-              onReset={(b) => resetBridge(b.id)}
-            />
+            <BridgeList bridges={bridges} />
           </>
         )}
       </Stack>

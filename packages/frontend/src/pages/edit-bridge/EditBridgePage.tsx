@@ -10,6 +10,7 @@ import { BridgeConfig } from "@home-assistant-matter-hub/common";
 import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
 import { useNotifications } from "../../components/notifications/use-notifications.ts";
 import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
+import { navigation } from "../../routes.tsx";
 
 export const EditBridgePage = () => {
   const notifications = useNotifications();
@@ -61,9 +62,9 @@ export const EditBridgePage = () => {
     <Stack spacing={4}>
       <Breadcrumbs
         items={[
-          { name: "Bridges", to: "/" },
-          { name: bridge.name, to: `/bridges/${bridgeId}` },
-          { name: "Edit", to: `/bridges/${bridgeId}/edit` },
+          { name: "Bridges", to: navigation.bridges() },
+          { name: bridge.name, to: navigation.bridge(bridgeId) },
+          { name: "Edit", to: navigation.editBridge(bridgeId) },
         ]}
       />
 

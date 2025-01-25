@@ -1,12 +1,10 @@
-import { ApiResponse, useApi } from "./api.ts";
 import { DeviceData } from "@home-assistant-matter-hub/common";
-import { useCallback } from "react";
-import { fetchDevices } from "../../api/devices.ts";
+import { useMemo } from "react";
+import { useAppSelector } from "../../state/hooks.ts";
+import { selectDevices } from "../../state/devices/device-selectors.ts";
+import { AsyncState } from "../../state/utils/async.ts";
 
-export function useDevices(
-  bridgeId: string,
-  seed?: number,
-): ApiResponse<DeviceData[]> {
-  const cb = useCallback(() => fetchDevices(bridgeId, seed), [bridgeId, seed]);
-  return useApi(cb);
+export function useDevices(bridgeId: string): AsyncState<DeviceData[]> {
+  const selector = useMemo(() => selectDevices(bridgeId), [bridgeId]);
+  return useAppSelector(selector);
 }

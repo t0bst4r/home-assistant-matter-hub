@@ -7,16 +7,6 @@ import {
   resetBridge as resetBridgeApi,
 } from "../../api/bridges.ts";
 
-export const requireBridges = createAppThunk(
-  "bridges/require",
-  async (_, thunkAPI) => {
-    const currentState = thunkAPI.getState().bridges.items;
-    if (!currentState.isInitialized && !currentState.isLoading) {
-      thunkAPI.dispatch(loadBridges());
-    }
-  },
-);
-
 export const loadBridges = createAppThunk("bridges/load", fetchBridges);
 
 export const createBridge = createAppThunk("bridges/create", createBridgeApi);
