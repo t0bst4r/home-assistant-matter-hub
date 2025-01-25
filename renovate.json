@@ -1,13 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "packageRules": [
     {
       "matchPackageNames": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major {{manager}} dependencies"
+      "groupName": "all {{manager}} dependencies"
     },
     {
       "matchPackageNames": ["@project-chip/**", "@matter/**"],
