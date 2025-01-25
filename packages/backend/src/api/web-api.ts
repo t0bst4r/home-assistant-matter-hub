@@ -4,9 +4,9 @@ import * as http from "node:http";
 import { accessLogger } from "./access-log.js";
 import { webUi } from "./web-ui.js";
 import { createLogger } from "../logging/create-logger.js";
-import { Environment, Environmental } from "@matter/main";
+import { Environment } from "@matter/main";
 import { BridgeService } from "../matter/bridge-service.js";
-import { register } from "../environment/register.js";
+import { register, Service } from "../environment/register.js";
 import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
 
@@ -16,7 +16,7 @@ export interface WebApiProps {
   readonly webUiDist?: string;
 }
 
-export class WebApi implements Environmental.Service {
+export class WebApi implements Service {
   readonly construction: Promise<void>;
   private readonly log = createLogger("WebApi");
   private readonly accessLogger = accessLogger(

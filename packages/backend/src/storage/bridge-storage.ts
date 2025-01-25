@@ -1,9 +1,9 @@
 import { BridgeData } from "@home-assistant-matter-hub/common";
 import { Environment, Environmental, StorageContext } from "@matter/main";
 import { AppStorage } from "./app-storage.js";
-import { register } from "../environment/register.js";
+import { register, Service } from "../environment/register.js";
 
-export class BridgeStorage implements Environmental.Service {
+export class BridgeStorage implements Service {
   static [Environmental.create](environment: Environment) {
     return new this(environment);
   }

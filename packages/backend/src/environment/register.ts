@@ -3,7 +3,11 @@ import { createLogger } from "../logging/create-logger.js";
 
 const logger = createLogger("Environment");
 
-export function register<T extends Environmental.Service>(
+export interface Service extends Environmental.Service {
+  [Symbol.asyncDispose]?: () => void | Promise<void>;
+}
+
+export function register<T extends Service>(
   environment: Environment,
   factory: Environmental.Factory<T>,
   service: T,

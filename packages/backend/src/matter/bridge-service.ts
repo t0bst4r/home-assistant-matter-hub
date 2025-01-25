@@ -6,12 +6,12 @@ import {
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
-import { asyncNew, Environment, Environmental } from "@matter/main";
+import { asyncNew, Environment } from "@matter/main";
 import { BridgeStorage } from "../storage/bridge-storage.js";
 import { BridgeServerNode } from "./bridge/bridge-server-node.js";
-import { register } from "../environment/register.js";
+import { register, Service } from "../environment/register.js";
 
-export class BridgeService implements Environmental.Service {
+export class BridgeService implements Service {
   readonly construction: Promise<void>;
   public readonly bridges: BridgeServerNode[] = [];
   private bridgeStorage!: BridgeStorage;

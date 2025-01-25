@@ -5,9 +5,9 @@ import {
   StorageManager,
   StorageService,
 } from "@matter/main";
-import { register } from "../environment/register.js";
+import { register, Service } from "../environment/register.js";
 
-export class AppStorage implements Environmental.Service {
+export class AppStorage implements Service {
   static [Environmental.create](environment: Environment) {
     return new this(environment);
   }

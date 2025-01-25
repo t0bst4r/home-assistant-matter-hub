@@ -1,9 +1,9 @@
 import { Environment, Environmental } from "@matter/main";
-import { register } from "../environment/register.js";
+import { register, Service } from "../environment/register.js";
 import { HomeAssistantClient } from "./home-assistant-client.js";
 import { getConfig, HassConfig } from "home-assistant-js-websocket";
 
-export class HomeAssistantConfig implements Environmental.Service {
+export class HomeAssistantConfig implements Service {
   static [Environmental.create](environment: Environment) {
     return new this(environment);
   }

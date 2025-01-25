@@ -5,8 +5,8 @@ import {
   ERR_CANNOT_CONNECT,
   ERR_INVALID_AUTH,
 } from "home-assistant-js-websocket";
-import { Environment, Environmental } from "@matter/main";
-import { register } from "../environment/register.js";
+import { Environment } from "@matter/main";
+import { register, Service } from "../environment/register.js";
 import { Logger } from "winston";
 import { createLogger } from "../logging/create-logger.js";
 
@@ -15,7 +15,7 @@ export interface HomeAssistantClientProps {
   readonly accessToken: string;
 }
 
-export class HomeAssistantClient implements Environmental.Service {
+export class HomeAssistantClient implements Service {
   private readonly log: Logger;
   readonly construction: Promise<void>;
   public connection!: Connection;
