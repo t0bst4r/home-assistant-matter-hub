@@ -1,4 +1,4 @@
-# Combined Troubleshooting Guide for Network and Hub Connectivity Issues
+# Troubleshooting for Network and Hub Connectivity Issues
 
 If you're experiencing connectivity issues with your Matter Hub and voice assistants like Apple Home, Google Home, or
 Alexa, follow this guide to address common problems.

@@ -1,0 +1,29 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: d11d5cfb-20bb-476f-ae19-14c66a03d139
+  github: https://github.com/t0bst4r/home-assistant-matter-hub
+  toc:
+    - file: README.md
+    - title: Getting Started
+      children:
+      - file: "Getting Started/Installation.md"
+      - file: "Getting Started/Bridge Configuration.md"
+    - title: Guides
+      children:
+        - file: Guides/Connectivity Issues.md
+        - file: "Guides/Connect Multiple Fabrics.md"
+        - file: "Guides/Reverse Proxy.md"
+    - file: Supported Device Types.md
+    - file: Frequently Asked Questions.md
+site:
+  template: book-theme
+  title: Home-Assistant-Matter-Hub
+  options:
+    favicon: assets/hamh-logo-small.png
+    logo: assets/hamh-logo-large.png
+  nav:
+    - title: GitHub
+      url: https://github.com/t0bst4r/home-assistant-matter-hub
+    - title: Buy me a coffee
+      url: https://www.buymeacoffee.com/t0bst4r

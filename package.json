@@ -17,9 +17,9 @@
     "check-updates": "npx npm-check-updates --workspaces --root -u"
   },
   "workspaces": [
-    "apps/**",
-    "packages/**",
-    "utils/**"
+    "apps/*",
+    "packages/*",
+    "utils/*"
   ],
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.33.0",

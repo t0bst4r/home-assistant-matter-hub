@@ -111,6 +111,13 @@ jobs:
             --title "v$PACKAGE_VERSION" \
             --verify-tag
 
+      - name: Upload Documentation
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './packages/docs/_build/html'
+      - name: Deploy documentation to GitHub Pages
+        uses: actions/deploy-pages@v4
+
       - name: Dispatch Addon Repository
         if: steps.version.outputs.release-required == 'yes'
         uses: peter-evans/repository-dispatch@v3
