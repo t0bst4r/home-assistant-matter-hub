@@ -28,7 +28,7 @@ put a firewall in between.
 
 There were some users who got that working, but this can break any time due to any changes in your setup or any
 software / firmware update of any of your components - including Alexa, Google Home etc.
-In some cases (e.g. Alexa) you don't even get to know when an update was installed. 
+In some cases (e.g. Alexa) you don't even get to know when an update was installed.
 
 ## 1. Installation
 

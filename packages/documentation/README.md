@@ -44,6 +44,8 @@ built their controllers to be compatible with IPv4, too, but this can break at a
 > configured Matter-port of your bridge. Make sure that there is no firewall or VLAN setup in place blocking the
 > communication between the bridge and your controller.
 
+See also [this page](./faq/Connectivity%20Issues.md) for common connectivity issues.
+
 #### Additional references
 
 This project is based on `matter.js`, which implements the Matter protocol natively in JavaScript.

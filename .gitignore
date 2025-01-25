@@ -16,3 +16,4 @@ dist/
 .nx/
 
 *.tsbuildinfo
+tmp/
