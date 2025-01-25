@@ -18,13 +18,10 @@ export class BasicInformationServer extends Base {
     const { basicInformation } = this.env.get(BridgeDataProvider);
     const device = entity.deviceRegistry;
     applyPatchState(this.state, {
-      // The correct vendor name is in `device?.manufacturer`, but most
-      // controllers are currently unable to show this for bridged devices, and
-      // as Alexa Media Player relies on a check for a t0bst4r vendor to avoid
-      // loops, we keep it like this for now.
-      // See: https://github.com/alandtse/alexa_media_player/pull/2730
       vendorId: VendorId(basicInformation.vendorId),
-      vendorName: hash(32, basicInformation.vendorName),
+      vendorName:
+        ellipse(32, device?.manufacturer) ??
+        hash(32, basicInformation.vendorName),
       productName:
         ellipse(32, device?.model_id) ??
         ellipse(32, device?.model) ??
