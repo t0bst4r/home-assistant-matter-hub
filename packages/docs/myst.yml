@@ -7,8 +7,8 @@ project:
     - file: README.md
     - title: Getting Started
       children:
-      - file: "Getting Started/Installation.md"
-      - file: "Getting Started/Bridge Configuration.md"
+        - file: "Getting Started/Installation.md"
+        - file: "Getting Started/Bridge Configuration.md"
     - title: Guides
       children:
         - file: Guides/Connectivity Issues.md

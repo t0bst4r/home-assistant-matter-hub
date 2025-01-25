@@ -26,7 +26,7 @@ This happens when either editing the bridge (even without making changes), or wh
 - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an
   underscore.
 - Even when renaming a label or area, the slug doesn't change. Never.
-You can retrieve the slug using the following templates in Home Assistant:
+  You can retrieve the slug using the following templates in Home Assistant:
 - `{{ labels() }}` - returns all labels
 - `{{ labels("light.my_entity") }}` - returns the labels of a specific entity
 - `{{ areas() }}` - returns all areas

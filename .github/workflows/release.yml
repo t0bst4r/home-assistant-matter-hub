@@ -9,6 +9,7 @@ permissions:
   contents: write
   packages: write
   id-token: write
+  pages: write
 
 jobs:
   main:
@@ -114,7 +115,7 @@ jobs:
       - name: Upload Documentation
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './packages/docs/_build/html'
+          path: "./packages/docs/_build/html"
       - name: Deploy documentation to GitHub Pages
         uses: actions/deploy-pages@v4
 

@@ -4,9 +4,9 @@ This application can be installed in different ways:
 
 1. Home-Assistant AddOn for Home Assistant OS (preferred)
 2. Manual Deployment
-    1. Ready to use Docker Image
-    2. Manual installation using `npm`
-    3. Configuration options
+   1. Ready to use Docker Image
+   2. Manual installation using `npm`
+   3. Configuration options
 
 > [!WARNING]
 > In order to successfully use this application, you need to ensure IPv6 is enabled properly.

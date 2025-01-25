@@ -5,8 +5,12 @@ import { navigation } from "../routes.tsx";
 
 const links: { name: string; url: string }[] = [
   {
-    name: "GitHub & Documentation",
+    name: "GitHub",
     url: navigation.githubRepository,
+  },
+  {
+    name: "Documentation",
+    url: navigation.documentation,
   },
 ];
 

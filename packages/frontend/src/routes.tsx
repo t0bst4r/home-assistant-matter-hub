@@ -5,6 +5,7 @@ import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
 import { CreateBridgePage } from "./pages/edit-bridge/CreateBridgePage.tsx";
 import { AppPage } from "./pages/AppPage.tsx";
 
+const documentationUrl = "https://t0bst4r.github.io/home-assistant-matter-hub";
 export const navigation = {
   bridges: "/bridges",
   bridge: (bridgeId: string) => `/bridges/${bridgeId}`,
@@ -12,9 +13,9 @@ export const navigation = {
   editBridge: (bridgeId: string) => `/bridges/${bridgeId}/edit`,
 
   githubRepository: "https://github.com/t0bst4r/home-assistant-matter-hub/",
+  documentation: documentationUrl,
   faq: {
-    multiFabric:
-      "https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/faq/Connect%20Multiple%20Fabrics.md",
+    multiFabric: `${documentationUrl}/connect-multiple-fabrics`,
   },
 };
 
