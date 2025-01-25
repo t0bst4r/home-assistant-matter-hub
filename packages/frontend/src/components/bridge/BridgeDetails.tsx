@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { FabricList } from "../fabric/FabricList.tsx";
+import { navigation } from "../../routes.tsx";
 
 export interface BridgeDetailsProps {
   readonly bridge: BridgeDataWithMetadata;
@@ -83,7 +84,7 @@ const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
                   cursor: "help",
                   color: "inherit",
                 }}
-                href="https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/faq/Connect%20Multiple%20Fabrics.md"
+                href={navigation.faq.multiFabric}
                 target="_blank"
               >
                 Commissioned

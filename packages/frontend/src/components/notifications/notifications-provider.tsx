@@ -15,7 +15,11 @@ export const NotificationsProvider = (props: PropsWithChildren) => {
     (notification: NotificationOptions) => {
       setNotifications((prev) => [
         ...prev,
-        { ...notification, notificationId: nextNotificationId++ },
+        {
+          ...notification,
+          autoHideDuration: notification.autoHideDuration ?? 6000,
+          notificationId: nextNotificationId++,
+        },
       ]);
     },
     [setNotifications],

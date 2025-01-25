@@ -41,7 +41,7 @@ export const BridgesPage = () => {
             >
               <Button
                 component={Link}
-                to={navigation.createBridge()}
+                to={navigation.createBridge}
                 endIcon={<Add />}
                 variant="outlined"
               >

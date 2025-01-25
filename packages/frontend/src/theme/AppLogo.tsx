@@ -3,16 +3,24 @@ import { useAppInfo } from "../hooks/app-info.ts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { capitalize } from "@mui/material";
+import { Link } from "react-router";
+import { navigation } from "../routes.tsx";
 
 export const AppLogo = (props: { large: boolean }) => {
   const appInfo = useAppInfo();
 
   return (
     <Box
-      display="flex"
-      alignItems="center"
-      justifyContent={props.large ? "flex-start" : "center"}
-      flexGrow={1}
+      component={Link}
+      to={navigation.bridges}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: props.large ? "flex-start" : "center",
+        flexGrow: 1,
+        textDecoration: "none",
+        color: "inherit",
+      }}
     >
       <SvgLogo style={{ height: "40px" }} />
       <Typography variant="inherit" component="span" sx={{ mr: 1, ml: 1 }}>

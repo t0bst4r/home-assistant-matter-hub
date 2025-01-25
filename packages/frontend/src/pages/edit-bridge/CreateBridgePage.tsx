@@ -1,12 +1,17 @@
 import { useMemo } from "react";
-import { useCreateBridge, useUsedPorts } from "../../hooks/data/bridges.ts";
+import {
+  useBridges,
+  useCreateBridge,
+  useUsedPorts,
+} from "../../hooks/data/bridges.ts";
 import { useNavigate } from "react-router";
 import { BridgeConfig } from "@home-assistant-matter-hub/common";
 import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
 import { useNotifications } from "../../components/notifications/use-notifications.ts";
-import { Stack } from "@mui/material";
+import { Alert, Stack, Typography } from "@mui/material";
 import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
 import { navigation } from "../../routes.tsx";
+import Link from "@mui/material/Link";
 
 const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
@@ -31,6 +36,7 @@ export const CreateBridgePage = () => {
   const notifications = useNotifications();
   const navigate = useNavigate();
 
+  const showReuseBridgeHint = !!useBridges().content?.length;
   const usedPorts = useUsedPorts();
   const bridgeConfig: BridgeConfig | undefined = useMemo(() => {
     if (usedPorts) {
@@ -65,10 +71,22 @@ export const CreateBridgePage = () => {
     <Stack spacing={4}>
       <Breadcrumbs
         items={[
-          { name: "Bridges", to: navigation.bridges() },
-          { name: "Create New", to: navigation.createBridge() },
+          { name: "Bridges", to: navigation.bridges },
+          { name: "Create New", to: navigation.createBridge },
         ]}
       />
+
+      {showReuseBridgeHint && (
+        <Alert severity="info" variant="outlined">
+          <Typography>
+            Did you know that you can connect the same bridge with multiple
+            assistants?{" "}
+            <Link href={navigation.faq.multiFabric} target="_blank">
+              Learn more.
+            </Link>
+          </Typography>
+        </Alert>
+      )}
 
       <BridgeConfigEditor
         bridge={bridgeConfig}

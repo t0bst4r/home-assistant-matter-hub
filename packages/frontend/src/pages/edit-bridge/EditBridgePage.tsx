@@ -62,7 +62,7 @@ export const EditBridgePage = () => {
     <Stack spacing={4}>
       <Breadcrumbs
         items={[
-          { name: "Bridges", to: navigation.bridges() },
+          { name: "Bridges", to: navigation.bridges },
           { name: bridge.name, to: navigation.bridge(bridgeId) },
           { name: "Edit", to: navigation.editBridge(bridgeId) },
         ]}

@@ -9,6 +9,7 @@ import { BridgeService } from "../matter/bridge-service.js";
 import { register, Service } from "../environment/register.js";
 import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
+import nocache from "nocache";
 
 export interface WebApiProps {
   readonly port: number;
@@ -38,7 +39,10 @@ export class WebApi implements Service {
     const bridgeService = await this.environment.load(BridgeService);
 
     const api = express.Router();
-    api.use(express.json()).use("/matter", matterApi(bridgeService));
+    api
+      .use(express.json())
+      .use(nocache())
+      .use("/matter", matterApi(bridgeService));
 
     const middlewares: express.Handler[] = [
       this.accessLogger,

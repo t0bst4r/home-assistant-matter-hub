@@ -1,11 +1,12 @@
 import { Button, Container, Divider } from "@mui/material";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid2";
+import { navigation } from "../routes.tsx";
 
 const links: { name: string; url: string }[] = [
   {
     name: "GitHub & Documentation",
-    url: "https://github.com/t0bst4r/home-assistant-matter-hub/",
+    url: navigation.githubRepository,
   },
 ];
 
@@ -22,6 +23,7 @@ export const AppFooter = () => {
               variant="outlined"
               component={Link}
               href={link.url}
+              target="_blank"
             >
               {link.name}
             </Button>
