@@ -17,9 +17,10 @@ of port forwarding etc.
 ### Device Type Support
 
 This project does not yet support all available device types in the matter specification.
-In addition, controllers like Alexa or Google Home do not support all fevice types, too.
+In addition, controllers like Alexa or Google Home do not support all device types, too.
 
-To check which types are supported, please review the [list if supported types](./Supported%20Device%20Types.md).
+To check which types are supported, please review the
+[list of supported device types](./Supported%20Device%20Types.md).
 
 ### Alexa
 
