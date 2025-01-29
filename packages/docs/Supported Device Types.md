@@ -2,7 +2,14 @@
 
 The following device types are currently supported. If you need other device types, feel free to create a feature
 request. Please make sure, that such devices are already supported by the
-[Matter Device Specification](https://handbook.buildwithmatter.com/howitworks/devicetypes/).
+[Matter Device Specification](https://handbook.buildwithmatter.com/howitworks/devicetypes/) and the controller 
+you are using.
+
+You can check matter support for Alexa 
+[here](https://developer.amazon.com/en-US/docs/alexa/smarthome/matter-support.html#device-categories-and-clusters).
+
+You can check matter support for Google Home
+[here](https://developers.home.google.com/matter/supported-devices#device_type_and_control_support).
 
 | Domain        | Represented as Device Class                                          | Comment                                                                                                                                                                                                                                             |
 | ------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
