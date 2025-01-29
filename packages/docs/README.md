@@ -14,6 +14,13 @@ of port forwarding etc.
 
 ## Known issues and limitations
 
+### Device Type Support
+
+This project does not yet support all available device types in the matter specification.
+In addition, controllers like Alexa or Google Home do not support all fevice types, too.
+
+To check which types are supported, please review the [list if supported types](./Supported%20Device%20Types.md).
+
 ### Alexa
 
 - Alexa cannot pair with a bridge which has too many devices attached. It seems to have a limit of
