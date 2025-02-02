@@ -7,8 +7,8 @@ import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.j
 import { AsyncObservable } from "../../utils/async-observable.js";
 import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
 import AsyncLock from "async-lock";
-import { Logger } from "winston";
-import { createLogger } from "../../logging/create-logger.js";
+import { Logger } from "@matter/general";
+import { LoggerService } from "../../environment/logger.js";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;
@@ -17,7 +17,9 @@ export class HomeAssistantEntityBehavior extends Behavior {
   declare events: HomeAssistantEntityBehavior.Events;
 
   override async initialize() {
-    this.internal.logger = createLogger(`HomeAssistant / ${this.entityId}`);
+    this.internal.logger = this.env
+      .get(LoggerService)
+      .get(`HomeAssistant / ${this.entityId}`);
   }
 
   get entityId(): string {

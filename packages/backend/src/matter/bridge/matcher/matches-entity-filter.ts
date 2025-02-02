@@ -7,14 +7,26 @@ import {
 export function matchesEntityFilter(
   filter: HomeAssistantFilter,
   entity: HomeAssistantEntityInformation,
-): boolean {
-  const included =
-    filter.include.length === 0 ||
-    filter.include.some((matcher) => testMatcher(entity, matcher));
-  const excluded =
-    filter.exclude.length > 0 &&
-    filter.exclude.some((matcher) => testMatcher(entity, matcher));
-  return included && !excluded;
+): string[] | undefined {
+  const reasons: string[] = [];
+  if (filter.include.length > 0) {
+    if (!filter.include.some((matcher) => testMatcher(entity, matcher))) {
+      reasons.push("not included");
+    }
+  }
+  if (filter.exclude.length > 0) {
+    const exclusions = filter.exclude
+      .map((matcher, idx) => (testMatcher(entity, matcher) ? idx : undefined))
+      .filter((idx) => idx != undefined);
+    if (exclusions.length) {
+      exclusions
+        .map((exclusionIdx) => `excluded by filter: ${exclusionIdx + 1}`)
+        .forEach((reason) => reasons.push(reason));
+    }
+  }
+  if (reasons.length) {
+    return reasons;
+  }
 }
 
 export function testMatcher(

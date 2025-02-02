@@ -3,12 +3,12 @@ import { Environment, VendorId } from "@matter/main";
 import { ArgumentsCamelCase } from "yargs";
 import { StartOptions } from "./start-options.js";
 import * as ws from "ws";
-import { customLogger } from "../../logging/custom-logger.js";
 import { createEnvironment } from "../../environment/environment.js";
 import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.js";
 import { BridgeService } from "../../matter/bridge-service.js";
 import { WebApi } from "../../api/web-api.js";
 import AsyncLock from "async-lock";
+import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 
 const basicInformation: BridgeBasicInformation = {
   vendorId: VendorId(0xfff1),
@@ -27,11 +27,12 @@ export async function startHandler(
   Object.assign(globalThis, {
     WebSocket: globalThis.WebSocket ?? ws.WebSocket,
   });
-  customLogger.configure(options.logLevel, !options.disableLogColors);
 
   const environment = createEnvironment(Environment.default, {
     mdnsNetworkInterface: options.mdnsNetworkInterface,
     storageLocation: options.storageLocation,
+    logLevel: options.logLevel,
+    disableLogColors: options.disableLogColors,
   });
   environment.set(AsyncLock, new AsyncLock());
 
@@ -49,6 +50,7 @@ export async function startHandler(
   });
 
   // Ensure bridges are loaded and api is ready
+  await environment.load(HomeAssistantConfig);
   await environment.load(BridgeService);
   await environment.load(WebApi);
 

@@ -7,8 +7,8 @@ import {
 } from "home-assistant-js-websocket";
 import { Environment } from "@matter/main";
 import { register, Service } from "../environment/register.js";
-import { Logger } from "winston";
-import { createLogger } from "../logging/create-logger.js";
+import { Logger } from "@matter/general";
+import { LoggerService } from "../environment/logger.js";
 
 export interface HomeAssistantClientProps {
   readonly url: string;
@@ -24,8 +24,8 @@ export class HomeAssistantClient implements Service {
     environment: Environment,
     private readonly props: HomeAssistantClientProps,
   ) {
-    this.log = createLogger("HomeAssistantClient");
     register(environment, HomeAssistantClient, this);
+    this.log = environment.get(LoggerService).get("HomeAssistantClient");
     this.construction = this.initialize();
   }
 

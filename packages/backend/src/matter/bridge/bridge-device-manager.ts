@@ -1,6 +1,6 @@
 import { Endpoint, EndpointType, Environment } from "@matter/main";
 import {
-  BridgeData,
+  BridgeConfig,
   BridgeFeatureFlags,
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
@@ -11,18 +11,21 @@ import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-regis
 import _, { Dictionary } from "lodash";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 import AsyncLock from "async-lock";
-import { createLogger } from "../../logging/create-logger.js";
+import { BetterLogger, LoggerService } from "../../environment/logger.js";
 
 export class BridgeDeviceManager {
-  private readonly log = createLogger("BridgeDeviceManager");
+  private readonly log: BetterLogger;
   private unsubscribe?: () => void;
 
   constructor(
     private readonly environment: Environment,
+    private readonly bridgeId: string,
     private readonly aggregator: Endpoint,
-  ) {}
+  ) {
+    this.log = environment.get(LoggerService).get("BridgeDeviceManager");
+  }
 
-  async loadDevices(bridge: BridgeData) {
+  async loadDevices(bridge: BridgeConfig) {
     const registry = this.environment.get(HomeAssistantRegistry);
     try {
       this.unsubscribe?.();
@@ -39,13 +42,22 @@ export class BridgeDeviceManager {
 
   private async upsertDevices(
     registry: HomeAssistantRegistry,
-    bridgeData: BridgeData,
+    bridgeData: BridgeConfig,
   ): Promise<string[]> {
     const allEntities = await registry.allEntities();
-    const entities = allEntities.filter(
-      (entity) =>
-        isValidEntity(entity) && matchesEntityFilter(bridgeData.filter, entity),
-    );
+    const entities = allEntities.filter((entity) => {
+      const isValid = isValidEntity(entity) ?? [];
+      const matchesFilter =
+        matchesEntityFilter(bridgeData.filter, entity) ?? [];
+      const reasons = isValid.concat(matchesFilter);
+      if (reasons.length) {
+        this.log.silly(
+          `Entity ${entity.entity_id} is excluded from ${this.bridgeId}. Reason: ${reasons.join(", ")}`,
+        );
+        return false;
+      }
+      return true;
+    });
     const endpointIds = _.fromPairs(
       entities.map((e) => [e.entity_id, createEndpointId(e.entity_id)]),
     );
@@ -81,9 +93,7 @@ export class BridgeDeviceManager {
       endpointType = createDevice(lockKey(entity), entity, featureFlags);
     } catch (e) {
       this.log.error(
-        "Failed to create device %s. Entity information: %s",
-        entity?.entity_id,
-        entity,
+        `Failed to create device ${entity?.entity_id}. Entity information: ${JSON.stringify(entity, null, 2)}`,
       );
       throw e;
     }
@@ -131,10 +141,19 @@ export class BridgeDeviceManager {
   }
 }
 
-function isValidEntity(entity: HomeAssistantEntityInformation): boolean {
-  return (
-    entity.registry?.disabled_by == null && entity.registry?.hidden_by == null
-  );
+function isValidEntity(
+  entity: HomeAssistantEntityInformation,
+): string[] | undefined {
+  const reason: string[] = [];
+  if (entity.registry?.disabled_by != null) {
+    reason.push(`disabled_by: ${entity.registry.disabled_by}`);
+  }
+  if (entity.registry?.hidden_by != null) {
+    reason.push(`hidden_by: ${entity.registry.hidden_by}`);
+  }
+  if (reason.length) {
+    return reason;
+  }
 }
 
 function lockKey(entity: { entity_id: string }): string {

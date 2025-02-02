@@ -3,13 +3,13 @@ import { matterApi } from "./matter-api.js";
 import * as http from "node:http";
 import { accessLogger } from "./access-log.js";
 import { webUi } from "./web-ui.js";
-import { createLogger } from "../logging/create-logger.js";
 import { Environment } from "@matter/main";
 import { BridgeService } from "../matter/bridge-service.js";
 import { register, Service } from "../environment/register.js";
 import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
 import nocache from "nocache";
+import { BetterLogger, LoggerService } from "../environment/logger.js";
 
 export interface WebApiProps {
   readonly port: number;
@@ -19,10 +19,8 @@ export interface WebApiProps {
 
 export class WebApi implements Service {
   readonly construction: Promise<void>;
-  private readonly log = createLogger("WebApi");
-  private readonly accessLogger = accessLogger(
-    createLogger(`WebApi / Access Log`),
-  );
+  private readonly log: BetterLogger;
+  private readonly accessLogger: express.RequestHandler;
 
   private app!: express.Application;
   private server!: http.Server;
@@ -32,6 +30,9 @@ export class WebApi implements Service {
     private readonly props: WebApiProps,
   ) {
     register(environment, WebApi, this);
+    const loggerService = environment.get(LoggerService);
+    this.log = loggerService.get("WebApi");
+    this.accessLogger = accessLogger(loggerService.get("WebApi / Access Log"));
     this.construction = this.initialize();
   }
 
@@ -71,9 +72,7 @@ export class WebApi implements Service {
     this.server = await new Promise((resolve) => {
       const server = this.app.listen(this.props.port, () => {
         this.log.info(
-          "HTTP server (API %s) listening on port %s",
-          this.props.webUiDist ? "& Web App" : "only",
-          this.props.port,
+          `HTTP server (API ${this.props.webUiDist ? "& Web App" : "only"}) listening on port ${this.props.port}`,
         );
         resolve(server);
       });
