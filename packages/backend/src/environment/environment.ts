@@ -1,10 +1,12 @@
 import { Environment, VariableService } from "@matter/main";
 import { mdns } from "./mdns.js";
 import { storage } from "./storage.js";
+import { logging } from "./logger.js";
 
 export interface EnvironmentConfig {
   mdnsNetworkInterface: string | undefined;
   storageLocation: string | undefined;
+  logLevel: string | undefined;
 }
 
 export function createEnvironment(
@@ -12,6 +14,7 @@ export function createEnvironment(
   config: EnvironmentConfig,
 ): Environment {
   new VariableService(environment);
+  logging(environment, config.logLevel);
   mdns(environment, notEmpty(config.mdnsNetworkInterface));
   storage(environment, notEmpty(config.storageLocation));
   return environment;

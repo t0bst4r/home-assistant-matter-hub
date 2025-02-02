@@ -1,5 +1,5 @@
 import express from "express";
-import { Logger } from "winston";
+import { Logger } from "@matter/general";
 
 export function accessLogger(
   logger: Logger,
@@ -11,12 +11,7 @@ export function accessLogger(
   return (req, res, next) => {
     res.on("finish", function () {
       logger.debug(
-        "%s %s %s %s from %s",
-        req.method,
-        decodeURI(req.originalUrl),
-        res.statusCode,
-        res.statusMessage,
-        req.socket.remoteAddress,
+        `${req.method} ${decodeURI(req.originalUrl)} ${res.statusCode} ${res.statusMessage} from ${req.socket.remoteAddress}`,
       );
     });
     next();

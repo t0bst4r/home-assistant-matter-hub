@@ -1,7 +1,5 @@
 import { Environment, Environmental } from "@matter/main";
-import { createLogger } from "../logging/create-logger.js";
-
-const logger = createLogger("Environment");
+import { LoggerService } from "./logger.js";
 
 export interface Service extends Environmental.Service {
   [Symbol.asyncDispose]?: () => void | Promise<void>;
@@ -12,6 +10,7 @@ export function register<T extends Service>(
   factory: Environmental.Factory<T>,
   service: T,
 ) {
+  const logger = environment.get(LoggerService).get("Environment");
   environment.set(factory, service);
   let disposed = false;
   const close = () => {
@@ -19,9 +18,9 @@ export function register<T extends Service>(
       return;
     }
     disposed = true;
-    logger.debug("Disposing %s", factory.name);
+    logger.debug(`Disposing ${factory.name}`);
     service[Symbol.asyncDispose]?.();
-    logger.debug("Disposed %s", factory.name);
+    logger.debug(`Disposed ${factory.name}`);
   };
   environment.runtime.stopped.once(close);
   environment.runtime.crashed.once(close);
