@@ -1,7 +1,4 @@
 import _ from "lodash";
-import { createLogger } from "../logging/create-logger.js";
-
-const logger = createLogger("apply-patch-state");
 
 export function applyPatchState<T extends {}>(
   state: T,
@@ -19,11 +16,10 @@ export function applyPatchState<T extends {}>(
     try {
       Object.assign(state, actualPatch);
     } catch (e) {
-      logger.error(
-        "Failed to patch the following properties:\n%s",
-        JSON.stringify(actualPatch, null, 2),
+      throw new Error(
+        `Failed to patch the following properties: ${JSON.stringify(actualPatch, null, 2)}`,
+        { cause: e },
       );
-      throw e;
     }
   }
   return actualPatch;

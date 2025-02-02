@@ -10,9 +10,9 @@ import { createBridgeServerConfig } from "../../utils/json/create-bridge-server-
 import { AggregatorEndpoint } from "@matter/main/endpoints";
 import { BridgeDeviceManager } from "./bridge-device-manager.js";
 import _ from "lodash";
-import { Logger } from "winston";
-import { createLogger } from "../../logging/create-logger.js";
+import { Logger } from "@matter/general";
 import { BridgeDataProvider } from "./bridge-data-provider.js";
+import { LoggerService } from "../../environment/logger.js";
 
 export type BridgeServerNodeConfig =
   Node.Configuration<ServerNode.RootEndpoint>;
@@ -69,9 +69,13 @@ export class BridgeServerNode extends ServerNode {
       parts: [...(config.parts ?? []), aggregator],
     });
     new BridgeDataProvider(this.env, bridgeData);
-    this.log = createLogger(`Bridge / ${bridgeData.id}`);
+    this.log = environment.get(LoggerService).get(`Bridge / ${bridgeData.id}`);
     this.aggregator = aggregator;
-    this.deviceManager = new BridgeDeviceManager(this.env, this.aggregator);
+    this.deviceManager = new BridgeDeviceManager(
+      this.env,
+      bridgeData.id,
+      this.aggregator,
+    );
   }
 
   override async start() {
@@ -84,7 +88,7 @@ export class BridgeServerNode extends ServerNode {
       this.status = BridgeStatus.Running;
       this.statusReason = undefined;
     } catch (e) {
-      this.log.error("Failed to start bridge due to error: %s", e);
+      this.log.error("Failed to start bridge due to error:", e);
       await super.cancel();
       this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;
@@ -108,7 +112,7 @@ export class BridgeServerNode extends ServerNode {
     try {
       await this.deviceManager.loadDevices(this.bridgeData);
     } catch (e) {
-      this.log.error("Failed to update bridge due to error: %s", e);
+      this.log.error("Failed to update bridge due to error:", e);
       await super.cancel();
       this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;

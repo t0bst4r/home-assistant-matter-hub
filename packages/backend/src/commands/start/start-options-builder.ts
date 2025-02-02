@@ -20,7 +20,7 @@ export function startOptionsBuilder(yargs: Argv): Argv<StartOptions> {
     )
     .option("log-level", {
       type: "string",
-      choices: ["silly", "debug", "info", "warn", "error"],
+      choices: ["silly", "debug", "info", "notice", "warn", "error", "fatal"],
       default: "info",
     })
     .option("disable-log-colors", {

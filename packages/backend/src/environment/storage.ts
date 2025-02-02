@@ -5,18 +5,20 @@ import fs from "node:fs";
 import { StorageBackendJsonFile } from "@matter/nodejs";
 import { ClusterId } from "@home-assistant-matter-hub/common";
 import _ from "lodash";
-import { createLogger } from "../logging/create-logger.js";
+import { Logger } from "@matter/general";
+import { LoggerService } from "./logger.js";
 
 export function storage(
   environment: Environment,
   storageLocation: string | undefined,
 ) {
+  const loggerService = environment.get(LoggerService);
   const location = resolveStorageLocation(storageLocation);
   fs.mkdirSync(location, { recursive: true });
   const storageService = environment.get(StorageService);
   storageService.location = location;
   storageService.factory = (ns) =>
-    new CustomStorage(path.resolve(location, ns + ".json"));
+    new CustomStorage(loggerService, path.resolve(location, ns + ".json"));
 }
 
 function resolveStorageLocation(storageLocation: string | undefined) {
@@ -27,10 +29,11 @@ function resolveStorageLocation(storageLocation: string | undefined) {
 }
 
 class CustomStorage extends StorageBackendJsonFile {
-  private readonly log = createLogger("CustomStorage");
+  private readonly log: Logger;
 
-  constructor(path: string) {
+  constructor(loggerService: LoggerService, path: string) {
     super(path);
+    this.log = loggerService.get("CustomStorage");
 
     const parser = this as unknown as {
       fromJson: (json: string) => object;
@@ -48,9 +51,7 @@ class CustomStorage extends StorageBackendJsonFile {
           return this.removeClusters(object, Object.values(ClusterId));
         } catch (e) {
           this.log.error(
-            "Failed to parse json file '%s' with content: \n\n%s\n\n",
-            path,
-            json,
+            `Failed to parse json file '${path}' with content: \n\n${json}\n\n`,
           );
           throw e;
         }
