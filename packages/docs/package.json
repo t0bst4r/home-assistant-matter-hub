@@ -6,6 +6,6 @@
     "build": "BASE_URL=/home-assistant-matter-hub myst build --html"
   },
   "dependencies": {
-    "mystmd": "^1.3.22"
+    "mystmd": "^1.3.23"
   }
 }
