@@ -23,7 +23,13 @@
     "changelog": {
       "projectChangelogs": false,
       "workspaceChangelog": {
-        "createRelease": false
+        "createRelease": false,
+        "renderOptions": {
+          "authors": true,
+          "mapAuthorsToGitHubUsernames": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
       },
       "git": {
         "stageChanges": true,
@@ -33,6 +39,40 @@
     },
     "version": {
       "conventionalCommits": true
+    },
+    "conventionalCommits": {
+      "types": {
+        "feat": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "🚀 Features"
+          }
+        },
+        "fix": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🐛 Fixes"
+          }
+        },
+        "docs": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "📚 Documentation Changes"
+          }
+        },
+        "chore": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🚧 Chores"
+          }
+        },
+        "notice": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "ℹ️ Other Notes"
+          }
+        }
+      }
     }
   },
   "plugins": [
