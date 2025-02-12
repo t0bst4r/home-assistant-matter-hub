@@ -12,7 +12,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "color": "4.2.3"
+    "color": "5.0.0"
   },
   "devDependencies": {
     "@types/color": "^4.2.0",
