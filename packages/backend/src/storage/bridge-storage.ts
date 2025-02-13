@@ -1,7 +1,10 @@
 import { BridgeData } from "@home-assistant-matter-hub/common";
-import { Environment, Environmental, StorageContext } from "@matter/main";
+import { Environment, Environmental, StorageContext, SupportedStorageTypes } from "@matter/main";
 import { AppStorage } from "./app-storage.js";
 import { register, Service } from "../environment/register.js";
+import _ from "lodash";
+
+type StorageObjectType = { [key: string]: SupportedStorageTypes };
 
 export class BridgeStorage implements Service {
   static [Environmental.create](environment: Environment) {
@@ -21,19 +24,17 @@ export class BridgeStorage implements Service {
     const appStorage = await this.environment.load(AppStorage);
     this.storage = appStorage.createContext("bridges");
 
-    const bridgeIds: string[] = JSON.parse(await this.storage.get("ids", "[]"));
+    await this.migrate();
+
+    let bridgeIds: string[] = await this.storage.get("ids", []);
     const bridges = await Promise.all(
       bridgeIds.map(async (bridgeId) =>
-        this.storage.get<string | undefined>(bridgeId),
+        this.storage.get<StorageObjectType | undefined>(bridgeId),
       ),
     );
     this._bridges = bridges
-      .filter((b): b is string => b != undefined)
-      .map((bridge) => {
-        const b = JSON.parse(bridge);
-        delete b["compatibility"];
-        return b as BridgeData;
-      });
+      .filter((b) => b != undefined)
+      .map((bridge) => bridge as unknown as BridgeData);
   }
 
   get bridges(): ReadonlyArray<BridgeData> {
@@ -47,7 +48,7 @@ export class BridgeStorage implements Service {
     } else {
       this._bridges.push(bridge);
     }
-    await this.storage.set(bridge.id, JSON.stringify(bridge));
+    await this.storage.set(bridge.id, bridge as unknown as StorageObjectType);
     await this.persistIds();
   }
 
@@ -63,7 +64,36 @@ export class BridgeStorage implements Service {
   private async persistIds() {
     await this.storage.set(
       "ids",
-      JSON.stringify(this._bridges.map((b) => b.id)),
+      this._bridges.map((b) => b.id),
     );
   }
+
+  private async migrate(): Promise<void> {
+    let version = await this.storage.get<number>("version", 1);
+    if (version === 1) {
+      await this.migrateV1ToV2();
+      return this.migrate();
+    }
+  }
+
+  private async migrateV1ToV2() {
+    const bridgeIds = JSON.parse(await this.storage.get("ids", "[]")) as string[];
+    await this.storage.set("ids", bridgeIds);
+
+    const bridgeStrings = await Promise.all(
+      bridgeIds.map(async (bridgeId) =>
+        this.storage.get<string | undefined>(bridgeId),
+      ),
+    );
+    const bridges = bridgeStrings
+      .filter((b): b is string => b != undefined)
+      .map((bridge) => {
+        const b = JSON.parse(bridge);
+        delete b["compatibility"];
+        return b as {id: string} & StorageObjectType;
+      });
+    await Promise.all(bridges.map(bridge => this.storage.set(bridge.id, bridge)));
+    await this.storage.set("version", 2);
+  }
 }
+
