@@ -18,7 +18,7 @@ body:
     attributes:
       label: "Documentation & Issues"
       options:
-        - label: I have reviewed the list of [currently supported entities and their limitations](https://github.com/t0bst4r/home-assistant-matter-hub?tab=readme-ov-file#5-supported-domains--device-types).
+        - label: I have reviewed the list of [currently supported entities and their limitations](https://t0bst4r.github.io/home-assistant-matter-hub/supported-device-types).
           required: true
         - label: I have searched the [issues](https://github.com/t0bst4r/home-assistant-matter-hub/issues) for a similar requests.
           required: true

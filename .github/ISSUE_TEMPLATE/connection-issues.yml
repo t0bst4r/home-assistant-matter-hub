@@ -57,7 +57,7 @@ body:
     attributes:
       label: "Documentation & Issues"
       options:
-        - label: I have reviewed the [documentation](https://github.com/t0bst4r/home-assistant-matter-hub/blob/main/packages/documentation/README.md) and the linked troubleshooting guide.
+        - label: I have reviewed the [documentation](https://t0bst4r.github.io/home-assistant-matter-hub/connectivity-issues) and the linked troubleshooting guides.
           required: true
         - label: I have searched the [issues](https://github.com/t0bst4r/home-assistant-matter-hub/issues) for a similar problem.
           required: true
