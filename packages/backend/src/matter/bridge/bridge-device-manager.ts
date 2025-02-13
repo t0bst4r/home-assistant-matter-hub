@@ -46,7 +46,7 @@ export class BridgeDeviceManager {
   ): Promise<string[]> {
     const allEntities = await registry.allEntities();
     const entities = allEntities.filter((entity) => {
-      const isValid = isValidEntity(entity) ?? [];
+      const isValid = isValidEntity(entity, bridgeData.featureFlags) ?? [];
       const matchesFilter =
         matchesEntityFilter(bridgeData.filter, entity) ?? [];
       const reasons = isValid.concat(matchesFilter);
@@ -143,12 +143,13 @@ export class BridgeDeviceManager {
 
 function isValidEntity(
   entity: HomeAssistantEntityInformation,
+  featureFlags?: BridgeFeatureFlags,
 ): string[] | undefined {
   const reason: string[] = [];
   if (entity.registry?.disabled_by != null) {
     reason.push(`disabled_by: ${entity.registry.disabled_by}`);
   }
-  if (entity.registry?.hidden_by != null) {
+  if (!featureFlags?.includeHiddenEntities && entity.registry?.hidden_by != null) {
     reason.push(`hidden_by: ${entity.registry.hidden_by}`);
   }
   if (reason.length) {

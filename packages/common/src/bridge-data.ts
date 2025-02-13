@@ -4,6 +4,7 @@ interface AllBridgeFeatureFlags {
   readonly matterSpeakers: boolean;
   readonly matterFans: boolean;
   readonly mimicHaCoverPercentage: boolean;
+  readonly includeHiddenEntities: boolean;
 }
 
 export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;
