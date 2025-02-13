@@ -61,14 +61,4 @@ export async function startHandler(
   await environment.load(HomeAssistantConfig);
   await environment.load(BridgeService);
   await environment.load(WebApi);
-
-  const close = closeFn(environment);
-  process.on("SIGINT", close);
-  process.on("SIGTERM", close);
-}
-
-function closeFn(environment: Environment) {
-  return async () => {
-    environment.runtime.interrupt();
-  };
 }

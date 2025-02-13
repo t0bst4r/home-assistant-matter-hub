@@ -12,16 +12,10 @@ export function register<T extends Service>(
 ) {
   const logger = environment.get(LoggerService).get("Environment");
   environment.set(factory, service);
-  let disposed = false;
-  const close = () => {
-    if (disposed) {
-      return;
-    }
-    disposed = true;
+  const close = async () => {
     logger.debug(`Disposing ${factory.name}`);
-    service[Symbol.asyncDispose]?.();
+    await service[Symbol.asyncDispose]?.();
     logger.debug(`Disposed ${factory.name}`);
   };
-  environment.runtime.stopped.once(close);
-  environment.runtime.crashed.once(close);
+  environment.runtime.add({ [Symbol.asyncDispose]: close });
 }

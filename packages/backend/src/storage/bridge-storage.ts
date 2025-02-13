@@ -1,5 +1,10 @@
 import { BridgeData } from "@home-assistant-matter-hub/common";
-import { Environment, Environmental, StorageContext, SupportedStorageTypes } from "@matter/main";
+import {
+  Environment,
+  Environmental,
+  StorageContext,
+  SupportedStorageTypes,
+} from "@matter/main";
 import { AppStorage } from "./app-storage.js";
 import { register, Service } from "../environment/register.js";
 import _ from "lodash";
@@ -77,7 +82,9 @@ export class BridgeStorage implements Service {
   }
 
   private async migrateV1ToV2() {
-    const bridgeIds = JSON.parse(await this.storage.get("ids", "[]")) as string[];
+    const bridgeIds = JSON.parse(
+      await this.storage.get("ids", "[]"),
+    ) as string[];
     await this.storage.set("ids", bridgeIds);
 
     const bridgeStrings = await Promise.all(
@@ -90,10 +97,11 @@ export class BridgeStorage implements Service {
       .map((bridge) => {
         const b = JSON.parse(bridge);
         delete b["compatibility"];
-        return b as {id: string} & StorageObjectType;
+        return b as { id: string } & StorageObjectType;
       });
-    await Promise.all(bridges.map(bridge => this.storage.set(bridge.id, bridge)));
+    await Promise.all(
+      bridges.map((bridge) => this.storage.set(bridge.id, bridge)),
+    );
     await this.storage.set("version", 2);
   }
 }
-

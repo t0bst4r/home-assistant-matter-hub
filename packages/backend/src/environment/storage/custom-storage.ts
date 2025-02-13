@@ -6,8 +6,8 @@ import { LegacyCustomStorage } from "./legacy-custom-storage.js";
 import fs from "node:fs";
 
 export class CustomStorage extends StorageBackendDisk {
-    private readonly log: Logger;
-  
+  private readonly log: Logger;
+
   constructor(loggerService: LoggerService, path: string) {
     super(path);
     this.log = loggerService.get("CustomStorage");
@@ -17,8 +17,13 @@ export class CustomStorage extends StorageBackendDisk {
   }
 
   private migrateLegacyStorage(loggerService: LoggerService, path: string) {
-    this.log.warn(`Migrating legacy storage (JSON file) to new storage (directory): ${path}`);
-    const legacyStorage = new LegacyCustomStorage(loggerService, path + ".json");
+    this.log.warn(
+      `Migrating legacy storage (JSON file) to new storage (directory): ${path}`,
+    );
+    const legacyStorage = new LegacyCustomStorage(
+      loggerService,
+      path + ".json",
+    );
     legacyStorage.initialize();
     _.forEach(legacyStorage.data, (values, context) => {
       _.forEach(values, (value, key) => {

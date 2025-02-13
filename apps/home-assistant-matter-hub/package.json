@@ -70,7 +70,6 @@
     "@home-assistant-matter-hub/build-utils": "*",
     "@home-assistant-matter-hub/backend": "*",
     "@home-assistant-matter-hub/frontend": "*",
-    "@home-assistant-matter-hub/documentation": "*",
     "@home-assistant-matter-hub/common": "*"
   },
   "nx": {
