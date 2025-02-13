@@ -149,7 +149,10 @@ function isValidEntity(
   if (entity.registry?.disabled_by != null) {
     reason.push(`disabled_by: ${entity.registry.disabled_by}`);
   }
-  if (!featureFlags?.includeHiddenEntities && entity.registry?.hidden_by != null) {
+  if (
+    !featureFlags?.includeHiddenEntities &&
+    entity.registry?.hidden_by != null
+  ) {
     reason.push(`hidden_by: ${entity.registry.hidden_by}`);
   }
   if (reason.length) {

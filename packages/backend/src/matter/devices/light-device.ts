@@ -19,8 +19,8 @@ const colorModes: LightDeviceColorMode[] = [
   LightDeviceColorMode.HS,
   LightDeviceColorMode.RGB,
   LightDeviceColorMode.XY,
-  // ColorMode.RGBW, not yet supported
-  // ColorMode.RGBWW, not yet supported
+  LightDeviceColorMode.RGBW,
+  LightDeviceColorMode.RGBWW,
 ];
 
 export function LightDevice(

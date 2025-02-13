@@ -67,7 +67,8 @@ const featureFlagSchema: JSONSchema7 = {
     },
     includeHiddenEntities: {
       title: "Include Hidden Entities",
-      description: "Include entities that are marked as hidden in Home Assistant",
+      description:
+        "Include entities that are marked as hidden in Home Assistant",
       type: "boolean",
       default: false,
     },

@@ -8,6 +8,7 @@ import { ColorControlServer as Base } from "@matter/main/behaviors/color-control
 import { ColorControl } from "@matter/main/clusters";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ClusterType } from "@matter/main/types";
+import Color from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { getMatterColorMode } from "./utils/color-control-server-utils.js";
 
@@ -117,23 +118,24 @@ export class ColorControlServerBase extends FeaturedBase {
   private getMatterColor(
     entity: HomeAssistantEntityState<LightDeviceAttributes>,
   ): [hue: number, saturation: number] | undefined {
-    const hsColor: [number, number] | undefined = entity.attributes.hs_color;
-    const xyColor: [number, number] | undefined = entity.attributes.xy_color;
-    const rgbColor: [number, number, number] | undefined =
-      entity.attributes.rgb_color;
-    if (hsColor != null) {
-      const [hue, saturation] = hsColor;
-      return ColorConverter.toMatterHS(
-        ColorConverter.fromHomeAssistantHS(hue, saturation),
-      );
-    } else if (rgbColor != null) {
-      const [r, g, b] = rgbColor;
-      return ColorConverter.toMatterHS(ColorConverter.fromRGB(r, g, b));
-    } else if (xyColor != null) {
-      const [x, y] = xyColor;
-      return ColorConverter.toMatterHS(ColorConverter.fromXY(x, y));
+    let color: Color | undefined = undefined;
+    if (entity.attributes.hs_color != null) {
+      const [hue, saturation] = entity.attributes.hs_color;
+      color = ColorConverter.fromHomeAssistantHS(hue, saturation);
+    } else if (entity.attributes.rgbww_color != null) {
+      const [r, g, b, cw, ww] = entity.attributes.rgbww_color;
+      color = ColorConverter.fromRGBWW(r, g, b, cw, ww);
+    } else if (entity.attributes.rgbw_color != null) {
+      const [r, g, b, w] = entity.attributes.rgbw_color;
+      color = ColorConverter.fromRGBW(r, g, b, w);
+    } else if (entity.attributes.rgb_color != null) {
+      const [r, g, b] = entity.attributes.rgb_color;
+      color = ColorConverter.fromRGB(r, g, b);
+    } else if (entity.attributes.xy_color != null) {
+      const [x, y] = entity.attributes.xy_color;
+      color = ColorConverter.fromXY(x, y);
     }
-    return undefined;
+    return color ? ColorConverter.toMatterHS(color) : undefined;
   }
 }
 

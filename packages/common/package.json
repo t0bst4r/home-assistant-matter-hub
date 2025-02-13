@@ -9,7 +9,8 @@
     "cleanup": "npx rimraf node_modules dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "color": "4.2.3"

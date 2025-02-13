@@ -104,6 +104,41 @@ export abstract class ColorConverter {
   }
 
   /**
+   * Create a color object from `rgbw_color` value
+   * @param r Red, 0-255
+   * @param g Green, 0-255
+   * @param b Blue, 0-255
+   * @param w White, 0-255
+   * @return Color
+   */
+  public static fromRGBW(r: number, g: number, b: number, w: number): Color {
+    return this.fromRGB(
+      Math.min(255, r + w),
+      Math.min(255, g + w),
+      Math.min(255, b + w),
+    );
+  }
+
+  /**
+   * Create a color object from `rgbww_color` value
+   * @param r Red, 0-255
+   * @param g Green, 0-255
+   * @param b Blue, 0-255
+   * @param cw Cold White, 0-255
+   * @param ww Warm White, 0-255
+   * @returns
+   */
+  public static fromRGBWW(
+    r: number,
+    g: number,
+    b: number,
+    cw: number,
+    ww: number,
+  ): Color {
+    return this.fromRGBW(r, g, b, (cw + ww) / 2);
+  }
+
+  /**
    * Extract Hue and Saturation compatible with Home Assistant
    * @param color The Color
    * @return [hue, saturation]
@@ -113,16 +148,6 @@ export abstract class ColorConverter {
   ): [hue: number, saturation: number] {
     const [h, s] = color.hsv().array();
     return [h, s];
-  }
-
-  /**
-   * Extract R, G, B values from a color
-   * @param color The color
-   * @return [r, g, b]
-   */
-  public static toRGB(color: Color): [r: number, g: number, b: number] {
-    const [r, g, b] = color.rgb().array();
-    return [r, g, b];
   }
 
   /**
@@ -165,40 +190,5 @@ export abstract class ColorConverter {
       result = Math.ceil(result);
     }
     return result;
-  }
-
-  public static temperatureKelvinToColor(temperatureKelvin: number): Color {
-    const temp = temperatureKelvin / 100;
-    let red: number, green: number, blue: number;
-
-    if (temp <= 66) {
-      red = 255;
-      green = temp;
-      green = 99.4708025861 * Math.log(green) - 161.1195681661;
-      if (temp <= 19) {
-        blue = 0;
-      } else {
-        blue = temp - 10;
-        blue = 138.5177312231 * Math.log(blue) - 305.0447927307;
-      }
-    } else {
-      red = temp - 60;
-      red = 329.698727446 * Math.pow(red, -0.1332047592);
-      green = temp - 60;
-      green = 288.1221695283 * Math.pow(green, -0.0755148492);
-      blue = 255;
-    }
-
-    function boundary(value: number): number {
-      return Math.min(Math.max(value, 0), 255);
-    }
-
-    return this.fromRGB(boundary(red), boundary(green), boundary(blue));
-  }
-
-  public static temperatureMiredsToColor(temperatureMireds: number): Color {
-    return this.temperatureKelvinToColor(
-      this.temperatureMiredsToKelvin(temperatureMireds),
-    );
   }
 }
