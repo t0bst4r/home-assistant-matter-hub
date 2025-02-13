@@ -50,7 +50,9 @@ export class OnOffServer extends Base {
   }
 
   private isOn(state: HomeAssistantEntityState) {
-    const isOn = this.state.config?.isOn ?? ((e) => e.state !== "off");
+    const isOn =
+      this.state.config?.isOn ??
+      ((e) => e.state !== "off" && e.state !== "unavailable");
     return isOn(state);
   }
 }
