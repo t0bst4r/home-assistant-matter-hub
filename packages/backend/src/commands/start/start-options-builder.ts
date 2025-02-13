@@ -56,5 +56,13 @@ export function startOptionsBuilder(yargs: Argv): Argv<StartOptions> {
       type: "string",
       description: "A long-lived access token for your Home Assistant Instance",
     })
+    .option("http-auth-username", {
+      type: "string",
+      description: "Username for HTTP basic authentication (optional)",
+    })
+    .option("http-auth-password", {
+      type: "string",
+      description: "Password for HTTP basic authentication (optional)",
+    })
     .demandOption(["home-assistant-url", "home-assistant-access-token"]);
 }

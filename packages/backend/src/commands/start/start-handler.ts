@@ -47,6 +47,14 @@ export async function startHandler(
     port: options.httpPort,
     whitelist: options.httpIpWhitelist?.map((item) => item.toString()),
     webUiDist,
+    ...(options.httpAuthUsername && options.httpAuthPassword
+      ? {
+          auth: {
+            username: options.httpAuthUsername,
+            password: options.httpAuthPassword,
+          },
+        }
+      : {}),
   });
 
   // Ensure bridges are loaded and api is ready

@@ -10,11 +10,16 @@ import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
 import nocache from "nocache";
 import { BetterLogger, LoggerService } from "../environment/logger.js";
+import basicAuth from "express-basic-auth";
 
 export interface WebApiProps {
   readonly port: number;
   readonly whitelist: string[] | undefined;
   readonly webUiDist?: string;
+  readonly auth?: {
+    username: string;
+    password: string;
+  };
 }
 
 export class WebApi implements Service {
@@ -50,6 +55,17 @@ export class WebApi implements Service {
       supportIngress,
       supportProxyLocation,
     ];
+
+    if (this.props.auth) {
+      middlewares.push(
+        basicAuth({
+          users: { [this.props.auth.username]: this.props.auth.password },
+          challenge: true,
+          realm: "Home Assistant Matter Hub",
+        }),
+      );
+      this.log.info("Basic authentication enabled");
+    }
     if (this.props.whitelist && this.props.whitelist.length > 0) {
       middlewares.push(
         AccessControl({

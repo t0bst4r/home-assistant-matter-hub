@@ -143,6 +143,8 @@ Options:
                                  ub                                                                                                 [string]
   --http-port, --web-port        Port used by the web application. 'http-port' is recommended, 'web-port' is deprecated and will be removed
                                  in the future.                                                                     [number] [default: 8482]
+  --http-auth-username           Username for HTTP basic authentication                                                             [string]
+  --http-auth-password           Password for HTTP basic authentication                                                             [string]
   --http-ip-whitelist            Only allow the specified IPv4, IPv6 or CIDR. You can specify this option multiple times. When configured vi
                                  a ENV variables, you can only specify ONE value. Defaults to allow every IP address.                [array]
   --mdns-network-interface       Limit mDNS to this network interface                                                               [string]
