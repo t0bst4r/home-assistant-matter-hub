@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "cleanup": "npx rimraf package.tgz",
-    "build": "./build.sh",
+    "build": "",
+    "build:addon": "(cd ./addon && ./build.sh)",
+    "build:standalone": "(cd ./standalone && ./build.sh)",
     "retrieve-package": "node retrieve-package.js",
-    "nx-release-publish": "./build.sh --latest --push --all-platforms"
+    "nx-release-publish": "",
+    "publish:addon": "(cd addon && ./build.sh --latest --push --all-platforms)",
+    "publish:standalone": "(cd standalone && ./build.sh --latest --push --all-platforms)"
   },
   "dependencies": {
     "home-assistant-matter-hub": "*"
@@ -29,7 +33,27 @@
       "build": {
         "cache": true,
         "dependsOn": [
+          "build:addon",
+          "build:standalone"
+        ]
+      },
+      "build:addon": {
+        "cache": true,
+        "dependsOn": [
           "retrieve-package"
+        ]
+      },
+      "build:standalone": {
+        "cache": true,
+        "dependsOn": [
+          "retrieve-package"
+        ]
+      },
+      "nx-release-publish": {
+        "cache": false,
+        "dependsOn": [
+          "publish:addon",
+          "publish:standalone"
         ]
       }
     }

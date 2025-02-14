@@ -8,7 +8,15 @@ const filename = fs
   .trim();
 
 const packagePath = path.join(packageDist, filename);
-const destination = path.join(import.meta.dirname, "package.tgz");
+const destinationAddon = path.join(import.meta.dirname, "addon", "package.tgz");
+const destinationStandalone = path.join(
+  import.meta.dirname,
+  "standalone",
+  "package.tgz",
+);
 
-fs.copyFileSync(packagePath, destination);
-console.log(`Copied ${packagePath} to ${destination}`);
+fs.copyFileSync(packagePath, destinationAddon);
+console.log(`Copied ${packagePath} to ${destinationAddon}`);
+
+fs.copyFileSync(packagePath, destinationStandalone);
+console.log(`Copied ${packagePath} to ${destinationStandalone}`);

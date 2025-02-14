@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PACKAGE_VERSION=$(tar xfO package.tgz package/package.json | jq -r ".version")
-IMAGE_NAME="ghcr.io/t0bst4r/home-assistant-matter-hub"
+IMAGE_NAME="ghcr.io/t0bst4r/home-assistant-matter-hub-addon"
 
 DOCKER_PUSH="false"
 TAG_LATEST="false"
@@ -26,6 +26,9 @@ if [ "$TAG_LATEST" = "true" ]; then
 fi
 
 DOCKER_BUILD_ARGS=()
+
+DOCKER_BUILD_ARGS+=("--build-arg" "package_version=$PACKAGE_VERSION")
+
 for TAG in "${TAGS[@]}"; do
   DOCKER_BUILD_ARGS+=("-t" "$TAG")
 done
@@ -36,6 +39,10 @@ fi
 if [ -n "$PLATFORMS" ]; then
   DOCKER_BUILD_ARGS+=("--platform=$PLATFORMS")
 fi
+
+echo "#######################################################################################"
+echo "Building $IMAGE_NAME:$PACKAGE_VERSION"
+echo "#######################################################################################"
 
 docker buildx build \
   "${DOCKER_BUILD_ARGS[@]}" \
