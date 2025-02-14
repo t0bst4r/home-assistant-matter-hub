@@ -31,7 +31,7 @@ export class BridgeStorage implements Service {
 
     await this.migrate();
 
-    let bridgeIds: string[] = await this.storage.get("ids", []);
+    const bridgeIds: string[] = await this.storage.get("ids", []);
     const bridges = await Promise.all(
       bridgeIds.map(async (bridgeId) =>
         this.storage.get<StorageObjectType | undefined>(bridgeId),
@@ -74,7 +74,7 @@ export class BridgeStorage implements Service {
   }
 
   private async migrate(): Promise<void> {
-    let version = await this.storage.get<number>("version", 1);
+    const version = await this.storage.get<number>("version", 1);
     if (version === 1) {
       await this.migrateV1ToV2();
       return this.migrate();

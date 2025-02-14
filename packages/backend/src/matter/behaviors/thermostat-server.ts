@@ -11,6 +11,8 @@ import { applyPatchState } from "../../utils/apply-patch-state.js";
 import * as utils from "./utils/thermostat-server-utils.js";
 import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 import { testBit } from "../../utils/test-bit.js";
+import { Logger } from "@matter/main";
+import { LoggerService } from "../../environment/logger.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
@@ -20,9 +22,10 @@ export class ThermostatServerBase extends FeaturedBase {
 
   override async initialize() {
     await super.initialize();
+    this.internal.logger = this.env.get(LoggerService).get("ThermostatServer");
+
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    const config = await this.env.load(HomeAssistantConfig);
-    this.internal.homeAssistantUnit = config.unitSystem.temperature;
+    await this.env.load(HomeAssistantConfig);
 
     this.update(homeAssistant.entity);
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
@@ -42,6 +45,15 @@ export class ThermostatServerBase extends FeaturedBase {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
+    const config = this.env.get(HomeAssistantConfig);
+
+    if (this.internal.homeAssistantUnit != config.unitSystem.temperature) {
+      this.internal.logger.notice(
+        `Switching unit of ${entity.entity_id} to '${config.unitSystem.temperature}'`,
+      );
+      this.internal.homeAssistantUnit = config.unitSystem.temperature;
+    }
+
     const attributes = entity.state.attributes as ClimateDeviceAttributes;
     const unit = this.internal.homeAssistantUnit;
     const minSetpointLimit = utils.toMatterTemperature(
@@ -73,7 +85,7 @@ export class ThermostatServerBase extends FeaturedBase {
       ...(this.features.heating
         ? {
             occupiedHeatingSetpoint:
-              this.getHeatingTemperature(attributes) ??
+              this.getHeatingTemperature(attributes, unit) ??
               this.state.occupiedHeatingSetpoint,
             minHeatSetpointLimit: minSetpointLimit,
             maxHeatSetpointLimit: maxSetpointLimit,
@@ -84,7 +96,7 @@ export class ThermostatServerBase extends FeaturedBase {
       ...(this.features.cooling
         ? {
             occupiedCoolingSetpoint:
-              this.getCoolingTemperature(attributes) ??
+              this.getCoolingTemperature(attributes, unit) ??
               this.state.occupiedCoolingSetpoint,
             minCoolSetpointLimit: minSetpointLimit,
             maxCoolSetpointLimit: maxSetpointLimit,
@@ -110,8 +122,14 @@ export class ThermostatServerBase extends FeaturedBase {
     const state = homeAssistant.entity.state;
     const attributes = state.attributes as ClimateDeviceAttributes;
 
-    let cool = this.getCoolingTemperature(attributes);
-    let heat = this.getHeatingTemperature(attributes);
+    let cool = this.getCoolingTemperature(
+      attributes,
+      this.internal.homeAssistantUnit,
+    );
+    let heat = this.getHeatingTemperature(
+      attributes,
+      this.internal.homeAssistantUnit,
+    );
 
     if (
       request.mode !== Thermostat.SetpointRaiseLowerMode.Cool &&
@@ -157,7 +175,10 @@ export class ThermostatServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const attributes = homeAssistant.entity.state
       .attributes as ClimateDeviceAttributes;
-    const heating = this.getHeatingTemperature(attributes);
+    const heating = this.getHeatingTemperature(
+      attributes,
+      this.internal.homeAssistantUnit,
+    );
     if (heating == value) {
       return;
     }
@@ -173,7 +194,10 @@ export class ThermostatServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const attributes = homeAssistant.entity.state
       .attributes as ClimateDeviceAttributes;
-    const cooling = this.getCoolingTemperature(attributes);
+    const cooling = this.getCoolingTemperature(
+      attributes,
+      this.internal.homeAssistantUnit,
+    );
     if (cooling == value) {
       return;
     }
@@ -205,21 +229,27 @@ export class ThermostatServerBase extends FeaturedBase {
     await homeAssistant.callAction("climate.set_temperature", data);
   }
 
-  private getHeatingTemperature(attributes: ClimateDeviceAttributes) {
+  private getHeatingTemperature(
+    attributes: ClimateDeviceAttributes,
+    unit: string,
+  ) {
     return utils.toMatterTemperature(
       attributes.target_temp_low ??
         attributes.target_temperature ??
         attributes.temperature,
-      this.internal.homeAssistantUnit,
+      unit,
     );
   }
 
-  private getCoolingTemperature(attributes: ClimateDeviceAttributes) {
+  private getCoolingTemperature(
+    attributes: ClimateDeviceAttributes,
+    unit: string,
+  ) {
     return utils.toMatterTemperature(
       attributes.target_temp_high ??
         attributes.target_temperature ??
         attributes.temperature,
-      this.internal.homeAssistantUnit,
+      unit,
     );
   }
 }
@@ -229,6 +259,7 @@ export namespace ThermostatServerBase {
 
   export class Internal extends FeaturedBase.Internal {
     homeAssistantUnit!: string;
+    logger!: Logger;
   }
 }
 
