@@ -3,7 +3,8 @@
   "version": "3.0.0-alpha.68",
   "private": true,
   "scripts": {
-    "build": "BASE_URL=/home-assistant-matter-hub myst build --html"
+    "build": "BASE_URL=/home-assistant-matter-hub myst build --html",
+    "cleanup": "npx rimraf _build"
   },
   "dependencies": {
     "mystmd": "^1.3.23"

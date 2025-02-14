@@ -1,4 +1,4 @@
-import Color from "color";
+import Color, { ColorInstance } from "color";
 
 /*
  * Matter:
@@ -26,7 +26,10 @@ export abstract class ColorConverter {
    * @param saturation Saturation, Values between 0 and 100
    * @return Color
    */
-  public static fromHomeAssistantHS(hue: number, saturation: number): Color {
+  public static fromHomeAssistantHS(
+    hue: number,
+    saturation: number,
+  ): ColorInstance {
     return Color.hsv(hue, saturation, 100);
   }
 
@@ -36,7 +39,7 @@ export abstract class ColorConverter {
    * @param saturation Saturation, Values between 0 and 255
    * @return Color
    */
-  public static fromMatterHS(hue: number, saturation: number): Color {
+  public static fromMatterHS(hue: number, saturation: number): ColorInstance {
     return Color.hsv(
       Math.round((hue / 254) * 360),
       Math.round((saturation / 254) * 100),
@@ -51,7 +54,7 @@ export abstract class ColorConverter {
    * @param y Y, Values between 0 and 1
    * @return Color
    */
-  static fromXY(x: number, y: number): Color {
+  static fromXY(x: number, y: number): ColorInstance {
     function toXYZ(x: number, y: number): [X: number, Y: number, Z: number] {
       const Y = 1.0;
       const X = (Y / y) * x;
@@ -99,7 +102,7 @@ export abstract class ColorConverter {
    * @param b Blue, 0-255
    * @return Color
    */
-  public static fromRGB(r: number, g: number, b: number): Color {
+  public static fromRGB(r: number, g: number, b: number): ColorInstance {
     return Color.rgb(r, g, b);
   }
 
@@ -111,7 +114,12 @@ export abstract class ColorConverter {
    * @param w White, 0-255
    * @return Color
    */
-  public static fromRGBW(r: number, g: number, b: number, w: number): Color {
+  public static fromRGBW(
+    r: number,
+    g: number,
+    b: number,
+    w: number,
+  ): ColorInstance {
     return this.fromRGB(
       Math.min(255, r + w),
       Math.min(255, g + w),
@@ -134,7 +142,7 @@ export abstract class ColorConverter {
     b: number,
     cw: number,
     ww: number,
-  ): Color {
+  ): ColorInstance {
     return this.fromRGBW(r, g, b, (cw + ww) / 2);
   }
 
@@ -144,7 +152,7 @@ export abstract class ColorConverter {
    * @return [hue, saturation]
    */
   public static toHomeAssistantHS(
-    color: Color,
+    color: ColorInstance,
   ): [hue: number, saturation: number] {
     const [h, s] = color.hsv().array();
     return [h, s];
@@ -155,7 +163,9 @@ export abstract class ColorConverter {
    * @param color The Color
    * @return [hue, saturation]
    */
-  public static toMatterHS(color: Color): [hue: number, saturation: number] {
+  public static toMatterHS(
+    color: ColorInstance,
+  ): [hue: number, saturation: number] {
     const [h, s] = color.hsv().array();
     return [Math.round((h / 360) * 254), Math.round((s / 100) * 254)];
   }

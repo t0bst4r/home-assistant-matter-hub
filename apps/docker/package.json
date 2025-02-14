@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "cleanup": "npx rimraf package.tgz",
+    "cleanup": "npx rimraf addon/package.tgz standalone/package.tgz",
     "build": "",
     "build:addon": "(cd ./addon && ./build.sh)",
     "build:standalone": "(cd ./standalone && ./build.sh)",

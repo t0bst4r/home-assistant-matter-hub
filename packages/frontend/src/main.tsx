@@ -11,10 +11,10 @@ import "@fontsource/roboto/700.css";
 
 import { AppLayout } from "./theme/AppLayout.tsx";
 import { routes } from "./routes.tsx";
-import { store } from "./state/store.ts";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { appTheme } from "./theme/theme.ts";
 import { NotificationsProvider } from "./components/notifications/notifications-provider.tsx";
+import { store } from "./state/store.ts";
 
 let basename = document
   .getElementsByTagName("base")[0]
@@ -36,15 +36,19 @@ const router = createBrowserRouter(
   },
 );
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <StateProvider store={store}>
-      <ThemeProvider theme={appTheme}>
-        <CssBaseline />
-        <NotificationsProvider>
-          <RouterProvider router={router} />
-        </NotificationsProvider>
-      </ThemeProvider>
-    </StateProvider>
-  </StrictMode>,
-);
+const App = () => {
+  return (
+    <StrictMode>
+      <StateProvider store={store}>
+        <ThemeProvider theme={appTheme}>
+          <CssBaseline />
+          <NotificationsProvider>
+            <RouterProvider router={router} />
+          </NotificationsProvider>
+        </ThemeProvider>
+      </StateProvider>
+    </StrictMode>
+  );
+};
+
+createRoot(document.getElementById("root")!).render(<App />);

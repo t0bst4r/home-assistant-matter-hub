@@ -8,7 +8,7 @@ import { ColorControlServer as Base } from "@matter/main/behaviors/color-control
 import { ColorControl } from "@matter/main/clusters";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ClusterType } from "@matter/main/types";
-import Color from "color";
+import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { getMatterColorMode } from "./utils/color-control-server-utils.js";
 
@@ -118,7 +118,7 @@ export class ColorControlServerBase extends FeaturedBase {
   private getMatterColor(
     entity: HomeAssistantEntityState<LightDeviceAttributes>,
   ): [hue: number, saturation: number] | undefined {
-    let color: Color | undefined = undefined;
+    let color: ColorInstance | undefined = undefined;
     if (entity.attributes.hs_color != null) {
       const [hue, saturation] = entity.attributes.hs_color;
       color = ColorConverter.fromHomeAssistantHS(hue, saturation);
