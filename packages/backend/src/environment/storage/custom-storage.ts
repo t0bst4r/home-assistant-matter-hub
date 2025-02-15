@@ -8,15 +8,25 @@ import fs from "node:fs";
 export class CustomStorage extends StorageBackendDisk {
   private readonly log: Logger;
 
-  constructor(loggerService: LoggerService, path: string) {
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly path: string,
+  ) {
     super(path);
     this.log = loggerService.get("CustomStorage");
-    if (fs.existsSync(path + ".json")) {
-      this.migrateLegacyStorage(loggerService, path);
+  }
+
+  override async initialize() {
+    super.initialize();
+    if (fs.existsSync(this.path + ".json")) {
+      await this.migrateLegacyStorage(this.loggerService, this.path);
     }
   }
 
-  private migrateLegacyStorage(loggerService: LoggerService, path: string) {
+  private async migrateLegacyStorage(
+    loggerService: LoggerService,
+    path: string,
+  ) {
     this.log.warn(
       `Migrating legacy storage (JSON file) to new storage (directory): ${path}`,
     );
@@ -30,7 +40,7 @@ export class CustomStorage extends StorageBackendDisk {
         this.set([context], key, value);
       });
     });
-    legacyStorage.close();
+    await legacyStorage.close();
     fs.renameSync(path + ".json", path + "/backup.alpha-69.json");
   }
 }

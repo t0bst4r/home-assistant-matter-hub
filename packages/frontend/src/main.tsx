@@ -36,19 +36,15 @@ const router = createBrowserRouter(
   },
 );
 
-const App = () => {
-  return (
-    <StrictMode>
-      <StateProvider store={store}>
-        <ThemeProvider theme={appTheme}>
-          <CssBaseline />
-          <NotificationsProvider>
-            <RouterProvider router={router} />
-          </NotificationsProvider>
-        </ThemeProvider>
-      </StateProvider>
-    </StrictMode>
-  );
-};
-
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <StateProvider store={store}>
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <NotificationsProvider>
+          <RouterProvider router={router} />
+        </NotificationsProvider>
+      </ThemeProvider>
+    </StateProvider>
+  </StrictMode>,
+);

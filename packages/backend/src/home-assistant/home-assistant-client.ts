@@ -19,6 +19,7 @@ export class HomeAssistantClient implements Service {
   private readonly log: Logger;
   readonly construction: Promise<void>;
   public connection!: Connection;
+  private disposed = false;
 
   constructor(
     environment: Environment,
@@ -30,6 +31,9 @@ export class HomeAssistantClient implements Service {
   }
 
   private async initialize(): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
     try {
       this.connection?.close();
       this.connection = await createConnection({
@@ -60,6 +64,7 @@ export class HomeAssistantClient implements Service {
   }
 
   async [Symbol.asyncDispose]() {
+    this.disposed = true;
     this.connection?.close();
   }
 }

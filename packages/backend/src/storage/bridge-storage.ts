@@ -75,8 +75,15 @@ export class BridgeStorage implements Service {
 
   private async migrate(): Promise<void> {
     const version = await this.storage.get<number>("version", 1);
+    let migratedVersion: number = version;
     if (version === 1) {
-      await this.migrateV1ToV2();
+      migratedVersion = await this.migrateV1ToV2();
+    }
+    if (version === 2) {
+      migratedVersion = await this.migrateV2ToV3();
+    }
+    if (migratedVersion !== version) {
+      await this.storage.set("version", migratedVersion);
       return this.migrate();
     }
   }
@@ -87,21 +94,43 @@ export class BridgeStorage implements Service {
     ) as string[];
     await this.storage.set("ids", bridgeIds);
 
-    const bridgeStrings = await Promise.all(
-      bridgeIds.map(async (bridgeId) =>
-        this.storage.get<string | undefined>(bridgeId),
-      ),
-    );
-    const bridges = bridgeStrings
-      .filter((b): b is string => b != undefined)
-      .map((bridge) => {
-        const b = JSON.parse(bridge);
-        delete b["compatibility"];
-        return b as { id: string } & StorageObjectType;
-      });
-    await Promise.all(
-      bridges.map((bridge) => this.storage.set(bridge.id, bridge)),
-    );
-    await this.storage.set("version", 2);
+    for (const bridgeId of bridgeIds) {
+      const bridgeValue = await this.storage.get<string | undefined>(bridgeId);
+      if (bridgeValue == undefined) {
+        continue;
+      }
+      const bridge = JSON.parse(bridgeValue);
+      delete bridge["compatibility"];
+      await this.storage.set(bridgeId, bridge);
+    }
+    return 2;
+  }
+
+  private async migrateV2ToV3() {
+    const bridgeIdsValue = await this.storage.get<string | string[]>("ids", []);
+    let bridgeIds: string[];
+    if (typeof bridgeIdsValue === "string") {
+      bridgeIds = JSON.parse(bridgeIdsValue);
+      await this.storage.set("ids", bridgeIds);
+    } else {
+      bridgeIds = bridgeIdsValue;
+    }
+
+    for (const bridgeId of bridgeIds) {
+      const bridgeValue = await this.storage.get<string | {} | undefined>(
+        bridgeId,
+      );
+      if (bridgeValue == undefined) {
+        continue;
+      }
+      let bridge: {};
+      if (typeof bridgeValue === "string") {
+        bridge = JSON.parse(bridgeValue);
+      } else {
+        bridge = bridgeValue;
+      }
+      await this.storage.set(bridgeId, bridge);
+    }
+    return 3;
   }
 }
