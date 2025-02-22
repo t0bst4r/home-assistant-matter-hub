@@ -34,6 +34,9 @@ export enum ClimateDeviceFeature {
 
 export interface ClimateDeviceAttributes {
   hvac_action: ClimateHvacAction | undefined;
+  /**
+   * @deprecated use entity.state instead
+   */
   hvac_mode?: ClimateHvacMode | undefined;
   hvac_modes: ClimateHvacMode[];
   min_temp?: number | string | null | undefined;

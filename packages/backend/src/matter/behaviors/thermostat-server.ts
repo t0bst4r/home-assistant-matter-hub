@@ -68,10 +68,7 @@ export class ThermostatServerBase extends FeaturedBase {
     applyPatchState(this.state, {
       localTemperature:
         utils.toMatterTemperature(attributes.current_temperature, unit) ?? null,
-      systemMode: utils.getMatterSystemMode(
-        attributes.hvac_mode ?? entity.state.state,
-        this.features,
-      ),
+      systemMode: utils.getMatterSystemMode(entity.state.state, this.features),
       thermostatRunningState: utils.getMatterRunningState(
         attributes.hvac_action,
         entity.state.state,
@@ -149,10 +146,8 @@ export class ThermostatServerBase extends FeaturedBase {
 
   private async systemModeChanged(systemMode: Thermostat.SystemMode) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const currentAttributes = homeAssistant.entity.state
-      .attributes as ClimateDeviceAttributes;
     const current = utils.getMatterSystemMode(
-      currentAttributes.hvac_mode ?? homeAssistant.entity.state.state,
+      homeAssistant.entity.state.state,
       this.features,
     );
     if (systemMode === current) {
