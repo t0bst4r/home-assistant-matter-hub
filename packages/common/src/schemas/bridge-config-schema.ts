@@ -90,6 +90,12 @@ export const bridgeConfigSchema: JSONSchema7 = {
       type: "number",
       minimum: 1,
     },
+    countryCode: {
+      title: "Country Code",
+      type: "string",
+      description:
+        "An ISO 3166-1 alpha-2 code to represent the country in which the Node is located. Only needed if the commissioning fails due to missing country code.",
+    },
     filter: homeAssistantFilterSchema,
     featureFlags: featureFlagSchema,
   },

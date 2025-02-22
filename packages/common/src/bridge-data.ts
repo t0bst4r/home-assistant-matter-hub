@@ -14,6 +14,7 @@ export interface BridgeConfig {
   readonly port: number;
   readonly filter: HomeAssistantFilter;
   readonly featureFlags?: BridgeFeatureFlags;
+  readonly countryCode?: string;
 }
 
 export interface CreateBridgeRequest extends BridgeConfig {}

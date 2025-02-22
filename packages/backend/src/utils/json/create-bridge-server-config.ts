@@ -35,6 +35,7 @@ export function createBridgeServerConfig(
         .substring(0, 32),
       hardwareVersion: data.basicInformation.hardwareVersion,
       softwareVersion: data.basicInformation.softwareVersion,
+      ...(data.countryCode ? { location: data.countryCode } : {}),
     },
   };
 }
