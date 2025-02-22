@@ -28,6 +28,7 @@ export const EditBridgePage = () => {
       return {
         name: bridge.name,
         port: bridge.port,
+        countryCode: bridge.countryCode,
         filter: bridge.filter,
         featureFlags: bridge.featureFlags,
       };

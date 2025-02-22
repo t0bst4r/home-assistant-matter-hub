@@ -4,6 +4,7 @@ import { Logger } from "@matter/general";
 import { LoggerService } from "../logger.js";
 import { LegacyCustomStorage } from "./legacy-custom-storage.js";
 import fs from "node:fs";
+import { ClusterId } from "@home-assistant-matter-hub/common";
 
 export class CustomStorage extends StorageBackendDisk {
   private readonly log: Logger;
@@ -21,6 +22,18 @@ export class CustomStorage extends StorageBackendDisk {
     if (fs.existsSync(this.path + ".json")) {
       await this.migrateLegacyStorage(this.loggerService, this.path);
     }
+  }
+
+  override keys(contexts: string[]): string[] {
+    const key = this.getContextBaseKey(contexts);
+    const clusters: string[] = Object.values(ClusterId);
+    if (
+      key.startsWith("root.parts.aggregator.parts.") &&
+      clusters.some((cluster) => key.endsWith(cluster))
+    ) {
+      return [];
+    }
+    return super.keys(contexts);
   }
 
   private async migrateLegacyStorage(
