@@ -113,10 +113,12 @@ jobs:
             --verify-tag
 
       - name: Upload Documentation
+        if: steps.version.outputs.release-required == 'yes'
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./packages/docs/_build/html"
       - name: Deploy documentation to GitHub Pages
+        if: steps.version.outputs.release-required == 'yes'
         uses: actions/deploy-pages@v4
 
       - name: Dispatch Addon Repository
