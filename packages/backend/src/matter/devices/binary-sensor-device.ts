@@ -1,18 +1,28 @@
 import {
   BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
+  BridgeFeatureFlags,
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
   ContactSensorDevice,
   OccupancySensorDevice,
   WaterLeakDetectorDevice,
+  OnOffSensorDevice,
 } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import { BooleanStateServer } from "../behaviors/boolean-state-server.js";
 import { OccupancySensingServer } from "../behaviors/occupancy-sensing-server.js";
 import { EndpointType } from "@matter/main";
+import { OnOffSensorServer } from "../behaviors/on-off-sensor-server.js";
+
+const OnOffSensorType = OnOffSensorDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantEntityBehavior,
+  OnOffSensorServer,
+);
 
 const ContactSensorType = ContactSensorDevice.with(
   BasicInformationServer,
@@ -36,7 +46,8 @@ const WaterLeakDetectorType = WaterLeakDetectorDevice.with(
 type CombinedType =
   | typeof ContactSensorType
   | typeof OccupancySensorType
-  | typeof WaterLeakDetectorType;
+  | typeof WaterLeakDetectorType
+  | typeof OnOffSensorType;
 
 const deviceClasses: Partial<Record<BinarySensorDeviceClass, CombinedType>> = {
   [BinarySensorDeviceClass.Occupancy]: OccupancySensorType,
@@ -52,11 +63,17 @@ const deviceClasses: Partial<Record<BinarySensorDeviceClass, CombinedType>> = {
   [BinarySensorDeviceClass.Moisture]: WaterLeakDetectorType,
 };
 
-const defaultDeviceType = ContactSensorType;
-
 export function BinarySensorDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
+  featureFlags?: BridgeFeatureFlags,
 ): EndpointType {
+  const defaultDeviceType =
+    featureFlags?.useOnOffSensorAsDefaultForBinarySensors
+      ? OnOffSensorType
+      : ContactSensorType.set({
+          booleanState: { config: { inverted: false } },
+        });
+
   const attributes = homeAssistantEntity.entity.state
     .attributes as BinarySensorDeviceAttributes;
   const deviceClass = attributes.device_class;

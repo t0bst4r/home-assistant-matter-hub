@@ -5,6 +5,7 @@ interface AllBridgeFeatureFlags {
   readonly matterFans: boolean;
   readonly mimicHaCoverPercentage: boolean;
   readonly includeHiddenEntities: boolean;
+  readonly useOnOffSensorAsDefaultForBinarySensors: boolean;
 }
 
 export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;

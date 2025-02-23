@@ -72,6 +72,12 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
+    useOnOffSensorAsDefaultForBinarySensors: {
+      title: "Use On/Off Sensor as default device class for Binary Sensors",
+      description: "This is only supported by Google Home (as of 2025-02-23)",
+      type: "boolean",
+      default: false,
+    },
   },
   additionalProperties: false,
 };
