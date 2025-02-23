@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-home-assistant-matter-hub start
+exec home-assistant-matter-hub start
