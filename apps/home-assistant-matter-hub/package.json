@@ -50,8 +50,8 @@
     "pack": "mkdir -p pack && npm pack --pack-destination pack --json | jq -r .[0].filename > pack/package-name.txt"
   },
   "dependencies": {
-    "@matter/main": "0.12.3",
-    "@matter/nodejs": "0.12.3",
+    "@matter/main": "0.12.5",
+    "@matter/nodejs": "0.12.5",
     "ajv": "8.17.1",
     "async-lock": "1.4.1",
     "color": "5.0.0",
