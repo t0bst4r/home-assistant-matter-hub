@@ -1,4 +1,5 @@
 import { ThermostatDevice } from "@matter/main/devices";
+import { OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
 import {
@@ -18,6 +19,10 @@ import { Thermostat } from "@matter/main/clusters";
 import { ClusterType } from "@matter/main/types";
 import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
 
+const climateOnOffConfig: OnOffConfig = {
+   turnOn: { action: "climate.turn_on" },
+   turnOff: { action: "climate.turn_off" },
+};
 const humidityConfig: HumidityMeasurementConfig = {
   getValue(entity: HomeAssistantEntityState) {
     const attributes = entity.attributes as ClimateDeviceAttributes;
@@ -62,6 +67,7 @@ const ClimateDeviceType = (
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
+    OnOffServer.set({ config: climateOnOffConfig }),
     ThermostatServer.with(...features),
   );
 
@@ -85,7 +91,7 @@ const heatingModes: ClimateHvacMode[] = [
 
 export function ClimateDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
-): EndpointType | undefined {
+): EndpointType {
   const attributes = homeAssistantEntity.entity.state
     .attributes as ClimateDeviceAttributes;
   const supportsCooling = coolingModes.some((mode) =>
@@ -96,11 +102,9 @@ export function ClimateDevice(
   );
   const supportsHumidity = attributes.current_humidity !== undefined;
 
-  const deviceType = ClimateDeviceType(
+  return ClimateDeviceType(
     supportsCooling,
     supportsHeating,
     supportsHumidity,
   ).set({ homeAssistantEntity });
-
-  return deviceType;
 }
