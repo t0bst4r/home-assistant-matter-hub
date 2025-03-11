@@ -3,7 +3,14 @@ import { HomeAssistantFilter } from "./home-assistant-filter.js";
 interface AllBridgeFeatureFlags {
   readonly matterSpeakers: boolean;
   readonly matterFans: boolean;
+
+  /**
+   * @deprecated use `coverInvertPercentage` and `coverSwapOpenClose` instead
+   */
   readonly mimicHaCoverPercentage: boolean;
+  readonly coverDoNotInvertPercentage: boolean;
+  readonly coverSwapOpenClose: boolean;
+
   readonly includeHiddenEntities: boolean;
   readonly useOnOffSensorAsDefaultForBinarySensors: boolean;
 }

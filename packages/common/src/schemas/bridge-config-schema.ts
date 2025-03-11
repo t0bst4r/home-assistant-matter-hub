@@ -58,13 +58,22 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
-    mimicHaCoverPercentage: {
-      title: "Mimic Cover Percentage from Home Assistant",
+
+    coverDoNotInvertPercentage: {
+      title: "Do not invert Percentages for Covers",
       description:
-        "This will NOT invert percentages (=> HA = Matter), but it will swap 0% and 100% because those are used for 'open' and 'close' commands.",
+        "Do not invert the percentage of covers to match Home Assistant (not Matter compliant)",
       type: "boolean",
       default: false,
     },
+    coverSwapOpenClose: {
+      title: "Swap open and close percentages for covers",
+      description:
+        "If the percentages of the covers are NOT inverted, the “Open” and “Close” commands may be swapped. This causes them to be swapped back again.",
+      type: "boolean",
+      default: false,
+    },
+
     includeHiddenEntities: {
       title: "Include Hidden Entities",
       description:

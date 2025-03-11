@@ -8,6 +8,9 @@ import {
 import { AppStorage } from "./app-storage.js";
 import { register, Service } from "../environment/register.js";
 import _ from "lodash";
+import { migrateBridgeV1ToV2 } from "./migrations/bridge/v1-to-v2.js";
+import { migrateBridgeV2ToV3 } from "./migrations/bridge/v2-to-v3.js";
+import { migrateBridgeV3ToV4 } from "./migrations/bridge/v3-to-v4.js";
 
 type StorageObjectType = { [key: string]: SupportedStorageTypes };
 
@@ -77,60 +80,15 @@ export class BridgeStorage implements Service {
     const version = await this.storage.get<number>("version", 1);
     let migratedVersion: number = version;
     if (version === 1) {
-      migratedVersion = await this.migrateV1ToV2();
-    }
-    if (version === 2) {
-      migratedVersion = await this.migrateV2ToV3();
+      migratedVersion = await migrateBridgeV1ToV2(this.storage);
+    } else if (version === 2) {
+      migratedVersion = await migrateBridgeV2ToV3(this.storage);
+    } else if (version === 3) {
+      migratedVersion = await migrateBridgeV3ToV4(this.storage);
     }
     if (migratedVersion !== version) {
       await this.storage.set("version", migratedVersion);
       return this.migrate();
     }
-  }
-
-  private async migrateV1ToV2() {
-    const bridgeIds = JSON.parse(
-      await this.storage.get("ids", "[]"),
-    ) as string[];
-    await this.storage.set("ids", bridgeIds);
-
-    for (const bridgeId of bridgeIds) {
-      const bridgeValue = await this.storage.get<string | undefined>(bridgeId);
-      if (bridgeValue == undefined) {
-        continue;
-      }
-      const bridge = JSON.parse(bridgeValue);
-      delete bridge["compatibility"];
-      await this.storage.set(bridgeId, bridge);
-    }
-    return 2;
-  }
-
-  private async migrateV2ToV3() {
-    const bridgeIdsValue = await this.storage.get<string | string[]>("ids", []);
-    let bridgeIds: string[];
-    if (typeof bridgeIdsValue === "string") {
-      bridgeIds = JSON.parse(bridgeIdsValue);
-      await this.storage.set("ids", bridgeIds);
-    } else {
-      bridgeIds = bridgeIdsValue;
-    }
-
-    for (const bridgeId of bridgeIds) {
-      const bridgeValue = await this.storage.get<string | {} | undefined>(
-        bridgeId,
-      );
-      if (bridgeValue == undefined) {
-        continue;
-      }
-      let bridge: {};
-      if (typeof bridgeValue === "string") {
-        bridge = JSON.parse(bridgeValue);
-      } else {
-        bridge = bridgeValue;
-      }
-      await this.storage.set(bridgeId, bridge);
-    }
-    return 3;
   }
 }
