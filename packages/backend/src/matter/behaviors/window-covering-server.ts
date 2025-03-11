@@ -87,7 +87,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
         ? {
             installedOpenLimitTilt: 0,
             installedClosedLimitTilt: 100_00,
-            currentPositionTilt: currentLift,
+            currentPositionTilt: currentTilt,
           }
         : {}),
       ...(this.features.positionAwareLift
@@ -114,6 +114,10 @@ export class WindowCoveringServerBase extends FeaturedBase {
     let currentValue = this.convertValue(percentage);
     if (currentValue != null) {
       currentValue *= 100;
+      currentValue = Math.abs(currentValue);
+      if (currentValue > 100_00) {
+        currentValue = 100_00;
+      }
     } else {
       if (coverState === CoverDeviceState.open) {
         currentValue = 0;
