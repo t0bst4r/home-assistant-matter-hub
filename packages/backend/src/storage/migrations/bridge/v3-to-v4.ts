@@ -13,12 +13,14 @@ export async function migrateBridgeV3ToV4(
 
     const bridge = bridgeValue as Record<string, unknown>;
     const featureFlags = bridge["featureFlags"] as Record<string, unknown>;
-    featureFlags["coverDoNotInvertPercentage"] =
-      featureFlags["mimicHaCoverPercentage"] ?? false;
-    featureFlags["coverSwapOpenClose"] =
-      featureFlags["mimicHaCoverPercentage"] ?? false;
-    delete featureFlags["mimicHaCoverPercentage"];
-    await storage.set(bridgeId, bridgeValue);
+    if (featureFlags) {
+      featureFlags["coverDoNotInvertPercentage"] =
+        featureFlags["mimicHaCoverPercentage"] ?? false;
+      featureFlags["coverSwapOpenClose"] =
+        featureFlags["mimicHaCoverPercentage"] ?? false;
+      delete featureFlags["mimicHaCoverPercentage"];
+      await storage.set(bridgeId, bridgeValue);
+    }
   }
   return 4;
 }
