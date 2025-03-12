@@ -14,6 +14,7 @@
     "release": "nx release --verbose",
     "serve": "nx run-many -t serve --output-style=stream --parallel=100",
     "serve:production": "nx run home-assistant-matter-hub:start --skip-nx-cache",
+    "start": "npm run serve",
     "check-updates": "npx npm-check-updates --workspaces --root -u"
   },
   "workspaces": [

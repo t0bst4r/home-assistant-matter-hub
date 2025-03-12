@@ -70,9 +70,7 @@ export function BinarySensorDevice(
   const defaultDeviceType =
     featureFlags?.useOnOffSensorAsDefaultForBinarySensors
       ? OnOffSensorType
-      : ContactSensorType.set({
-          booleanState: { config: { inverted: false } },
-        });
+      : ContactSensorType;
 
   const attributes = homeAssistantEntity.entity.state
     .attributes as BinarySensorDeviceAttributes;
