@@ -9,7 +9,8 @@ import {
   getMatterRunningState,
   getMatterSystemMode,
   ThermostatRunningState,
-  toMatterTemperature,
+  homeAssistantToMatterTemperature,
+  matterToHomeAssistantTemperature,
 } from "./thermostat-server-utils.js";
 import { Thermostat } from "@matter/main/clusters";
 
@@ -109,7 +110,7 @@ describe("ThermostatServerUtils", () => {
     });
   });
 
-  describe("toMatterTemperature", () => {
+  describe("homeAssistantToMatterTemperature", () => {
     it.each([
       [100, "°C", 100_00],
       [85, "°C", 85_00],
@@ -121,7 +122,30 @@ describe("ThermostatServerUtils", () => {
       [undefined, "°C", undefined],
       [null, "°C", undefined],
     ])("should convert '%s %s' to '%s'", (temperature, unit, expected) => {
-      expect(toMatterTemperature(temperature, unit)).toEqual(expected);
+      const actual = homeAssistantToMatterTemperature(temperature, unit);
+      if (expected == undefined) {
+        expect(actual).toBeUndefined();
+      } else {
+        expect(actual).approximately(expected, 0.01);
+      }
+    });
+  });
+
+  describe("matterToHomeAssistantTemperature", () => {
+    it.each([
+      [100_00, "°C", 100],
+      [85_00, "°C", 85],
+      [21_00, "K", 294.15],
+      [21_11, "°F", 70],
+      [23_46, "°C", 23.46],
+      [undefined, "°C", undefined],
+    ])("should convert '%s %s' to '%s'", (temperature, unit, expected) => {
+      const actual = matterToHomeAssistantTemperature(temperature, unit);
+      if (expected == undefined) {
+        expect(actual).toBeUndefined();
+      } else {
+        expect(actual).approximately(expected, 0.01);
+      }
     });
   });
 });
