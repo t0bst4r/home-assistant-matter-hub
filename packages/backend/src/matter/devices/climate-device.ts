@@ -16,6 +16,7 @@ import { EndpointType } from "@matter/main";
 import { FeatureSelection } from "../../utils/feature-selection.js";
 import { Thermostat } from "@matter/main/clusters";
 import { ClusterType } from "@matter/main/types";
+import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
 
 const humidityConfig: HumidityMeasurementConfig = {
   getValue(entity: HomeAssistantEntityState) {
@@ -51,13 +52,17 @@ const ClimateDeviceType = (
   supportsHeating: boolean,
   supportsHumidity: boolean,
 ) => {
+  const features = thermostatFeatures(supportsCooling, supportsHeating);
+  if (features.size === 0) {
+    throw new InvalidDeviceError(
+      'Climates have to support either "heating" or "cooling". Just "auto" is not enough.',
+    );
+  }
   const device = ThermostatDevice.with(
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    ThermostatServer.with(
-      ...thermostatFeatures(supportsCooling, supportsHeating),
-    ),
+    ThermostatServer.with(...features),
   );
 
   if (supportsHumidity) {
@@ -80,7 +85,7 @@ const heatingModes: ClimateHvacMode[] = [
 
 export function ClimateDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
-): EndpointType {
+): EndpointType | undefined {
   const attributes = homeAssistantEntity.entity.state
     .attributes as ClimateDeviceAttributes;
   const supportsCooling = coolingModes.some((mode) =>
@@ -91,9 +96,11 @@ export function ClimateDevice(
   );
   const supportsHumidity = attributes.current_humidity !== undefined;
 
-  return ClimateDeviceType(
+  const deviceType = ClimateDeviceType(
     supportsCooling,
     supportsHeating,
     supportsHumidity,
   ).set({ homeAssistantEntity });
+
+  return deviceType;
 }

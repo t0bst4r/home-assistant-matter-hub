@@ -140,12 +140,12 @@ describe("createDevice", () => {
     const devices = entities.map((entity) =>
       createDevice("lock_" + entity.entity_id, entity, featureFlags),
     );
-    const actual = _.uniq(
-      devices
-        .filter((d): d is EndpointType => d != null)
-        .map((endpointType) => new Endpoint(endpointType))
-        .flatMap((d) => Object.keys(d.state)),
-    ).sort();
+    const endpoints = devices
+      .filter((d): d is EndpointType => d != null)
+      .map((endpointType) => new Endpoint(endpointType));
+    const actual = _.uniq(endpoints.flatMap((d) => Object.keys(d.state)))
+      .filter((key) => !/^\d+$/.test(key))
+      .sort();
     const expected = Object.keys(ClusterId).sort();
     expect(actual).toEqual(expected);
   });

@@ -67,15 +67,17 @@ export class HomeAssistantClient implements Service {
 
   private async waitForHomeAssistantToBeUpAndRunning(): Promise<void> {
     this.log.info("Waiting for Home Assistant to be up and running");
-      
+
     const getState = async () => {
       const s = await getConfig(this.connection).then((config) => config.state);
-      this.log.debug(`Got an update from Home Assistant. System state is '${s}'.`);
+      this.log.debug(
+        `Got an update from Home Assistant. System state is '${s}'.`,
+      );
       return s;
     };
     let state = "NOT_RUNNING";
     while (state !== "RUNNING") {
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       state = await getState();
     }
   }

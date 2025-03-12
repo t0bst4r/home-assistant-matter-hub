@@ -8,5 +8,4 @@ COPY package.tgz /install/app.tgz
 RUN npm install -g /install/app.tgz
 RUN rm -rf /install
 
-ENTRYPOINT ["home-assistant-matter-hub"]
-CMD [ "start" ]
+CMD exec home-assistant-matter-hub start

@@ -12,6 +12,7 @@ import _, { Dictionary } from "lodash";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 import AsyncLock from "async-lock";
 import { BetterLogger, LoggerService } from "../../environment/logger.js";
+import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
 
 export class BridgeDeviceManager {
   private readonly log: BetterLogger;
@@ -92,10 +93,14 @@ export class BridgeDeviceManager {
     try {
       endpointType = createDevice(lockKey(entity), entity, featureFlags);
     } catch (e) {
-      this.log.error(
-        `Failed to create device ${entity?.entity_id}. Entity information: ${JSON.stringify(entity, null, 2)}`,
-      );
-      throw e;
+      if (e instanceof InvalidDeviceError) {
+        this.log.warn("Invalid device detected. Reason: " + e.message);
+      } else {
+        this.log.error(
+          `Failed to create device ${entity?.entity_id}. Entity information: ${JSON.stringify(entity, null, 2)}`,
+        );
+        throw e;
+      }
     }
 
     if (endpoint) {
