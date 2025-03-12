@@ -1,3 +1,16 @@
+## 3.0.0-alpha.75 (2025-03-12)
+
+### 🐛 Fixes
+
+- **binary_sensor:** revert to invert state for ALL contact sensors ([572fc85](https://github.com/t0bst4r/home-assistant-matter-hub/commit/572fc85))
+- **climate:** add OnOff cluster to climates, so that they can be turned on and off ([841a192](https://github.com/t0bst4r/home-assistant-matter-hub/commit/841a192))
+- **climate:** ensure correct temperature conversion between home assistant and matter ([bb33b7b](https://github.com/t0bst4r/home-assistant-matter-hub/commit/bb33b7b))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+- Tobias Glatthar @t0bst4r
+
 ## 3.0.0-alpha.74 (2025-03-12)
 
 ### 🐛 Fixes
