@@ -56,18 +56,21 @@ export class ThermostatServerBase extends FeaturedBase {
 
     const attributes = entity.state.attributes as ClimateDeviceAttributes;
     const unit = this.internal.homeAssistantUnit;
-    const minSetpointLimit = utils.toMatterTemperature(
+    const minSetpointLimit = utils.homeAssistantToMatterTemperature(
       attributes.min_temp,
       unit,
     );
-    const maxSetpointLimit = utils.toMatterTemperature(
+    const maxSetpointLimit = utils.homeAssistantToMatterTemperature(
       attributes.max_temp,
       unit,
     );
 
     applyPatchState(this.state, {
       localTemperature:
-        utils.toMatterTemperature(attributes.current_temperature, unit) ?? null,
+        utils.homeAssistantToMatterTemperature(
+          attributes.current_temperature,
+          unit,
+        ) ?? null,
       systemMode: utils.getMatterSystemMode(entity.state.state, this.features),
       thermostatRunningState: utils.getMatterRunningState(
         attributes.hvac_action,
@@ -208,16 +211,19 @@ export class ThermostatServerBase extends FeaturedBase {
     if (heat == null && cool == null) {
       return;
     }
-    const fallback = (heat ?? cool)!;
+
+    const unit = this.internal.homeAssistantUnit;
 
     let data: object;
     if (heat != null && cool != null) {
       data = {
-        target_temp_low: (heat ?? fallback) / 100,
-        target_temp_high: (cool ?? fallback) / 100,
+        target_temp_low: utils.matterToHomeAssistantTemperature(heat, unit),
+        target_temp_high: utils.matterToHomeAssistantTemperature(cool, unit),
       };
     } else {
-      data = { temperature: fallback / 100 };
+      data = {
+        temperature: utils.matterToHomeAssistantTemperature(heat ?? cool, unit),
+      };
     }
 
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
@@ -228,7 +234,7 @@ export class ThermostatServerBase extends FeaturedBase {
     attributes: ClimateDeviceAttributes,
     unit: string,
   ) {
-    return utils.toMatterTemperature(
+    return utils.homeAssistantToMatterTemperature(
       attributes.target_temp_low ??
         attributes.target_temperature ??
         attributes.temperature,
@@ -240,7 +246,7 @@ export class ThermostatServerBase extends FeaturedBase {
     attributes: ClimateDeviceAttributes,
     unit: string,
   ) {
-    return utils.toMatterTemperature(
+    return utils.homeAssistantToMatterTemperature(
       attributes.target_temp_high ??
         attributes.target_temperature ??
         attributes.temperature,
