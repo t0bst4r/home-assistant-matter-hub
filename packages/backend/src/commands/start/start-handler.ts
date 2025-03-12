@@ -8,7 +8,6 @@ import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.
 import { BridgeService } from "../../matter/bridge-service.js";
 import { WebApi } from "../../api/web-api.js";
 import AsyncLock from "async-lock";
-import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 
 const basicInformation: BridgeBasicInformation = {
   vendorId: VendorId(0xfff1),
@@ -36,14 +35,14 @@ export async function startHandler(
   });
   environment.set(AsyncLock, new AsyncLock());
 
-  new HomeAssistantClient(environment, {
+  await new HomeAssistantClient(environment, {
     url: options.homeAssistantUrl,
     accessToken: options.homeAssistantAccessToken,
-  });
+  }).construction;
 
-  new BridgeService(environment, basicInformation);
+  await new BridgeService(environment, basicInformation).construction;
 
-  new WebApi(environment, {
+  await new WebApi(environment, {
     port: options.httpPort,
     whitelist: options.httpIpWhitelist?.map((item) => item.toString()),
     webUiDist,
@@ -55,10 +54,5 @@ export async function startHandler(
           },
         }
       : {}),
-  });
-
-  // Ensure bridges are loaded and api is ready
-  await environment.load(HomeAssistantConfig);
-  await environment.load(BridgeService);
-  await environment.load(WebApi);
+  }).construction;
 }

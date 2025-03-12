@@ -1,7 +1,7 @@
 import { Environment, Environmental } from "@matter/main";
 import { register, Service } from "../environment/register.js";
 import { HomeAssistantClient } from "./home-assistant-client.js";
-import { HassConfig, subscribeConfig } from "home-assistant-js-websocket";
+import { HassConfig, getConfig } from "home-assistant-js-websocket";
 import { Logger } from "@matter/general";
 import { LoggerService } from "../environment/logger.js";
 
@@ -28,19 +28,6 @@ export class HomeAssistantConfig implements Service {
 
   private async initialize(): Promise<void> {
     const { connection } = await this.environment.load(HomeAssistantClient);
-
-    this.logger.info("Waiting for Home Assistant to be up and running");
-
-    this.config = await new Promise((resolve) => {
-      const unsubscribe = subscribeConfig(connection, (config) => {
-        this.logger.debug(
-          `Got an update from Home Assistant. System state is '${config.state}'`,
-        );
-        if (config.state === "RUNNING") {
-          unsubscribe();
-          resolve(config);
-        }
-      });
-    });
+    this.config = await getConfig(connection);
   }
 }
