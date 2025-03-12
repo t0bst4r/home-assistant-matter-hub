@@ -1,3 +1,13 @@
+## 3.0.0-alpha.76 (2025-03-12)
+
+### 🐛 Fixes
+
+- add additional null-checks to prevent startup failures ([c53c29f](https://github.com/t0bst4r/home-assistant-matter-hub/commit/c53c29f))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.75 (2025-03-12)
 
 ### 🐛 Fixes
