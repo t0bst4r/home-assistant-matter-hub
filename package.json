@@ -25,7 +25,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.38.5",
     "@eslint/js": "^9.22.0",
-    "@nx/js": "20.5.0",
+    "@nx/js": "20.6.0",
     "@swc-node/register": "~1.10.9",
     "@swc/core": "~1.11.8",
     "@swc/helpers": "~0.5.15",
@@ -36,7 +36,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "globals": "^16.0.0",
     "nodemon": "^3.1.9",
-    "nx": "20.5.0",
+    "nx": "20.6.0",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.3",
