@@ -1,5 +1,4 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { BridgeState } from "./bridge-state.ts";
 import {
   createBridge,
   deleteBridge,
@@ -7,6 +6,7 @@ import {
   resetBridge,
   updateBridge,
 } from "./bridge-actions.ts";
+import type { BridgeState } from "./bridge-state.ts";
 
 const initialState: BridgeState = {
   items: { isInitialized: false, isLoading: false },
@@ -35,14 +35,14 @@ export const bridgesReducer = createReducer(initialState, (builder) => {
     .addCase(updateBridge.fulfilled, (state, action) => {
       const idx =
         state.items.content?.findIndex((b) => b.id === action.payload.id) ?? -1;
-      if (idx != -1) {
+      if (idx !== -1) {
         state.items.content![idx] = action.payload;
       }
     })
     .addCase(resetBridge.fulfilled, (state, action) => {
       const idx =
         state.items.content?.findIndex((b) => b.id === action.payload.id) ?? -1;
-      if (idx != -1) {
+      if (idx !== -1) {
         state.items.content![idx] = action.payload;
       }
     })
@@ -51,7 +51,7 @@ export const bridgesReducer = createReducer(initialState, (builder) => {
         const idx = state.items.content.findIndex(
           (b) => b.id === action.meta.arg,
         );
-        if (idx != -1) {
+        if (idx !== -1) {
           state.items.content.splice(idx, 1);
         }
       }

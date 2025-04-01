@@ -1,18 +1,18 @@
-import { Node, ServerNode } from "@matter/main/node";
-import { Endpoint, Environment } from "@matter/main";
 import {
-  BridgeData,
-  BridgeDataWithMetadata,
+  type BridgeData,
+  type BridgeDataWithMetadata,
   BridgeStatus,
-  UpdateBridgeRequest,
+  type UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
-import { createBridgeServerConfig } from "../../utils/json/create-bridge-server-config.js";
+import type { Logger } from "@matter/general";
+import { Endpoint, Environment } from "@matter/main";
 import { AggregatorEndpoint } from "@matter/main/endpoints";
-import { BridgeDeviceManager } from "./bridge-device-manager.js";
+import { type Node, ServerNode } from "@matter/main/node";
 import _ from "lodash";
-import { Logger } from "@matter/general";
-import { BridgeDataProvider } from "./bridge-data-provider.js";
 import { LoggerService } from "../../environment/logger.js";
+import { createBridgeServerConfig } from "../../utils/json/create-bridge-server-config.js";
+import { BridgeDataProvider } from "./bridge-data-provider.js";
+import { BridgeDeviceManager } from "./bridge-device-manager.js";
 
 export type BridgeServerNodeConfig =
   Node.Configuration<ServerNode.RootEndpoint>;

@@ -1,9 +1,9 @@
-import { NotificationsContext } from "./notifications-context.ts";
-import { PropsWithChildren, useCallback, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
-import { NotificationOptions } from "./notification-options.ts";
+import { type PropsWithChildren, useCallback, useState } from "react";
+import type { NotificationOptions } from "./notification-options.ts";
+import { NotificationsContext } from "./notifications-context.ts";
 
-let nextNotificationId: number = 0;
+let nextNotificationId = 0;
 
 interface Notification extends NotificationOptions {
   notificationId: number;
@@ -11,19 +11,16 @@ interface Notification extends NotificationOptions {
 
 export const NotificationsProvider = (props: PropsWithChildren) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const show = useCallback(
-    (notification: NotificationOptions) => {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          ...notification,
-          autoHideDuration: notification.autoHideDuration ?? 6000,
-          notificationId: nextNotificationId++,
-        },
-      ]);
-    },
-    [setNotifications],
-  );
+  const show = useCallback((notification: NotificationOptions) => {
+    setNotifications((prev) => [
+      ...prev,
+      {
+        ...notification,
+        autoHideDuration: notification.autoHideDuration ?? 6000,
+        notificationId: nextNotificationId++,
+      },
+    ]);
+  }, []);
 
   const deleteNotification = (notificationId: number) => {
     setNotifications((prev) =>

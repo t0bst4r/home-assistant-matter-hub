@@ -23,7 +23,7 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
   return (
     <MuiBreadcrumbs separator="›">
       {items.map((item, index) => (
-        <Breadcrumb key={index} {...item} />
+        <Breadcrumb key={index.toString()} {...item} />
       ))}
     </MuiBreadcrumbs>
   );

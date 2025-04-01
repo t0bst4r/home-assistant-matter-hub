@@ -1,5 +1,5 @@
+import type { JSONSchema7 } from "json-schema";
 import { bridgeConfigSchema } from "./bridge-config-schema.js";
-import { JSONSchema7 } from "json-schema";
 
 export const updateBridgeRequestSchema: JSONSchema7 = {
   ...bridgeConfigSchema,

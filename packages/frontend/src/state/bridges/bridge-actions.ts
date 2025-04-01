@@ -1,11 +1,11 @@
-import { createAppThunk } from "../types.ts";
 import {
   createBridge as createBridgeApi,
   deleteBridge as deleteBridgeApi,
   fetchBridges,
-  updateBridge as updateBridgeApi,
   resetBridge as resetBridgeApi,
+  updateBridge as updateBridgeApi,
 } from "../../api/bridges.ts";
+import { createAppThunk } from "../types.ts";
 
 export const loadBridges = createAppThunk("bridges/load", fetchBridges);
 

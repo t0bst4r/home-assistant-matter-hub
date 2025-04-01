@@ -1,6 +1,6 @@
 import { Button, Container, Divider } from "@mui/material";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid2";
+import Link from "@mui/material/Link";
 import { navigation } from "../routes.tsx";
 
 const links: { name: string; url: string }[] = [
@@ -20,7 +20,7 @@ export const AppFooter = () => {
       <Divider sx={{ mt: 4, mb: 4 }} />
       <Grid container spacing={2} justifyContent="center">
         {links.map((link, idx) => (
-          <Grid size={{ xs: 12, sm: "auto" }} key={idx}>
+          <Grid size={{ xs: 12, sm: "auto" }} key={idx.toString()}>
             <Button
               fullWidth
               size="small"

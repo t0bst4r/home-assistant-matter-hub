@@ -1,5 +1,5 @@
 import {
-  FanDeviceAttributes,
+  type FanDeviceAttributes,
   FanDeviceDirection,
 } from "@home-assistant-matter-hub/common";
 import { FanControl } from "@matter/main/clusters/fan-control";
@@ -20,11 +20,10 @@ export function getMatterFanModeSequence(
     return features.auto
       ? FanControl.FanModeSequence.OffLowMedHighAuto
       : FanControl.FanModeSequence.OffLowMedHigh;
-  } else {
-    return features.auto
-      ? FanControl.FanModeSequence.OffHighAuto
-      : FanControl.FanModeSequence.OffHigh;
   }
+  return features.auto
+    ? FanControl.FanModeSequence.OffHighAuto
+    : FanControl.FanModeSequence.OffHigh;
 }
 
 /**
@@ -40,14 +39,16 @@ export function getMatterFanMode(
   presetMode: FanDeviceAttributes["preset_mode"],
   fanModeSequence: FanControl.FanModeSequence,
 ): FanControl.FanMode {
-  percentage = percentage ?? 0;
-  if (state == "off" || percentage === 0) {
+  let percentValue = percentage;
+  percentValue = percentValue ?? 0;
+  if (state === "off" || percentValue === 0) {
     return FanControl.FanMode.Off;
-  } else if (_autoSupported(fanModeSequence) && presetMode == "Auto") {
+  }
+  if (_autoSupported(fanModeSequence) && presetMode === "Auto") {
     return FanControl.FanMode.Auto;
   }
   const sequence = _fanModesForSequence(fanModeSequence);
-  const modeIndex = Math.ceil((percentage / 100) * sequence.length) - 1;
+  const modeIndex = Math.ceil((percentValue / 100) * sequence.length) - 1;
   return sequence[modeIndex];
 }
 
@@ -69,7 +70,7 @@ export function getSpeedPercentFromMatterFanMode(
   }
   const sequence = _fanModesForSequence(fanModeSequence);
   let index = sequence.indexOf(mode);
-  if (index == -1) {
+  if (index === -1) {
     index = 0;
   }
   const percent = (index + 1) / sequence.length;
@@ -83,9 +84,10 @@ export function getSpeedPercentFromMatterFanMode(
 export function getMatterAirflowDirection(
   direction?: FanDeviceDirection,
 ): FanControl.AirflowDirection | undefined {
-  if (direction == FanDeviceDirection.FORWARD) {
+  if (direction === FanDeviceDirection.FORWARD) {
     return FanControl.AirflowDirection.Forward;
-  } else if (direction == FanDeviceDirection.REVERSE) {
+  }
+  if (direction === FanDeviceDirection.REVERSE) {
     return FanControl.AirflowDirection.Reverse;
   }
   return undefined;
@@ -98,7 +100,7 @@ export function getMatterAirflowDirection(
 export function getDirectionFromMatter(
   direction: FanControl.AirflowDirection,
 ): FanDeviceDirection {
-  if (direction == FanControl.AirflowDirection.Forward) {
+  if (direction === FanControl.AirflowDirection.Forward) {
     return FanDeviceDirection.FORWARD;
   }
   return FanDeviceDirection.REVERSE;

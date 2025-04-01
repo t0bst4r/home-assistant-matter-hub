@@ -1,12 +1,12 @@
 import {
   FanControlAirflowDirection,
-  FanControlClusterState,
+  type FanControlClusterState,
   FanControlFanMode,
 } from "@home-assistant-matter-hub/common";
-import { SvgIcon } from "@mui/material";
-import PowerOffIcon from "@mui/icons-material/PowerOff";
-import PowerOnIcon from "@mui/icons-material/Power";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import PowerOnIcon from "@mui/icons-material/Power";
+import PowerOffIcon from "@mui/icons-material/PowerOff";
+import type { SvgIcon } from "@mui/material";
 
 export interface FanControlStateProps {
   state: FanControlClusterState;

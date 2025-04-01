@@ -1,13 +1,13 @@
-import { Environment, Environmental } from "@matter/main";
-import { register, Service } from "../environment/register.js";
-import { HomeAssistantClient } from "./home-assistant-client.js";
-import { HassConfig, getConfig } from "home-assistant-js-websocket";
-import { Logger } from "@matter/general";
+import type { Logger } from "@matter/general";
+import { type Environment, Environmental } from "@matter/main";
+import { type HassConfig, getConfig } from "home-assistant-js-websocket";
 import { LoggerService } from "../environment/logger.js";
+import { type Service, register } from "../environment/register.js";
+import { HomeAssistantClient } from "./home-assistant-client.js";
 
 export class HomeAssistantConfig implements Service {
   static [Environmental.create](environment: Environment) {
-    return new this(environment);
+    return new HomeAssistantConfig(environment);
   }
 
   private readonly environment: Environment;

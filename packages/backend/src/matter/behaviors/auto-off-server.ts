@@ -1,6 +1,6 @@
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { OnOffServer as Base } from "@matter/main/behaviors";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 
 export interface AutoOffConfig {
   turnOn?: {
@@ -24,7 +24,7 @@ export class AutoOffServer extends Base {
     this.internal.turnOffTimeout = this.state.config?.turnOn?.timeout ?? 1000;
     const lastPressed = new Date(entity.state.state).getTime();
     this.state.onOff =
-      !isNaN(lastPressed) &&
+      !Number.isNaN(lastPressed) &&
       Date.now() - lastPressed < this.internal.turnOffTimeout;
   }
 

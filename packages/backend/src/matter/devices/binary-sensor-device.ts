@@ -1,21 +1,21 @@
 import {
-  BinarySensorDeviceAttributes,
+  type BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  BridgeFeatureFlags,
+  type BridgeFeatureFlags,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { EndpointType } from "@matter/main";
 import {
   ContactSensorDevice,
   OccupancySensorDevice,
-  WaterLeakDetectorDevice,
   OnOffSensorDevice,
+  WaterLeakDetectorDevice,
 } from "@matter/main/devices";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
-import { IdentifyServer } from "../behaviors/identify-server.js";
 import { BooleanStateServer } from "../behaviors/boolean-state-server.js";
+import { IdentifyServer } from "../behaviors/identify-server.js";
 import { OccupancySensingServer } from "../behaviors/occupancy-sensing-server.js";
-import { EndpointType } from "@matter/main";
 import { OnOffSensorServer } from "../behaviors/on-off-sensor-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 const OnOffSensorType = OnOffSensorDevice.with(
   BasicInformationServer,

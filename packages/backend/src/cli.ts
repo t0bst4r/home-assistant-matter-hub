@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import "./bootstrap.js";
+import * as path from "node:path";
 import * as url from "node:url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import * as path from "node:path";
 
 import start from "./commands/start/start-command.js";
 

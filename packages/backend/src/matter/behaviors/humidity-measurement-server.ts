@@ -1,10 +1,10 @@
-import { RelativeHumidityMeasurementServer as Base } from "@matter/main/behaviors";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { RelativeHumidityMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export interface HumidityMeasurementConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;

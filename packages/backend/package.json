@@ -6,8 +6,6 @@
   "destination": "./dist",
   "scripts": {
     "cleanup": "npx rimraf node_modules dist",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "build": "tsc && node bundle.js",
     "test": "vitest run",
     "serve": "tsx watch --env-file=../../.env --env-file=.env.development --clear-screen=false src/cli.ts start",

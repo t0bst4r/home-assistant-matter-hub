@@ -1,9 +1,9 @@
-import { Environment } from "@matter/main";
-import {
+import type {
   BridgeBasicInformation,
   BridgeData,
   BridgeFeatureFlags,
 } from "@home-assistant-matter-hub/common";
+import type { Environment } from "@matter/main";
 
 export class BridgeDataProvider {
   get basicInformation(): BridgeBasicInformation {

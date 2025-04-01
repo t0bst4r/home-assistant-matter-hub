@@ -1,12 +1,12 @@
+import {
+  type HomeAssistantDeviceRegistry,
+  type HomeAssistantEntityInformation,
+  type HomeAssistantEntityRegistry,
+  type HomeAssistantEntityState,
+  HomeAssistantMatcherType,
+} from "@home-assistant-matter-hub/common";
 import { describe, expect, it } from "vitest";
 import { testMatcher } from "./matches-entity-filter.js";
-import {
-  HomeAssistantEntityInformation,
-  HomeAssistantEntityRegistry,
-  HomeAssistantEntityState,
-  HomeAssistantMatcherType,
-  HomeAssistantDeviceRegistry,
-} from "@home-assistant-matter-hub/common";
 
 const registry: HomeAssistantEntityRegistry = {
   id: "id",

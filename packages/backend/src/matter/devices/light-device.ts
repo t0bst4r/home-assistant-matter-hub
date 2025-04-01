@@ -1,13 +1,13 @@
 import {
-  LightDeviceAttributes,
+  type LightDeviceAttributes,
   LightDeviceColorMode,
 } from "@home-assistant-matter-hub/common";
-import { ExtendedColorLightType } from "./light/extended-color-light.js";
+import type { EndpointType } from "@matter/main";
+import type { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ColorTemperatureLightType } from "./light/color-temperature-light.js";
 import { DimmableLightType } from "./light/dimmable-light.js";
+import { ExtendedColorLightType } from "./light/extended-color-light.js";
 import { OnOffLightType } from "./light/on-off-light-device.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { EndpointType } from "@matter/main";
 
 const brightnessModes: LightDeviceColorMode[] = Object.values(
   LightDeviceColorMode,
@@ -45,11 +45,12 @@ export function LightDevice(
     return ExtendedColorLightType(supportsColorTemperature).set({
       homeAssistantEntity,
     });
-  } else if (supportsColorTemperature) {
-    return ColorTemperatureLightType.set({ homeAssistantEntity });
-  } else if (supportsBrightness) {
-    return DimmableLightType.set({ homeAssistantEntity });
-  } else {
-    return OnOffLightType.set({ homeAssistantEntity });
   }
+  if (supportsColorTemperature) {
+    return ColorTemperatureLightType.set({ homeAssistantEntity });
+  }
+  if (supportsBrightness) {
+    return DimmableLightType.set({ homeAssistantEntity });
+  }
+  return OnOffLightType.set({ homeAssistantEntity });
 }

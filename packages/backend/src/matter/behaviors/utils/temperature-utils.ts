@@ -4,7 +4,7 @@ function convertTemperatureToCelsius(
   value: number | null | undefined,
   sourceUnit: TemperatureUnit,
 ): number | null {
-  if (value == null || isNaN(value)) {
+  if (value == null || Number.isNaN(value)) {
     return null;
   }
   switch (sourceUnit) {
@@ -27,7 +27,7 @@ function convertTemperatureFromCelsius(
   celsius: number | null,
   targetUnit: TemperatureUnit,
 ) {
-  if (celsius == null || isNaN(celsius)) {
+  if (celsius == null || Number.isNaN(celsius)) {
     return null;
   }
   switch (targetUnit) {

@@ -1,9 +1,9 @@
-import CircleIcon from "@mui/icons-material/Circle";
-import { useMemo } from "react";
 import {
-  ColorControlClusterState,
+  type ColorControlClusterState,
   ColorConverter,
 } from "@home-assistant-matter-hub/common";
+import CircleIcon from "@mui/icons-material/Circle";
+import { useMemo } from "react";
 
 export interface ColorControlStateProps {
   state: ColorControlClusterState;

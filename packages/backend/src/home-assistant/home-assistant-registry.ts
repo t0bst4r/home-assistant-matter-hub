@@ -1,17 +1,17 @@
-import { Environment, Environmental } from "@matter/main";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { getRegistry, getDeviceRegistry } from "./api/get-registry.js";
-import { HomeAssistantClient } from "./home-assistant-client.js";
+import { type Environment, Environmental } from "@matter/main";
 import { getStates } from "home-assistant-js-websocket";
-import _, { Dictionary } from "lodash";
+import _, { type Dictionary } from "lodash";
+import { getDeviceRegistry, getRegistry } from "./api/get-registry.js";
 import { subscribeEntities } from "./api/subscribe-entities.js";
+import { HomeAssistantClient } from "./home-assistant-client.js";
 
 export class HomeAssistantRegistry {
   static [Environmental.create](environment: Environment) {
-    return new this(environment);
+    return new HomeAssistantRegistry(environment);
   }
 
   constructor(private readonly environment: Environment) {

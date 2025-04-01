@@ -42,8 +42,6 @@
   "repository": "github:t0bst4r/home-assistant-matter-hub",
   "scripts": {
     "cleanup": "npx rimraf node_modules dist pack LICENSE README.md",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "build": "node build.js",
     "test": "vitest run",
     "start": "dotenvx run -f ../../.env -- ./dist/backend/cli.js start",
@@ -76,18 +74,12 @@
     "targets": {
       "start": {
         "cache": false,
-        "dependsOn": [
-          "build"
-        ]
+        "dependsOn": ["build"]
       },
       "pack": {
         "cache": true,
-        "dependsOn": [
-          "build"
-        ],
-        "outputs": [
-          "{projectRoot}/pack"
-        ]
+        "dependsOn": ["build"],
+        "outputs": ["{projectRoot}/pack"]
       },
       "build": {
         "inputs": [

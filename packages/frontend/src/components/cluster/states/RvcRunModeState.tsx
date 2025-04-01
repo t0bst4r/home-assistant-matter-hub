@@ -1,5 +1,5 @@
+import type { RvcRunModeClusterState } from "@home-assistant-matter-hub/common";
 import { useMemo } from "react";
-import { RvcRunModeClusterState } from "@home-assistant-matter-hub/common";
 
 export interface RvcRunModeStateProps {
   state: RvcRunModeClusterState;

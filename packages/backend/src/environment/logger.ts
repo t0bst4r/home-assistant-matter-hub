@@ -1,10 +1,10 @@
 import {
+  LogFormat,
   Logger,
   LogLevel as MatterLogLevel,
   logLevelFromString as matterLogLevelFromString,
-  LogFormat,
 } from "@matter/general";
-import { Environment } from "@matter/main";
+import type { Environment } from "@matter/main";
 
 export enum CustomLogLevel {
   SILLY = -1,

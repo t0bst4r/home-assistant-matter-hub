@@ -1,6 +1,6 @@
-import { ColorConverter } from "./color-converter.js";
 import Color from "color";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { ColorConverter } from "./color-converter.js";
 
 describe("ColorConverter", () => {
   describe("fromHomeAssistantHS", () => {

@@ -1,8 +1,8 @@
+import type { DeviceData } from "@home-assistant-matter-hub/common";
 import { createReducer } from "@reduxjs/toolkit";
-import { DeviceState } from "./device-state.ts";
+import type { AsyncState } from "../utils/async.ts";
 import { loadDevices } from "./device-actions.ts";
-import { AsyncState } from "../utils/async.ts";
-import { DeviceData } from "@home-assistant-matter-hub/common";
+import type { DeviceState } from "./device-state.ts";
 
 const initialState: DeviceState = {
   byBridge: {},

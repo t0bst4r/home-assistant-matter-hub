@@ -1,4 +1,4 @@
-export type HomeAssistantEntityStateAttributes<T extends object = {}> = {
+export type HomeAssistantEntityStateAttributes<T extends object = object> = {
   friendly_name?: string;
   unit_of_measurement?: string;
   icon?: string;
@@ -11,7 +11,7 @@ export type HomeAssistantEntityStateAttributes<T extends object = {}> = {
   restored?: boolean;
 } & T;
 
-export interface HomeAssistantEntityState<T extends object = {}> {
+export interface HomeAssistantEntityState<T extends object = object> {
   entity_id: string;
   state: string;
   last_changed: string;

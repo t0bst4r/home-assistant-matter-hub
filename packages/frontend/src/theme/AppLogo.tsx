@@ -1,9 +1,9 @@
-import SvgLogo from "../assets/hamh-logo.svg?react";
-import { useAppInfo } from "../hooks/app-info.ts";
+import { capitalize } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { capitalize } from "@mui/material";
 import { Link } from "react-router";
+import SvgLogo from "../assets/hamh-logo.svg?react";
+import { useAppInfo } from "../hooks/app-info.ts";
 import { navigation } from "../routes.tsx";
 
 export const AppLogo = (props: { large: boolean }) => {

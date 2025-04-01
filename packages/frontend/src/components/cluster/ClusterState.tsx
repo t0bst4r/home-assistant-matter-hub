@@ -1,8 +1,8 @@
+import type { ClusterId } from "@home-assistant-matter-hub/common";
 import { useEffect } from "react";
-import { ClusterId } from "@home-assistant-matter-hub/common";
+import { CopyToClipboard } from "../misc/CopyToClipboard.tsx";
 import { UnknownClusterState } from "./UnknownClusterState.tsx";
 import { clusterRenderers } from "./states";
-import { CopyToClipboard } from "../misc/CopyToClipboard.tsx";
 
 export interface ClusterStateProps {
   clusterId: ClusterId | string;
@@ -26,20 +26,19 @@ export const ClusterState = ({ clusterId, state }: ClusterStateProps) => {
 
   if (Component === null) {
     return <></>;
-  } else {
-    return (
-      <CopyToClipboard
-        text={
-          <>
-            {clusterId}
-            <br />
-            click to copy the state to clipboard
-          </>
-        }
-        getValue={() => JSON.stringify(state, null, 2)}
-      >
-        <Component state={state} clusterId={clusterId} />
-      </CopyToClipboard>
-    );
   }
+  return (
+    <CopyToClipboard
+      text={
+        <>
+          {clusterId}
+          <br />
+          click to copy the state to clipboard
+        </>
+      }
+      getValue={() => JSON.stringify(state, null, 2)}
+    >
+      <Component state={state} clusterId={clusterId} />
+    </CopyToClipboard>
+  );
 };

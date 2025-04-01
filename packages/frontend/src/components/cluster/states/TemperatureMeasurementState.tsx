@@ -1,5 +1,5 @@
+import type { TemperatureMeasurementClusterState } from "@home-assistant-matter-hub/common";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
-import { TemperatureMeasurementClusterState } from "@home-assistant-matter-hub/common";
 
 export interface TemperatureMeasurementStateProps {
   state: TemperatureMeasurementClusterState;

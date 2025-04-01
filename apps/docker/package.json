@@ -23,38 +23,24 @@
     "targets": {
       "retrieve-package": {
         "cache": true,
-        "dependsOn": [
-          "^pack"
-        ],
-        "outputs": [
-          "{projectRoot}/package.tgz"
-        ]
+        "dependsOn": ["^pack"],
+        "outputs": ["{projectRoot}/package.tgz"]
       },
       "build": {
         "cache": true,
-        "dependsOn": [
-          "build:addon",
-          "build:standalone"
-        ]
+        "dependsOn": ["build:addon", "build:standalone"]
       },
       "build:addon": {
         "cache": true,
-        "dependsOn": [
-          "retrieve-package"
-        ]
+        "dependsOn": ["retrieve-package"]
       },
       "build:standalone": {
         "cache": true,
-        "dependsOn": [
-          "retrieve-package"
-        ]
+        "dependsOn": ["retrieve-package"]
       },
       "nx-release-publish": {
         "cache": false,
-        "dependsOn": [
-          "publish:addon",
-          "publish:standalone"
-        ]
+        "dependsOn": ["publish:addon", "publish:standalone"]
       }
     }
   }

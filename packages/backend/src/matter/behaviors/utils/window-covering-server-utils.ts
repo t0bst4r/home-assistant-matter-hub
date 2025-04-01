@@ -6,15 +6,16 @@ export function convertCoverValue(
   if (percentage == null) {
     return null;
   }
+  let percentValue = percentage;
   if (invert) {
-    percentage = 100 - percentage;
+    percentValue = 100 - percentValue;
   }
   if (swap) {
-    if (percentage == 0) {
-      percentage = 100;
-    } else if (percentage == 100) {
-      percentage = 0;
+    if (percentValue === 0) {
+      percentValue = 100;
+    } else if (percentValue === 100) {
+      percentValue = 0;
     }
   }
-  return percentage;
+  return percentValue;
 }

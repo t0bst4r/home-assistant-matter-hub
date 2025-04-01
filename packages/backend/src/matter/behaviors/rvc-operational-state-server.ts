@@ -1,11 +1,11 @@
-import { RvcOperationalStateServer as Base } from "@matter/main/behaviors/rvc-operational-state";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import {
-  HomeAssistantEntityInformation,
+  type HomeAssistantEntityInformation,
   VacuumState,
 } from "@home-assistant-matter-hub/common";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { RvcOperationalStateServer as Base } from "@matter/main/behaviors/rvc-operational-state";
 import { RvcOperationalState } from "@matter/main/clusters/rvc-operational-state";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export class RvcOperationalStateServer extends Base {
   override async initialize() {
@@ -42,7 +42,6 @@ export class RvcOperationalStateServer extends Base {
       case VacuumState.paused:
       case VacuumState.idle:
         return RvcOperationalState.OperationalState.Paused;
-      case VacuumState.error:
       default:
         return RvcOperationalState.OperationalState.Error;
     }

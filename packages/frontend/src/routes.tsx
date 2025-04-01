@@ -1,9 +1,9 @@
-import { Navigate, RouteObject } from "react-router";
-import { BridgesPage } from "./pages/bridges/BridgesPage.tsx";
-import { BridgeDetailsPage } from "./pages/bridge-details/BridgeDetailsPage.tsx";
-import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
-import { CreateBridgePage } from "./pages/edit-bridge/CreateBridgePage.tsx";
+import { Navigate, type RouteObject } from "react-router";
 import { AppPage } from "./pages/AppPage.tsx";
+import { BridgeDetailsPage } from "./pages/bridge-details/BridgeDetailsPage.tsx";
+import { BridgesPage } from "./pages/bridges/BridgesPage.tsx";
+import { CreateBridgePage } from "./pages/edit-bridge/CreateBridgePage.tsx";
+import { EditBridgePage } from "./pages/edit-bridge/EditBridgePage.tsx";
 
 const documentationUrl = "https://t0bst4r.github.io/home-assistant-matter-hub";
 export const navigation = {

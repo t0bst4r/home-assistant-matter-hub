@@ -1,6 +1,6 @@
-import { AppState, createAppSelector } from "../types.ts";
-import { AsyncState } from "../utils/async.ts";
-import { DeviceData } from "@home-assistant-matter-hub/common";
+import type { DeviceData } from "@home-assistant-matter-hub/common";
+import { type AppState, createAppSelector } from "../types.ts";
+import type { AsyncState } from "../utils/async.ts";
 
 export const selectDeviceState = (state: AppState) => state.devices;
 

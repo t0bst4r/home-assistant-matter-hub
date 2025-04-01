@@ -1,7 +1,7 @@
 import { BridgeStatus } from "@home-assistant-matter-hub/common";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
-import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 export interface BridgeStatusIconProps {

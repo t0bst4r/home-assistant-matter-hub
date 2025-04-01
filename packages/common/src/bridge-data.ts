@@ -1,4 +1,4 @@
-import { HomeAssistantFilter } from "./home-assistant-filter.js";
+import type { HomeAssistantFilter } from "./home-assistant-filter.js";
 
 interface AllBridgeFeatureFlags {
   readonly matterSpeakers: boolean;

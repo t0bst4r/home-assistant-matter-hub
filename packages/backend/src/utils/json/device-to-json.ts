@@ -1,6 +1,6 @@
-import { DeviceData } from "@home-assistant-matter-hub/common";
+import type { DeviceData } from "@home-assistant-matter-hub/common";
+import type { Endpoint } from "@matter/main";
 import _ from "lodash";
-import { Endpoint } from "@matter/main";
 import { HomeAssistantEntityBehavior } from "../../matter/custom-behaviors/home-assistant-entity-behavior.js";
 
 export function deviceToJson(device: Endpoint): DeviceData {

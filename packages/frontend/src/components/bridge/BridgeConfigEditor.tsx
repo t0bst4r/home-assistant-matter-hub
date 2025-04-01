@@ -1,14 +1,14 @@
+import {
+  type BridgeConfig,
+  bridgeConfigSchema,
+} from "@home-assistant-matter-hub/common";
+import { LibraryBooks, TextFields } from "@mui/icons-material";
 import { Box, Button, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useCallback, useState } from "react";
-import {
-  BridgeConfig,
-  bridgeConfigSchema,
-} from "@home-assistant-matter-hub/common";
-import { JsonEditor } from "../misc/editors/JsonEditor";
 import { FormEditor } from "../misc/editors/FormEditor";
-import { LibraryBooks, TextFields } from "@mui/icons-material";
-import { ValidationError } from "../misc/editors/validation-error.ts";
+import { JsonEditor } from "../misc/editors/JsonEditor";
+import type { ValidationError } from "../misc/editors/validation-error.ts";
 
 enum BridgeEditorMode {
   JSON_EDITOR = "JSON_EDITOR",
@@ -45,7 +45,7 @@ export const BridgeConfigEditor = (props: BridgeConfigEditorProps) => {
         return [];
       }
       const usedBy = props.usedPorts[config.port];
-      if (usedBy != undefined && usedBy != props.bridgeId) {
+      if (usedBy !== undefined && usedBy !== props.bridgeId) {
         return [
           {
             instancePath: "/port",

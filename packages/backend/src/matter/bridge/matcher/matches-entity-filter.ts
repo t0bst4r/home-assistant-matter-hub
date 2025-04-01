@@ -1,4 +1,4 @@
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantFilter,
   HomeAssistantMatcher,
@@ -17,7 +17,7 @@ export function matchesEntityFilter(
   if (filter.exclude.length > 0) {
     const exclusions = filter.exclude
       .map((matcher, idx) => (testMatcher(entity, matcher) ? idx : undefined))
-      .filter((idx) => idx != undefined);
+      .filter((idx) => idx !== undefined);
     if (exclusions.length) {
       exclusions
         .map((exclusionIdx) => `excluded by filter: ${exclusionIdx + 1}`)
@@ -65,5 +65,5 @@ function patternToRegex(pattern: string): RegExp {
     .split("*")
     .map((part) => escapeRegExp(part))
     .join(".*");
-  return new RegExp("^" + regex + "$");
+  return new RegExp(`^${regex}$`);
 }

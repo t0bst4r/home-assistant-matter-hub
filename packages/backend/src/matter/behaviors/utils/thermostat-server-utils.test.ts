@@ -1,18 +1,18 @@
-import { describe, expect, it } from "vitest";
 import {
   ClimateHvacAction,
   ClimateHvacMode,
 } from "@home-assistant-matter-hub/common";
+import { Thermostat } from "@matter/main/clusters";
+import { describe, expect, it } from "vitest";
 import {
+  type ThermostatRunningState,
   getHvacModeFromMatter,
   getMatterRunningMode,
   getMatterRunningState,
   getMatterSystemMode,
-  ThermostatRunningState,
   homeAssistantToMatterTemperature,
   matterToHomeAssistantTemperature,
 } from "./thermostat-server-utils.js";
-import { Thermostat } from "@matter/main/clusters";
 
 describe("ThermostatServerUtils", () => {
   describe("getMatterRunningState", () => {
@@ -123,7 +123,7 @@ describe("ThermostatServerUtils", () => {
       [null, "°C", undefined],
     ])("should convert '%s %s' to '%s'", (temperature, unit, expected) => {
       const actual = homeAssistantToMatterTemperature(temperature, unit);
-      if (expected == undefined) {
+      if (expected === undefined) {
         expect(actual).toBeUndefined();
       } else {
         expect(actual).approximately(expected, 0.01);
@@ -141,7 +141,7 @@ describe("ThermostatServerUtils", () => {
       [undefined, "°C", undefined],
     ])("should convert '%s %s' to '%s'", (temperature, unit, expected) => {
       const actual = matterToHomeAssistantTemperature(temperature, unit);
-      if (expected == undefined) {
+      if (expected === undefined) {
         expect(actual).toBeUndefined();
       } else {
         expect(actual).approximately(expected, 0.01);

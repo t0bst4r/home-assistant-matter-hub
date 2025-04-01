@@ -1,7 +1,7 @@
-import { Environment, StorageService } from "@matter/main";
+import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import fs from "node:fs";
+import { type Environment, StorageService } from "@matter/main";
 import _ from "lodash";
 import { LoggerService } from "./logger.js";
 import { CustomStorage } from "./storage/custom-storage.js";
@@ -22,6 +22,6 @@ export function storage(
 function resolveStorageLocation(storageLocation: string | undefined) {
   const homedir = os.homedir();
   return storageLocation
-    ? path.resolve(storageLocation.replace(/^~\//, homedir + "/"))
+    ? path.resolve(storageLocation.replace(/^~\//, `${homedir}/`))
     : path.join(homedir, ".home-assistant-matter-hub");
 }

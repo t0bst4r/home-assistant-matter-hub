@@ -1,13 +1,13 @@
 import {
-  HomeAssistantEntityInformation,
+  type HomeAssistantEntityInformation,
   VacuumState,
 } from "@home-assistant-matter-hub/common";
 import { RvcRunModeServer as Base } from "@matter/main/behaviors";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
+import type { ModeBase } from "@matter/main/clusters/mode-base";
 import { RvcRunMode } from "@matter/main/clusters/rvc-run-mode";
-import { ModeBase } from "@matter/main/clusters/mode-base";
 import { ClusterType, Status } from "@matter/main/types";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export enum RvcSupportedRunMode {
   Idle = 0,

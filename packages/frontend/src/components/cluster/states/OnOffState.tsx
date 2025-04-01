@@ -1,8 +1,8 @@
-import OnIcon from "@mui/icons-material/ToggleOn";
+import type { OnOffClusterState } from "@home-assistant-matter-hub/common";
 import OffIcon from "@mui/icons-material/ToggleOff";
-import { SvgIcon, Theme } from "@mui/material";
+import OnIcon from "@mui/icons-material/ToggleOn";
+import type { SvgIcon, Theme } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { OnOffClusterState } from "@home-assistant-matter-hub/common";
 
 export interface OnOffStateProps {
   state: OnOffClusterState;

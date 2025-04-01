@@ -1,4 +1,4 @@
-import Color, { ColorInstance } from "color";
+import Color, { type ColorInstance } from "color";
 
 /*
  * Matter:
@@ -67,18 +67,17 @@ export abstract class ColorConverter {
       Y: number,
       Z: number,
     ): [r: number, g: number, b: number] {
-      const r = X * 1.656492 - Y * 0.354851 - Z * 0.255038,
-        g = -X * 0.707196 + Y * 1.655397 + Z * 0.036152,
-        b = X * 0.051713 - Y * 0.121364 + Z * 1.01153;
+      const r = X * 1.656492 - Y * 0.354851 - Z * 0.255038;
+      const g = -X * 0.707196 + Y * 1.655397 + Z * 0.036152;
+      const b = X * 0.051713 - Y * 0.121364 + Z * 1.01153;
       return [r, g, b];
     }
 
     function applyReverseGammaCorrection(x: number): number {
       if (x <= 0.0031308) {
         return 12.92 * x;
-      } else {
-        return (1.0 + 0.055) * Math.pow(x, 1.0 / 2.4) - 0.055;
       }
+      return (1.0 + 0.055) * x ** (1.0 / 2.4) - 0.055;
     }
 
     const XYZ = toXYZ(x, y);
@@ -92,7 +91,7 @@ export abstract class ColorConverter {
     }
 
     const [r, g, b] = rgb.map((v) => Math.round(v * 255));
-    return this.fromRGB(r, g, b);
+    return ColorConverter.fromRGB(r, g, b);
   }
 
   /**
@@ -120,7 +119,7 @@ export abstract class ColorConverter {
     b: number,
     w: number,
   ): ColorInstance {
-    return this.fromRGB(
+    return ColorConverter.fromRGB(
       Math.min(255, r + w),
       Math.min(255, g + w),
       Math.min(255, b + w),
@@ -143,7 +142,7 @@ export abstract class ColorConverter {
     cw: number,
     ww: number,
   ): ColorInstance {
-    return this.fromRGBW(r, g, b, (cw + ww) / 2);
+    return ColorConverter.fromRGBW(r, g, b, (cw + ww) / 2);
   }
 
   /**

@@ -28,14 +28,16 @@ export function applyPatchState<T extends {}>(
 function deepEqual<T>(a: T, b: T): boolean {
   if (a == null || b == null) {
     return a === b;
-  } else if (typeof a !== typeof b || Array.isArray(a) != Array.isArray(b)) {
+  }
+  if (typeof a !== typeof b || Array.isArray(a) !== Array.isArray(b)) {
     return false;
-  } else if (Array.isArray(a) && Array.isArray(b)) {
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
     return a.length === b.length && a.every((vA, idx) => deepEqual(vA, b[idx]));
-  } else if (typeof a === "object" && typeof b === "object") {
+  }
+  if (typeof a === "object" && typeof b === "object") {
     const keys = Object.keys({ ...a, ...b }) as (keyof T)[];
     return keys.every((key) => deepEqual(a[key], b[key]));
-  } else {
-    return a === b;
   }
+  return a === b;
 }

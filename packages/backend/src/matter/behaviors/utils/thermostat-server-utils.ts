@@ -55,14 +55,7 @@ export function getMatterRunningState(
     case ClimateHvacAction.fan:
     case ClimateHvacMode.fan_only:
       return { ...allOff, fan: true };
-    case ClimateHvacAction.idle:
-    case ClimateHvacAction.off:
-    case ClimateHvacMode.heat_cool:
-    case ClimateHvacMode.auto:
-    case ClimateHvacMode.off:
-    case "unavailable":
     default:
-    case undefined:
       return allOff;
   }
 }
@@ -163,9 +156,8 @@ export function homeAssistantToMatterTemperature(
   const celsius = convertTemperature(current, sourceUnit, "C");
   if (celsius == null) {
     return undefined;
-  } else {
-    return Math.round(celsius * 100);
   }
+  return Math.round(celsius * 100);
 }
 
 /**

@@ -1,11 +1,11 @@
-import { OccupancySensingServer as Base } from "@matter/main/behaviors";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
+import { OccupancySensingServer as Base } from "@matter/main/behaviors";
 import { OccupancySensing } from "@matter/main/clusters";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export class OccupancySensingServer extends Base {
   override async initialize() {

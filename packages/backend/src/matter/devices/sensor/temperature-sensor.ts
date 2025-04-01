@@ -1,19 +1,19 @@
+import type {
+  HomeAssistantEntityState,
+  SensorDeviceAttributes,
+} from "@home-assistant-matter-hub/common";
 import { TemperatureSensorDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../../behaviors/identify-server.js";
 import {
-  TemperatureMeasurementConfig,
+  type TemperatureMeasurementConfig,
   TemperatureMeasurementServer,
 } from "../../behaviors/temperature-measurement-server.js";
 import { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
-import {
-  HomeAssistantEntityState,
-  SensorDeviceAttributes,
-} from "@home-assistant-matter-hub/common";
 
 const temperatureSensorConfig: TemperatureMeasurementConfig = {
   getValue({ state }: HomeAssistantEntityState) {
-    if (state == null || isNaN(+state)) {
+    if (state == null || Number.isNaN(+state)) {
       return null;
     }
     return +state;

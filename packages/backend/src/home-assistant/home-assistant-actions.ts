@@ -1,15 +1,15 @@
-import { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
-import { Environment, Environmental } from "@matter/main";
+import type { Logger } from "@matter/general";
+import { type Environment, Environmental } from "@matter/main";
 import { callService } from "home-assistant-js-websocket";
-import { HomeAssistantClient } from "./home-assistant-client.js";
-import { Logger } from "@matter/general";
+import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { LoggerService } from "../environment/logger.js";
+import { HomeAssistantClient } from "./home-assistant-client.js";
 
 export class HomeAssistantActions {
   private readonly log: Logger;
 
   static [Environmental.create](environment: Environment) {
-    return new this(environment);
+    return new HomeAssistantActions(environment);
   }
 
   constructor(private readonly environment: Environment) {

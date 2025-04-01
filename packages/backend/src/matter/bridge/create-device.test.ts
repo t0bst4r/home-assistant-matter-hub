@@ -1,29 +1,29 @@
-import { describe, expect, it } from "vitest";
 import {
-  BinarySensorDeviceAttributes,
+  type BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  BridgeFeatureFlags,
-  ClimateDeviceAttributes,
+  type BridgeFeatureFlags,
+  type ClimateDeviceAttributes,
   ClimateHvacAction,
   ClimateHvacMode,
   ClusterId,
-  CoverDeviceAttributes,
-  FanDeviceAttributes,
+  type CoverDeviceAttributes,
+  type FanDeviceAttributes,
   HomeAssistantDomain,
-  HomeAssistantEntityInformation,
-  HomeAssistantEntityRegistry,
-  HomeAssistantEntityState,
-  HumidiferDeviceAttributes,
-  LightDeviceAttributes,
+  type HomeAssistantEntityInformation,
+  type HomeAssistantEntityRegistry,
+  type HomeAssistantEntityState,
+  type HumidiferDeviceAttributes,
+  type LightDeviceAttributes,
   LightDeviceColorMode,
-  SensorDeviceAttributes,
-  SensorDeviceClass,
   MediaPlayerDeviceFeature,
-  VacuumDeviceAttributes,
+  type SensorDeviceAttributes,
+  SensorDeviceClass,
+  type VacuumDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
-import { createDevice } from "./create-device.js";
+import { Endpoint, type EndpointType } from "@matter/main";
 import _ from "lodash";
-import { Endpoint, EndpointType } from "@matter/main";
+import { describe, expect, it } from "vitest";
+import { createDevice } from "./create-device.js";
 
 const testEntities: Record<
   HomeAssistantDomain,
@@ -147,7 +147,7 @@ describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
     const devices = entities.map((entity) =>
-      createDevice("lock_" + entity.entity_id, entity, featureFlags),
+      createDevice(`lock_${entity.entity_id}`, entity, featureFlags),
     );
     const endpoints = devices
       .filter((d): d is EndpointType => d != null)

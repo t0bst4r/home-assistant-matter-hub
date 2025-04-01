@@ -1,7 +1,7 @@
-import { Environment, VariableService } from "@matter/main";
+import { type Environment, VariableService } from "@matter/main";
+import { logging } from "./logger.js";
 import { mdns } from "./mdns.js";
 import { storage } from "./storage.js";
-import { logging } from "./logger.js";
 
 export interface EnvironmentConfig {
   mdnsNetworkInterface: string | undefined;
@@ -23,7 +23,7 @@ export function createEnvironment(
 
 function notEmpty(val: string | undefined | null): string | undefined {
   const value = val?.trim();
-  if (value == undefined || value.length === 0) {
+  if (value === undefined || value.length === 0) {
     return undefined;
   }
   return value;

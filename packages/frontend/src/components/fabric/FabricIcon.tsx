@@ -1,13 +1,13 @@
-import { Tooltip } from "@mui/material";
+import type { BridgeFabric } from "@home-assistant-matter-hub/common";
 import QuestionMark from "@mui/icons-material/QuestionMark";
-import { BridgeFabric } from "@home-assistant-matter-hub/common";
-import { FC, SVGProps, useMemo } from "react";
+import { Tooltip } from "@mui/material";
+import { type FC, type SVGProps, useMemo } from "react";
 
+import Box from "@mui/material/Box";
 import AmazonIcon from "../../assets/brands/Amazon.svg?react";
 import AppleIcon from "../../assets/brands/Apple.svg?react";
 import GoogleIcon from "../../assets/brands/Google.svg?react";
 import SamsungIcon from "../../assets/brands/Samsung.svg?react";
-import Box from "@mui/material/Box";
 
 export interface FabricIconProps {
   fabric: BridgeFabric;
@@ -21,12 +21,12 @@ const iconsPerKeyword: Record<string, FC<SVGProps<SVGSVGElement>>> = {
 
 const iconPerVendorId: Record<number, FC<SVGProps<SVGSVGElement>> | undefined> =
   {
-    0x1217: AmazonIcon,
-    0x1349: AppleIcon,
-    0x1384: AppleIcon,
-    0x6006: GoogleIcon,
-    0x10e1: SamsungIcon,
-    0x110a: SamsungIcon,
+    4631: AmazonIcon,
+    4937: AppleIcon,
+    4996: AppleIcon,
+    24582: GoogleIcon,
+    4321: SamsungIcon,
+    4362: SamsungIcon,
   };
 
 function getIcon(fabric: BridgeFabric) {

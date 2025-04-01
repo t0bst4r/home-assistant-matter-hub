@@ -1,6 +1,6 @@
-import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 export function distDir(pkgName) {
   const packagePath = fileURLToPath(

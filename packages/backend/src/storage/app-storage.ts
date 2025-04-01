@@ -1,15 +1,15 @@
 import {
-  Environment,
+  type Environment,
   Environmental,
-  StorageContext,
-  StorageManager,
+  type StorageContext,
+  type StorageManager,
   StorageService,
 } from "@matter/main";
-import { register, Service } from "../environment/register.js";
+import { type Service, register } from "../environment/register.js";
 
 export class AppStorage implements Service {
   static [Environmental.create](environment: Environment) {
-    return new this(environment);
+    return new AppStorage(environment);
   }
 
   readonly construction: Promise<void>;

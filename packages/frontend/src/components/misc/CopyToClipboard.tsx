@@ -1,7 +1,12 @@
-import clipboard from "clipboardy";
-import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
-import Box from "@mui/material/Box";
 import { Tooltip } from "@mui/material";
+import Box from "@mui/material/Box";
+import clipboard from "clipboardy";
+import {
+  type PropsWithChildren,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 export interface CopyToClipboardProps extends PropsWithChildren {
   text: ReactNode;

@@ -15,16 +15,16 @@ export function getMatterColorMode(
   if (features.colorTemperature && features.hueSaturation) {
     if (mode === LightDeviceColorMode.COLOR_TEMP) {
       return ColorControl.ColorMode.ColorTemperatureMireds;
-    } else {
-      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
     }
-  } else if (features.colorTemperature) {
-    return ColorControl.ColorMode.ColorTemperatureMireds;
-  } else if (features.hueSaturation) {
     return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
-  } else {
-    throw new Error(
-      "ColorControlServer does not support either HueSaturation or ColorTemperature",
-    );
   }
+  if (features.colorTemperature) {
+    return ColorControl.ColorMode.ColorTemperatureMireds;
+  }
+  if (features.hueSaturation) {
+    return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+  }
+  throw new Error(
+    "ColorControlServer does not support either HueSaturation or ColorTemperature",
+  );
 }

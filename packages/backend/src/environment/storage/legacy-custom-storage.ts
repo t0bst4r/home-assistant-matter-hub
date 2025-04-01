@@ -1,8 +1,8 @@
-import { StorageBackendJsonFile } from "@matter/nodejs";
 import { ClusterId } from "@home-assistant-matter-hub/common";
+import type { Logger } from "@matter/general";
+import { StorageBackendJsonFile } from "@matter/nodejs";
 import _ from "lodash";
-import { Logger } from "@matter/general";
-import { LoggerService } from "../logger.js";
+import type { LoggerService } from "../logger.js";
 
 /**
  * @deprecated
@@ -24,16 +24,15 @@ export class LegacyCustomStorage extends StorageBackendJsonFile {
     parser.fromJson = (json: string) => {
       if (json.trim().length === 0) {
         return {};
-      } else {
-        try {
-          const object = deserialize(json);
-          return this.removeClusters(object, Object.values(ClusterId));
-        } catch (e) {
-          this.log.error(
-            `Failed to parse json file '${path}' with content: \n\n${json}\n\n`,
-          );
-          throw e;
-        }
+      }
+      try {
+        const object = deserialize(json);
+        return this.removeClusters(object, Object.values(ClusterId));
+      } catch (e) {
+        this.log.error(
+          `Failed to parse json file '${path}' with content: \n\n${json}\n\n`,
+        );
+        throw e;
       }
     };
 

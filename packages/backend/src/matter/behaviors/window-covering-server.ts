@@ -1,18 +1,18 @@
 import {
+  type CoverDeviceAttributes,
+  CoverDeviceState,
+  type HomeAssistantEntityInformation,
+  type HomeAssistantEntityState,
+} from "@home-assistant-matter-hub/common";
+import {
+  WindowCoveringServer as Base,
   MovementDirection,
   MovementType,
-  WindowCoveringServer as Base,
 } from "@matter/main/behaviors";
-import {
-  CoverDeviceAttributes,
-  CoverDeviceState,
-  HomeAssistantEntityInformation,
-  HomeAssistantEntityState,
-} from "@home-assistant-matter-hub/common";
 import { WindowCovering } from "@matter/main/clusters";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { ClusterType } from "@matter/main/types";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { convertCoverValue } from "./utils/window-covering-server-utils.js";
 
 export interface WindowCoveringConfig {
@@ -208,13 +208,14 @@ export class WindowCoveringServerBase extends FeaturedBase {
   }
 
   private convertValue(percentage: number | undefined | null): number | null {
-    if (percentage == -1) {
-      percentage = 0;
+    let value = percentage;
+    if (value === -1) {
+      value = 0;
     }
     return convertCoverValue(
-      percentage,
-      this.state.config?.invertPercentage == true,
-      this.state.config?.swapOpenAndClose == true,
+      value,
+      this.state.config?.invertPercentage === true,
+      this.state.config?.swapOpenAndClose === true,
     );
   }
 }

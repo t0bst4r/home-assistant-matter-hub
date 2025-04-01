@@ -1,17 +1,17 @@
-import { FanDevice as Device } from "@matter/main/devices";
-import { OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
-import { BasicInformationServer } from "../behaviors/basic-information-server.js";
-import { IdentifyServer } from "../behaviors/identify-server.js";
-import { FanControlServer } from "../behaviors/fan-control-server.js";
 import {
-  FanDeviceAttributes,
+  type FanDeviceAttributes,
   FanDeviceFeature,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { EndpointType } from "@matter/main";
-import { FanControl } from "@matter/main/clusters";
-import { FeatureSelection } from "../../utils/feature-selection.js";
+import type { EndpointType } from "@matter/main";
+import type { FanControl } from "@matter/main/clusters";
+import { FanDevice as Device } from "@matter/main/devices";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { testBit } from "../../utils/test-bit.js";
+import { BasicInformationServer } from "../behaviors/basic-information-server.js";
+import { FanControlServer } from "../behaviors/fan-control-server.js";
+import { IdentifyServer } from "../behaviors/identify-server.js";
+import { type OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 const fanOnOffConfig: OnOffConfig = {
   turnOn: { action: "fan.turn_on" },

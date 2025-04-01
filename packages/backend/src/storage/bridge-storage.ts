@@ -1,13 +1,13 @@
-import { BridgeData } from "@home-assistant-matter-hub/common";
+import type { BridgeData } from "@home-assistant-matter-hub/common";
 import {
-  Environment,
+  type Environment,
   Environmental,
-  StorageContext,
-  SupportedStorageTypes,
+  type StorageContext,
+  type SupportedStorageTypes,
 } from "@matter/main";
-import { AppStorage } from "./app-storage.js";
-import { register, Service } from "../environment/register.js";
 import _ from "lodash";
+import { type Service, register } from "../environment/register.js";
+import { AppStorage } from "./app-storage.js";
 import { migrateBridgeV1ToV2 } from "./migrations/bridge/v1-to-v2.js";
 import { migrateBridgeV2ToV3 } from "./migrations/bridge/v2-to-v3.js";
 import { migrateBridgeV3ToV4 } from "./migrations/bridge/v3-to-v4.js";
@@ -16,7 +16,7 @@ type StorageObjectType = { [key: string]: SupportedStorageTypes };
 
 export class BridgeStorage implements Service {
   static [Environmental.create](environment: Environment) {
-    return new this(environment);
+    return new BridgeStorage(environment);
   }
 
   readonly construction: Promise<void>;
@@ -41,7 +41,7 @@ export class BridgeStorage implements Service {
       ),
     );
     this._bridges = bridges
-      .filter((b) => b != undefined)
+      .filter((b) => b !== undefined)
       .map((bridge) => bridge as unknown as BridgeData);
   }
 
@@ -51,7 +51,7 @@ export class BridgeStorage implements Service {
 
   async add(bridge: BridgeData): Promise<void> {
     const idx = this._bridges.findIndex((b) => b.id === bridge.id);
-    if (idx != -1) {
+    if (idx !== -1) {
       this._bridges[idx] = bridge;
     } else {
       this._bridges.push(bridge);
