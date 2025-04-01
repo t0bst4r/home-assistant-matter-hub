@@ -7,7 +7,9 @@ const filename = fs
   .readFileSync(path.join(packageDist, "package-name.txt"), "utf-8")
   .trim();
 
-const packagePath = path.join(packageDist, filename);
+const packagePath = filename.startsWith("/")
+  ? filename
+  : path.join(packageDist, filename);
 const destinationAddon = path.join(import.meta.dirname, "addon", "package.tgz");
 const destinationStandalone = path.join(
   import.meta.dirname,

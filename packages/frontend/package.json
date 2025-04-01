@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
-    "@home-assistant-matter-hub/common": "*",
+    "@home-assistant-matter-hub/common": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.5",

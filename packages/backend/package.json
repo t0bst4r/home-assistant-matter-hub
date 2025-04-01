@@ -14,7 +14,7 @@
     "help": "tsx src/cli.ts start --help"
   },
   "dependencies": {
-    "@home-assistant-matter-hub/common": "*",
+    "@home-assistant-matter-hub/common": "workspace:*",
     "@matter/main": "0.13.0-alpha.0-20250401-82b90831a",
     "@matter/nodejs": "0.13.0-alpha.0-20250401-82b90831a",
     "ajv": "8.17.1",
