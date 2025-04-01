@@ -5,9 +5,10 @@ import {
 } from "@home-assistant-matter-hub/common";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { Agent } from "@matter/main";
 
 export interface OnOffConfig {
-  isOn?: (state: HomeAssistantEntityState) => boolean;
+  isOn?: (state: HomeAssistantEntityState, agent: Agent) => boolean;
   turnOn?: {
     action: string;
     data?: object;
@@ -34,7 +35,7 @@ export class OnOffServer extends Base {
     });
   }
 
-  override async on() {
+  async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
     const data = this.state.config?.turnOn?.data;
@@ -53,7 +54,7 @@ export class OnOffServer extends Base {
     const isOn =
       this.state.config?.isOn ??
       ((e) => e.state !== "off" && e.state !== "unavailable");
-    return isOn(state);
+    return isOn(state, this.agent);
   }
 }
 

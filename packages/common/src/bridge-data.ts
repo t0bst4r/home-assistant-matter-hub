@@ -54,6 +54,7 @@ export interface BridgeDataWithMetadata extends BridgeData {
 }
 
 export enum BridgeStatus {
+  Starting = "starting",
   Running = "running",
   Stopped = "stopped",
   Failed = "failed",

@@ -9,20 +9,24 @@ import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
 import { BridgeService } from "../matter/bridge-service.js";
 import { deviceToJson } from "../utils/json/device-to-json.js";
 import { Ajv } from "ajv";
+import { Environment } from "@matter/main";
 
 const ajv = new Ajv();
 
-export function matterApi(bridgeService: BridgeService): express.Router {
+export function matterApi(environment: Environment): express.Router {
+  const bridgeService$ = environment.load(BridgeService);
   const router = express.Router();
   router.get("/", (_, res) => {
     res.status(200).json({});
   });
 
-  router.get("/bridges", (_, res) => {
+  router.get("/bridges", async (_, res) => {
+    const bridgeService = await bridgeService$;
     res.status(200).json(bridgeService.bridges.map((b) => b.data));
   });
 
   router.post("/bridges", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const body = req.body as CreateBridgeRequest;
     const isValid = ajv.validate(createBridgeRequestSchema, body);
     if (!isValid) {
@@ -41,6 +45,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
   });
 
   router.get("/bridges/:bridgeId", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
@@ -51,6 +56,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
   });
 
   router.put("/bridges/:bridgeId", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const body = req.body as UpdateBridgeRequest;
     const isValid = ajv.validate(updateBridgeRequestSchema, body);
@@ -76,12 +82,14 @@ export function matterApi(bridgeService: BridgeService): express.Router {
   });
 
   router.delete("/bridges/:bridgeId", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     await bridgeService.delete(bridgeId);
     res.status(204).send();
   });
 
   router.get("/bridges/:bridgeId/actions/factory-reset", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
@@ -94,6 +102,7 @@ export function matterApi(bridgeService: BridgeService): express.Router {
   });
 
   router.get("/bridges/:bridgeId/devices", async (req, res) => {
+    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {

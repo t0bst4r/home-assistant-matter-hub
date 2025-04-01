@@ -35,14 +35,14 @@ export async function startHandler(
   });
   environment.set(AsyncLock, new AsyncLock());
 
-  await new HomeAssistantClient(environment, {
+  const homeAssistantClient = new HomeAssistantClient(environment, {
     url: options.homeAssistantUrl,
     accessToken: options.homeAssistantAccessToken,
-  }).construction;
+  });
 
-  await new BridgeService(environment, basicInformation).construction;
+  const bridgeService = new BridgeService(environment, basicInformation);
 
-  await new WebApi(environment, {
+  const webApi = new WebApi(environment, {
     port: options.httpPort,
     whitelist: options.httpIpWhitelist?.map((item) => item.toString()),
     webUiDist,
@@ -54,5 +54,11 @@ export async function startHandler(
           },
         }
       : {}),
-  }).construction;
+  });
+
+  await Promise.all([
+    homeAssistantClient.construction,
+    bridgeService.construction,
+    webApi.construction,
+  ]);
 }

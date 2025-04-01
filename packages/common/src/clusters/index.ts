@@ -10,6 +10,8 @@ export * from "./temperature-measurement.js";
 export * from "./thermostat.js";
 export * from "./window-covering.js";
 export * from "./media-input.js";
+export * from "./rvc-run-mode.js";
+export * from "./rvc-operational-state.js";
 
 export enum ClusterId {
   homeAssistantEntity = "homeAssistantEntity",
@@ -32,4 +34,6 @@ export enum ClusterId {
   thermostat = "thermostat",
   windowCovering = "windowCovering",
   mediaInput = "mediaInput",
+  rvcRunMode = "rvcRunMode",
+  rvcOperationalState = "rvcOperationalState",
 }
