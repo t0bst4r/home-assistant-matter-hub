@@ -23,26 +23,26 @@
     "utils/*"
   ],
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.38.5",
-    "@eslint/js": "^9.22.0",
-    "@nx/js": "20.5.0",
-    "@swc-node/register": "~1.10.9",
-    "@swc/core": "~1.11.8",
+    "@dotenvx/dotenvx": "^1.39.0",
+    "@eslint/js": "^9.23.0",
+    "@nx/js": "20.7.0",
+    "@swc-node/register": "~1.10.10",
+    "@swc/core": "~1.11.16",
     "@swc/helpers": "~0.5.15",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.25.2",
     "esbuild-plugin-noexternal": "^0.1.6",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-prettier": "^5.2.5",
     "globals": "^16.0.0",
     "nodemon": "^3.1.9",
-    "nx": "20.5.0",
+    "nx": "20.7.0",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.1",
-    "vite": "^6.2.1",
-    "vitest": "^3.0.8"
+    "typescript-eslint": "^8.29.0",
+    "vite": "^6.2.4",
+    "vitest": "^3.1.1"
   }
 }
