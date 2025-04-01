@@ -1,3 +1,17 @@
+## 3.0.0-alpha.77 (2025-04-01)
+
+### 🚀 Features
+
+- **vacuum:** add basic support for vacuums (RVC) ([9021b7b](https://github.com/t0bst4r/home-assistant-matter-hub/commit/9021b7b))
+
+### 🚧 Chores
+
+- update all dependencies ([dd76bec](https://github.com/t0bst4r/home-assistant-matter-hub/commit/dd76bec))
+
+### ❤️ Thank You
+
+- Tobias Glatthar @t0bst4r
+
 ## 3.0.0-alpha.76 (2025-03-12)
 
 ### 🐛 Fixes
