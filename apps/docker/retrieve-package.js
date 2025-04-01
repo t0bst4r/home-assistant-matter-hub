@@ -1,6 +1,6 @@
-import { distDir } from "@home-assistant-matter-hub/build-utils";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { distDir } from "@home-assistant-matter-hub/build-utils";
 
 const packageDist = distDir("home-assistant-matter-hub");
 const filename = fs

@@ -1,5 +1,5 @@
+import type { RelativeHumidityMeasurementClusterState } from "@home-assistant-matter-hub/common";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
-import { RelativeHumidityMeasurementClusterState } from "@home-assistant-matter-hub/common";
 
 export interface RelativeHumidityMeasurementStateProps {
   state: RelativeHumidityMeasurementClusterState;

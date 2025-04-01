@@ -1,5 +1,5 @@
-import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { type Plugin, defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/

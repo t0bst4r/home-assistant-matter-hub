@@ -1,8 +1,8 @@
-import * as path from "node:path";
 import * as fs from "node:fs";
+import * as path from "node:path";
 
-import { rimraf } from "rimraf";
 import { distDir } from "@home-assistant-matter-hub/build-utils";
+import { rimraf } from "rimraf";
 
 const dist = path.resolve(import.meta.dirname, "dist");
 
@@ -34,10 +34,10 @@ async function copyDist(source, destination, minSize, maxSize) {
     `Copy ${path.relative(import.meta.dirname, source)} to ${path.relative(import.meta.dirname, destination)}... `,
   );
   const sourceSize = getDirSize(source);
-  if (minSize != undefined && sourceSize < minSize) {
+  if (minSize !== undefined && sourceSize < minSize) {
     throw new Error(`${sourceSize} does not satisfy min size (${minSize})`);
   }
-  if (maxSize != undefined && sourceSize > maxSize) {
+  if (maxSize !== undefined && sourceSize > maxSize) {
     throw new Error(`${sourceSize} does not satisfy max size (${maxSize})`);
   }
 

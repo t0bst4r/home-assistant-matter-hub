@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import ReactCodeMirror, { hoverTooltip } from "@uiw/react-codemirror";
-import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
-import { Alert, Button, Stack, useTheme } from "@mui/material";
-import { linter } from "@codemirror/lint";
 import { json, jsonLanguage, jsonParseLinter } from "@codemirror/lang-json";
+import { linter } from "@codemirror/lint";
+import { Alert, Button, Stack, useTheme } from "@mui/material";
+import Box from "@mui/material/Box";
+import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
+import ReactCodeMirror, { hoverTooltip } from "@uiw/react-codemirror";
+import Ajv from "ajv";
 import {
   handleRefresh,
   jsonCompletion,
@@ -11,11 +12,10 @@ import {
   jsonSchemaLinter,
   stateExtensions,
 } from "codemirror-json-schema";
-import Box from "@mui/material/Box";
 import type { JSONSchema7 } from "json-schema";
-import { ValidationError } from "./validation-error.ts";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ValidationErrors } from "./ValidationErrors.tsx";
-import Ajv from "ajv";
+import type { ValidationError } from "./validation-error.ts";
 
 export interface JsonEditorProps {
   schema: JSONSchema7;
@@ -129,7 +129,6 @@ function useCodeTheme() {
   const theme = useTheme();
   if (theme.palette.mode === "dark") {
     return vscodeDark;
-  } else {
-    return vscodeLight;
   }
+  return vscodeLight;
 }

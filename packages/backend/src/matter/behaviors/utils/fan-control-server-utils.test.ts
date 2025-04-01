@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { FanControl } from "@matter/main/clusters";
-import * as utils from "./fan-control-server-utils.js";
-import { FanControlFeatures } from "./fan-control-server-utils.js";
 import { FanDeviceDirection } from "@home-assistant-matter-hub/common";
+import { FanControl } from "@matter/main/clusters";
+import { describe, expect, it } from "vitest";
+import * as utils from "./fan-control-server-utils.js";
+import type { FanControlFeatures } from "./fan-control-server-utils.js";
 
 import FanModeSequence = FanControl.FanModeSequence;
 import FanMode = FanControl.FanMode;

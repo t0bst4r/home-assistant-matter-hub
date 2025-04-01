@@ -1,15 +1,15 @@
+import type { BridgeConfig } from "@home-assistant-matter-hub/common";
 import { Stack } from "@mui/material";
 import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
+import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
+import { useNotifications } from "../../components/notifications/use-notifications.ts";
 import {
   useBridge,
   useUpdateBridge,
   useUsedPorts,
 } from "../../hooks/data/bridges.ts";
-import { useNavigate, useParams } from "react-router";
-import { BridgeConfig } from "@home-assistant-matter-hub/common";
-import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
-import { useNotifications } from "../../components/notifications/use-notifications.ts";
-import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
 import { navigation } from "../../routes.tsx";
 
 export const EditBridgePage = () => {
@@ -24,15 +24,14 @@ export const EditBridgePage = () => {
   const bridgeConfig = useMemo<BridgeConfig | undefined>(() => {
     if (isLoading || !bridge) {
       return undefined;
-    } else {
-      return {
-        name: bridge.name,
-        port: bridge.port,
-        countryCode: bridge.countryCode,
-        filter: bridge.filter,
-        featureFlags: bridge.featureFlags,
-      };
     }
+    return {
+      name: bridge.name,
+      port: bridge.port,
+      countryCode: bridge.countryCode,
+      filter: bridge.filter,
+      featureFlags: bridge.featureFlags,
+    };
   }, [isLoading, bridge]);
 
   const cancelAction = () => {
@@ -55,7 +54,8 @@ export const EditBridgePage = () => {
 
   if (isLoading || !usedPorts) {
     return <>Loading</>;
-  } else if (!bridge || !bridgeConfig) {
+  }
+  if (!bridge || !bridgeConfig) {
     return <>Not found</>;
   }
 

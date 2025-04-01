@@ -1,10 +1,10 @@
-import { StorageBackendDisk } from "@matter/nodejs";
-import _ from "lodash";
-import { Logger } from "@matter/general";
-import { LoggerService } from "../logger.js";
-import { LegacyCustomStorage } from "./legacy-custom-storage.js";
 import fs from "node:fs";
 import { ClusterId } from "@home-assistant-matter-hub/common";
+import type { Logger } from "@matter/general";
+import { StorageBackendDisk } from "@matter/nodejs";
+import _ from "lodash";
+import type { LoggerService } from "../logger.js";
+import { LegacyCustomStorage } from "./legacy-custom-storage.js";
 
 export class CustomStorage extends StorageBackendDisk {
   private readonly log: Logger;
@@ -19,7 +19,7 @@ export class CustomStorage extends StorageBackendDisk {
 
   override async initialize() {
     super.initialize();
-    if (fs.existsSync(this.path + ".json")) {
+    if (fs.existsSync(`${this.path}.json`)) {
       await this.migrateLegacyStorage(this.loggerService, this.path);
     }
   }
@@ -45,7 +45,7 @@ export class CustomStorage extends StorageBackendDisk {
     );
     const legacyStorage = new LegacyCustomStorage(
       loggerService,
-      path + ".json",
+      `${path}.json`,
     );
     legacyStorage.initialize();
     _.forEach(legacyStorage.data, (values, context) => {
@@ -54,6 +54,6 @@ export class CustomStorage extends StorageBackendDisk {
       });
     });
     await legacyStorage.close();
-    fs.renameSync(path + ".json", path + "/backup.alpha-69.json");
+    fs.renameSync(`${path}.json`, `${path}/backup.alpha-69.json`);
   }
 }

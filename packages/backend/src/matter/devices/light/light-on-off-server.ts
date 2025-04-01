@@ -1,4 +1,7 @@
-import { OnOffConfig, OnOffServer } from "../../behaviors/on-off-server.js";
+import {
+  type OnOffConfig,
+  OnOffServer,
+} from "../../behaviors/on-off-server.js";
 
 const onOffConfig: OnOffConfig = {
   turnOn: {

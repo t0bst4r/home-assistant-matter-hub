@@ -1,18 +1,18 @@
-import { Endpoint, EndpointType, Environment } from "@matter/main";
-import {
+import type {
   BridgeConfig,
   BridgeFeatureFlags,
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { createDevice } from "./create-device.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-registry.js";
-import _, { Dictionary } from "lodash";
-import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
+import { Endpoint, type EndpointType, type Environment } from "@matter/main";
 import AsyncLock from "async-lock";
-import { BetterLogger, LoggerService } from "../../environment/logger.js";
+import _, { type Dictionary } from "lodash";
+import { type BetterLogger, LoggerService } from "../../environment/logger.js";
+import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-registry.js";
 import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { createDevice } from "./create-device.js";
+import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
 
 export class BridgeDeviceManager {
   private readonly log: BetterLogger;
@@ -94,7 +94,7 @@ export class BridgeDeviceManager {
       endpointType = createDevice(lockKey(entity), entity, featureFlags);
     } catch (e) {
       if (e instanceof InvalidDeviceError) {
-        this.log.warn("Invalid device detected. Reason: " + e.message);
+        this.log.warn(`Invalid device detected. Reason: ${e.message}`);
       } else {
         this.log.error(
           `Failed to create device ${entity?.entity_id}. Entity information: ${JSON.stringify(entity, null, 2)}`,
@@ -106,9 +106,8 @@ export class BridgeDeviceManager {
     if (endpoint) {
       if (endpoint.type.deviceClass === endpointType?.deviceClass) {
         return entity.entity_id;
-      } else {
-        await endpoint.delete();
       }
+      await endpoint.delete();
     }
 
     if (!endpointType) {

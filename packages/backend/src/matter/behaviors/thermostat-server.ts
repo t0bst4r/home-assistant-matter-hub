@@ -1,18 +1,18 @@
+import {
+  type ClimateDeviceAttributes,
+  ClimateDeviceFeature,
+  type HomeAssistantEntityInformation,
+} from "@home-assistant-matter-hub/common";
+import type { Logger } from "@matter/main";
 import { ThermostatServer as Base } from "@matter/main/behaviors";
 import { Thermostat } from "@matter/main/clusters";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import {
-  ClimateDeviceAttributes,
-  ClimateDeviceFeature,
-  HomeAssistantEntityInformation,
-} from "@home-assistant-matter-hub/common";
 import { ClusterType } from "@matter/main/types";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
-import * as utils from "./utils/thermostat-server-utils.js";
-import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
-import { testBit } from "../../utils/test-bit.js";
-import { Logger } from "@matter/main";
 import { LoggerService } from "../../environment/logger.js";
+import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { testBit } from "../../utils/test-bit.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import * as utils from "./utils/thermostat-server-utils.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
@@ -47,7 +47,7 @@ export class ThermostatServerBase extends FeaturedBase {
   private update(entity: HomeAssistantEntityInformation) {
     const config = this.env.get(HomeAssistantConfig);
 
-    if (this.internal.homeAssistantUnit != config.unitSystem.temperature) {
+    if (this.internal.homeAssistantUnit !== config.unitSystem.temperature) {
       this.internal.logger.notice(
         `Switching unit of ${entity.entity_id} to '${config.unitSystem.temperature}'`,
       );
@@ -177,7 +177,7 @@ export class ThermostatServerBase extends FeaturedBase {
       attributes,
       this.internal.homeAssistantUnit,
     );
-    if (heating == value) {
+    if (heating === value) {
       return;
     }
     await this.setTemperatureFromMatter(
@@ -196,7 +196,7 @@ export class ThermostatServerBase extends FeaturedBase {
       attributes,
       this.internal.homeAssistantUnit,
     );
-    if (cooling == value) {
+    if (cooling === value) {
       return;
     }
     await this.setTemperatureFromMatter(

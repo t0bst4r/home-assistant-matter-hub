@@ -1,13 +1,13 @@
-import { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
+import type { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
 import { Environment, VendorId } from "@matter/main";
-import { ArgumentsCamelCase } from "yargs";
-import { StartOptions } from "./start-options.js";
+import AsyncLock from "async-lock";
 import * as ws from "ws";
+import type { ArgumentsCamelCase } from "yargs";
+import { WebApi } from "../../api/web-api.js";
 import { createEnvironment } from "../../environment/environment.js";
 import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.js";
 import { BridgeService } from "../../matter/bridge-service.js";
-import { WebApi } from "../../api/web-api.js";
-import AsyncLock from "async-lock";
+import type { StartOptions } from "./start-options.js";
 
 const basicInformation: BridgeBasicInformation = {
   vendorId: VendorId(0xfff1),

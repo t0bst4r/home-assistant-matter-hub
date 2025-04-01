@@ -1,10 +1,10 @@
-import { BooleanStateServer as Base } from "@matter/main/behaviors/boolean-state";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { BooleanStateServer as Base } from "@matter/main/behaviors/boolean-state";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export interface BooleanStateConfig {
   inverted: boolean;

@@ -1,6 +1,6 @@
-import { Argv } from "yargs";
 import fs from "node:fs";
-import { StartOptions } from "./start-options.js";
+import type { Argv } from "yargs";
+import type { StartOptions } from "./start-options.js";
 
 export function startOptionsBuilder(yargs: Argv): Argv<StartOptions> {
   return yargs

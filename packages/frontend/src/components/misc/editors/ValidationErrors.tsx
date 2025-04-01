@@ -1,6 +1,6 @@
 import { List, ListItem, Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { ValidationError } from "./validation-error";
+import type { ValidationError } from "./validation-error";
 
 export interface ValidationErrorProps {
   validationErrors: ValidationError[];
@@ -10,7 +10,7 @@ export const ValidationErrors = (props: ValidationErrorProps) => {
   return (
     <List disablePadding>
       {props.validationErrors.map((error, idx) => (
-        <ListItem disableGutters disablePadding key={idx}>
+        <ListItem disableGutters disablePadding key={idx.toString()}>
           <Stack direction="row" spacing={1}>
             <Typography variant="body2">&bull;</Typography>
             <Typography variant="caption">

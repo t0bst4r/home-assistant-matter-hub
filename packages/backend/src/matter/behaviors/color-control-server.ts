@@ -1,15 +1,15 @@
 import {
   ColorConverter,
-  HomeAssistantEntityInformation,
-  HomeAssistantEntityState,
-  LightDeviceAttributes,
+  type HomeAssistantEntityInformation,
+  type HomeAssistantEntityState,
+  type LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { ClusterType } from "@matter/main/types";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { getMatterColorMode } from "./utils/color-control-server-utils.js";
 
 const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
@@ -33,9 +33,15 @@ export class ColorControlServerBase extends FeaturedBase {
     const currentKelvin = attributes.color_temp_kelvin;
     let minKelvin = attributes.min_color_temp_kelvin ?? 1500;
     let maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
-    if (this.state.config?.expandMinMaxTemperature == true) {
-      minKelvin = Math.min(minKelvin, currentKelvin ?? Infinity);
-      maxKelvin = Math.max(maxKelvin, currentKelvin ?? -Infinity);
+    if (this.state.config?.expandMinMaxTemperature === true) {
+      minKelvin = Math.min(
+        minKelvin,
+        currentKelvin ?? Number.POSITIVE_INFINITY,
+      );
+      maxKelvin = Math.max(
+        maxKelvin,
+        currentKelvin ?? Number.NEGATIVE_INFINITY,
+      );
       if (minKelvin > maxKelvin) {
         [minKelvin, maxKelvin] = [maxKelvin, minKelvin];
       }
@@ -105,7 +111,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const [currentHue, currentSaturation] =
       this.getMatterColor(homeAssistant.entity.state) ?? [];
-    if (currentHue == targetHue && currentSaturation == targetSaturation) {
+    if (currentHue === targetHue && currentSaturation === targetSaturation) {
       return;
     }
     const color = ColorConverter.fromMatterHS(targetHue, targetSaturation);

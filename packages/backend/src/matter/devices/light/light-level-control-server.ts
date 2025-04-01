@@ -1,11 +1,11 @@
-import {
-  LevelControlConfig,
-  LevelControlServer,
-} from "../../behaviors/level-control-server.js";
-import {
+import type {
   HomeAssistantEntityState,
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
+import {
+  type LevelControlConfig,
+  LevelControlServer,
+} from "../../behaviors/level-control-server.js";
 
 const levelControlConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState<LightDeviceAttributes>) => {

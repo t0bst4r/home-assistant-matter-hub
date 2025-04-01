@@ -1,14 +1,14 @@
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
-import Box from "@mui/material/Box";
+import type { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import QrCode from "@mui/icons-material/QrCode";
 import { CardActionArea } from "@mui/material";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid2";
-import { BridgeStatusIcon } from "./BridgeStatusIcon.tsx";
+import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router";
 import { navigation } from "../../routes.tsx";
+import { BridgeStatusIcon } from "./BridgeStatusIcon.tsx";
 
 export interface BridgeCardProps {
   bridge: BridgeDataWithMetadata;

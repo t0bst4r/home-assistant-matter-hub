@@ -1,4 +1,4 @@
-import { Environment, Environmental } from "@matter/main";
+import type { Environment, Environmental } from "@matter/main";
 import { LoggerService } from "./logger.js";
 
 export interface Service extends Environmental.Service {

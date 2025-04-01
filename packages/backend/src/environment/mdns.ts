@@ -1,4 +1,4 @@
-import { Environment } from "@matter/main";
+import type { Environment } from "@matter/main";
 import { MdnsService } from "@matter/main/protocol";
 
 export function mdns(

@@ -1,25 +1,25 @@
-import { ThermostatDevice } from "@matter/main/devices";
-import { OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
-import { BasicInformationServer } from "../behaviors/basic-information-server.js";
-import { IdentifyServer } from "../behaviors/identify-server.js";
 import {
-  ClimateDeviceAttributes,
+  type ClimateDeviceAttributes,
   ClimateDeviceFeature,
   ClimateHvacMode,
-  HomeAssistantEntityState,
+  type HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { ThermostatServer } from "../behaviors/thermostat-server.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ClusterBehavior, EndpointType } from "@matter/main";
+import type { Thermostat } from "@matter/main/clusters";
+import { ThermostatDevice } from "@matter/main/devices";
+import type { ClusterType } from "@matter/main/types";
+import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
+import { testBit } from "../../utils/test-bit.js";
+import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import {
-  HumidityMeasurementConfig,
+  type HumidityMeasurementConfig,
   HumidityMeasurementServer,
 } from "../behaviors/humidity-measurement-server.js";
-import { EndpointType, ClusterBehavior } from "@matter/main";
-import { FeatureSelection } from "../../utils/feature-selection.js";
-import { Thermostat } from "@matter/main/clusters";
-import { ClusterType } from "@matter/main/types";
-import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
-import { testBit } from "../../utils/test-bit.js";
+import { IdentifyServer } from "../behaviors/identify-server.js";
+import { type OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
+import { ThermostatServer } from "../behaviors/thermostat-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 const climateOnOffConfig: OnOffConfig = {
   turnOn: { action: "climate.turn_on" },
@@ -29,7 +29,7 @@ const humidityConfig: HumidityMeasurementConfig = {
   getValue(entity: HomeAssistantEntityState) {
     const attributes = entity.attributes as ClimateDeviceAttributes;
     const humidity = attributes.current_humidity;
-    if (humidity == null || isNaN(+humidity)) {
+    if (humidity == null || Number.isNaN(+humidity)) {
       return null;
     }
     return +humidity;

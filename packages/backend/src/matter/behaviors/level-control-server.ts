@@ -1,12 +1,12 @@
-import { LevelControlServer as Base } from "@matter/main/behaviors";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { ClusterType } from "@matter/main/types";
+import { LevelControlServer as Base } from "@matter/main/behaviors";
 import { LevelControl } from "@matter/main/clusters";
+import { ClusterType } from "@matter/main/types";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export interface LevelControlConfig {
   getValue: (state: HomeAssistantEntityState) => number | null;
@@ -38,12 +38,12 @@ export class LevelControlServerBase extends Base {
       this.validValue(this.state.config.getValue(state)) ??
       this.state.currentLevel;
 
-    if (this.state.config?.expandMinMaxForValue == true) {
+    if (this.state.config?.expandMinMaxForValue === true) {
       if (minLevel != null) {
-        minLevel = Math.min(minLevel, currentLevel ?? Infinity);
+        minLevel = Math.min(minLevel, currentLevel ?? Number.POSITIVE_INFINITY);
       }
       if (maxLevel != null) {
-        maxLevel = Math.max(maxLevel, currentLevel ?? -Infinity);
+        maxLevel = Math.max(maxLevel, currentLevel ?? Number.NEGATIVE_INFINITY);
       }
     }
 
@@ -69,7 +69,7 @@ export class LevelControlServerBase extends Base {
   private validValue(
     number: number | null | undefined,
   ): number | null | undefined {
-    if (number != null && isNaN(number)) {
+    if (number != null && Number.isNaN(number)) {
       return undefined;
     }
     return number;

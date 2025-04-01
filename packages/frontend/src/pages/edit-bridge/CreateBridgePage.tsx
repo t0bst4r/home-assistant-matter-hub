@@ -1,17 +1,17 @@
+import type { BridgeConfig } from "@home-assistant-matter-hub/common";
+import { Alert, Stack, Typography } from "@mui/material";
+import Link from "@mui/material/Link";
 import { useMemo } from "react";
+import { useNavigate } from "react-router";
+import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
+import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
+import { useNotifications } from "../../components/notifications/use-notifications.ts";
 import {
   useBridges,
   useCreateBridge,
   useUsedPorts,
 } from "../../hooks/data/bridges.ts";
-import { useNavigate } from "react-router";
-import { BridgeConfig } from "@home-assistant-matter-hub/common";
-import { BridgeConfigEditor } from "../../components/bridge/BridgeConfigEditor.tsx";
-import { useNotifications } from "../../components/notifications/use-notifications.ts";
-import { Alert, Stack, Typography } from "@mui/material";
-import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";
 import { navigation } from "../../routes.tsx";
-import Link from "@mui/material/Link";
 
 const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
@@ -41,9 +41,8 @@ export const CreateBridgePage = () => {
   const bridgeConfig: BridgeConfig | undefined = useMemo(() => {
     if (usedPorts) {
       return { ...defaultConfig, port: nextFreePort(usedPorts) };
-    } else {
-      return undefined;
     }
+    return undefined;
   }, [usedPorts]);
 
   const createBridge = useCreateBridge();

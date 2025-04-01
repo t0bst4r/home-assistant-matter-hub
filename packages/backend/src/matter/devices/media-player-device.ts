@@ -1,21 +1,21 @@
 import {
-  BridgeFeatureFlags,
-  HomeAssistantEntityState,
-  MediaPlayerDeviceAttributes,
+  type BridgeFeatureFlags,
+  type HomeAssistantEntityState,
+  type MediaPlayerDeviceAttributes,
   MediaPlayerDeviceFeature,
 } from "@home-assistant-matter-hub/common";
 import { SpeakerDevice } from "@matter/main/devices";
+import { OnOffPlugInUnitDevice } from "@matter/main/devices";
+import { testBit } from "../../utils/test-bit.js";
 import { BasicInformationServer } from "../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../behaviors/identify-server.js";
-import { OnOffServer, OnOffConfig } from "../behaviors/on-off-server.js";
 import {
-  LevelControlConfig,
+  type LevelControlConfig,
   LevelControlServer,
 } from "../behaviors/level-control-server.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { OnOffPlugInUnitDevice } from "@matter/main/devices";
 import { MediaInputServer } from "../behaviors/media-input-server.js";
-import { testBit } from "../../utils/test-bit.js";
+import { type OnOffConfig, OnOffServer } from "../behaviors/on-off-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 const muteOnOffConfig: OnOffConfig = {
   turnOn: {

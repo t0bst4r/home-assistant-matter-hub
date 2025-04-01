@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { NotificationOptions } from "./notification-options.ts";
+import type { NotificationOptions } from "./notification-options.ts";
 
 interface NotificationsContextValue {
   show: (notification: NotificationOptions) => void;

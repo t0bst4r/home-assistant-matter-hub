@@ -1,6 +1,6 @@
-import { createAppSelector, AppState } from "../types";
-import { AsyncState } from "../utils/async";
-import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
+import type { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
+import { type AppState, createAppSelector } from "../types";
+import type { AsyncState } from "../utils/async";
 
 export const selectBridgeState = (state: AppState) => state.bridges;
 

@@ -1,4 +1,4 @@
-import { WindowCoveringClusterState } from "@home-assistant-matter-hub/common";
+import type { WindowCoveringClusterState } from "@home-assistant-matter-hub/common";
 
 export interface WindowCoveringStateProps {
   state: WindowCoveringClusterState;

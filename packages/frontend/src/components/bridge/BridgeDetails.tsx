@@ -1,12 +1,12 @@
-import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
-import Box from "@mui/material/Box";
-import { Alert, Chip, Paper, Stack, Typography } from "@mui/material";
-import { QRCodeSVG } from "qrcode.react";
-import Grid from "@mui/material/Grid2";
+import type { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { FabricList } from "../fabric/FabricList.tsx";
+import { Alert, Chip, Paper, Stack, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid2";
+import { QRCodeSVG } from "qrcode.react";
 import { navigation } from "../../routes.tsx";
+import { FabricList } from "../fabric/FabricList.tsx";
 
 export interface BridgeDetailsProps {
   readonly bridge: BridgeDataWithMetadata;
@@ -30,7 +30,7 @@ export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
           {bridge.filter.include.map((filter, idx) => (
             <Chip
-              key={idx}
+              key={idx.toString()}
               size="small"
               icon={<AddIcon />}
               label={
@@ -43,7 +43,7 @@ export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
           ))}
           {bridge.filter.exclude.map((filter, idx) => (
             <Chip
-              key={idx}
+              key={idx.toString()}
               size="small"
               icon={<RemoveIcon />}
               label={

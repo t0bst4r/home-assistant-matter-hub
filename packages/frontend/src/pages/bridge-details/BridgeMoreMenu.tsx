@@ -1,5 +1,7 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import MoreVert from "@mui/icons-material/MoreVert";
-import IconButton from "@mui/material/IconButton";
+import ResetIcon from "@mui/icons-material/RotateLeft";
 import {
   Divider,
   ListItemIcon,
@@ -7,14 +9,12 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { Link as RouterLink, useNavigate } from "react-router";
+import IconButton from "@mui/material/IconButton";
 import * as React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ResetIcon from "@mui/icons-material/RotateLeft";
-import { navigation } from "../../routes.tsx";
-import { useDeleteBridge, useResetBridge } from "../../hooks/data/bridges.ts";
+import { Link as RouterLink, useNavigate } from "react-router";
 import { useNotifications } from "../../components/notifications/use-notifications.ts";
+import { useDeleteBridge, useResetBridge } from "../../hooks/data/bridges.ts";
+import { navigation } from "../../routes.tsx";
 
 export interface BridgeMoreMenuProps {
   bridge: string;

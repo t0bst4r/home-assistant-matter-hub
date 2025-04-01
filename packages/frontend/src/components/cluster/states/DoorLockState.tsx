@@ -1,11 +1,11 @@
-import UnlockedIcon from "@mui/icons-material/LockOpen";
-import LockedIcon from "@mui/icons-material/Lock";
-import { SvgIcon, Theme } from "@mui/material";
-import { useCallback, useMemo } from "react";
 import {
-  DoorLockClusterState,
+  type DoorLockClusterState,
   DoorLockStatus,
 } from "@home-assistant-matter-hub/common";
+import LockedIcon from "@mui/icons-material/Lock";
+import UnlockedIcon from "@mui/icons-material/LockOpen";
+import type { SvgIcon, Theme } from "@mui/material";
+import { useCallback, useMemo } from "react";
 
 export interface DoorLockStateProps {
   state: DoorLockClusterState;

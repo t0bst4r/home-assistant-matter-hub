@@ -1,14 +1,14 @@
-import { Behavior, EventEmitter } from "@matter/main";
 import {
   ClusterId,
-  HomeAssistantEntityInformation,
+  type HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
-import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
-import { AsyncObservable } from "../../utils/async-observable.js";
-import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
+import type { Logger } from "@matter/general";
+import { Behavior, EventEmitter } from "@matter/main";
 import AsyncLock from "async-lock";
-import { Logger } from "@matter/general";
+import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { LoggerService } from "../../environment/logger.js";
+import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
+import { AsyncObservable } from "../../utils/async-observable.js";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;

@@ -1,10 +1,10 @@
-import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behaviors";
 import crypto from "node:crypto";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
+import { VendorId } from "@matter/main";
+import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
-import { VendorId } from "@matter/main";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
@@ -54,20 +54,19 @@ function hash(maxLength: number, value?: string) {
 }
 
 function trimToLength(
-  value: string | null | undefined,
+  value: string | number | null | undefined,
   maxLength: number,
   type: "ellipsis" | "hash",
 ): string | undefined {
-  value = value?.toString();
-  if (!value?.trim().length) {
+  const stringValue = value?.toString();
+  if (!stringValue?.trim().length) {
     return undefined;
   }
-  if (value.length <= maxLength) {
-    return value;
-  } else {
-    const suffix = createSuffix(value, type);
-    return value.substring(0, maxLength - suffix.length) + suffix;
+  if (stringValue.length <= maxLength) {
+    return stringValue;
   }
+  const suffix = createSuffix(stringValue, type);
+  return stringValue.substring(0, maxLength - suffix.length) + suffix;
 }
 
 function createSuffix(value: string, type: "ellipsis" | "hash") {
@@ -78,7 +77,6 @@ function createSuffix(value: string, type: "ellipsis" | "hash") {
       .update(value)
       .digest("hex")
       .substring(0, hashLength);
-  } else {
-    return "...";
   }
+  return "...";
 }

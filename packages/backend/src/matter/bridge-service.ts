@@ -1,15 +1,15 @@
 import crypto from "node:crypto";
-import {
+import type {
   BridgeBasicInformation,
   BridgeData,
   CreateBridgeRequest,
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
+import { type Environment, asyncNew } from "@matter/main";
+import { type Service, register } from "../environment/register.js";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
-import { asyncNew, Environment } from "@matter/main";
 import { BridgeStorage } from "../storage/bridge-storage.js";
 import { BridgeServerNode } from "./bridge/bridge-server-node.js";
-import { register, Service } from "../environment/register.js";
 
 export class BridgeService implements Service {
   readonly construction: Promise<void>;

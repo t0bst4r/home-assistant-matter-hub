@@ -1,4 +1,4 @@
-import { StorageContext } from "@matter/main";
+import type { StorageContext } from "@matter/main";
 
 export async function migrateBridgeV1ToV2(
   storage: StorageContext,
@@ -8,11 +8,11 @@ export async function migrateBridgeV1ToV2(
 
   for (const bridgeId of bridgeIds) {
     const bridgeValue = await storage.get<string | undefined>(bridgeId);
-    if (bridgeValue == undefined) {
+    if (bridgeValue === undefined) {
       continue;
     }
     const bridge = JSON.parse(bridgeValue);
-    delete bridge["compatibility"];
+    bridge.compatibility = undefined;
     await storage.set(bridgeId, bridge);
   }
   return 2;

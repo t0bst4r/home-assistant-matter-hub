@@ -6,8 +6,8 @@ import {
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import BuyMeACoffeeLogo from "../assets/bmc-button.svg?react";
 import Link from "@mui/material/Link";
+import BuyMeACoffeeLogo from "../assets/bmc-button.svg?react";
 import { AppLogo } from "./AppLogo.tsx";
 
 const Funding = (props: { large: boolean }) => {

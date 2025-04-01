@@ -1,15 +1,15 @@
-import express from "express";
 import {
+  type CreateBridgeRequest,
+  type UpdateBridgeRequest,
   createBridgeRequestSchema,
-  CreateBridgeRequest,
   updateBridgeRequestSchema,
-  UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
+import type { Environment } from "@matter/main";
+import { Ajv } from "ajv";
+import express from "express";
 import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
 import { BridgeService } from "../matter/bridge-service.js";
 import { deviceToJson } from "../utils/json/device-to-json.js";
-import { Ajv } from "ajv";
-import { Environment } from "@matter/main";
 
 const ajv = new Ajv();
 

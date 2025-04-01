@@ -1,14 +1,14 @@
-import { FanControlServer as Base } from "@matter/main/behaviors";
-import { FanControl } from "@matter/main/clusters";
-import {
+import type {
   FanDeviceAttributes,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { FanControlServer as Base } from "@matter/main/behaviors";
+import { FanControl } from "@matter/main/clusters";
 import { ClusterType } from "@matter/main/types";
-import * as utils from "./utils/fan-control-server-utils.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import * as utils from "./utils/fan-control-server-utils.js";
 
 const FeaturedBase = Base.with(
   "Step",
@@ -114,11 +114,11 @@ export class FanControlServerBase extends FeaturedBase {
     const currentAttributes = homeAssistant.entity.state
       .attributes as FanDeviceAttributes;
     const current = currentAttributes.percentage;
-    if (current == percentage) {
+    if (current === percentage) {
       return;
     }
 
-    if (percentage == 0) {
+    if (percentage === 0) {
       await homeAssistant.callAction("fan.turn_off");
     } else {
       await homeAssistant.callAction("fan.turn_on", { percentage });
@@ -178,7 +178,7 @@ export class FanControlServerBase extends FeaturedBase {
       .attributes as FanDeviceAttributes;
     const current = currentAttributes.current_direction;
     const direction = utils.getDirectionFromMatter(airflowDirection);
-    if (current == direction) {
+    if (current === direction) {
       return;
     }
     await homeAssistant.callAction("fan.set_direction", { direction });

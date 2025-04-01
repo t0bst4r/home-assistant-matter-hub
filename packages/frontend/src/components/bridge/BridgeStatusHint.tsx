@@ -1,6 +1,6 @@
 import { BridgeStatus } from "@home-assistant-matter-hub/common";
 import { Alert } from "@mui/material";
-import { AlertColor } from "@mui/material/Alert/Alert";
+import type { AlertColor } from "@mui/material/Alert/Alert";
 
 export interface BridgeStatusHintProps {
   status: BridgeStatus;

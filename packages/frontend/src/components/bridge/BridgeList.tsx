@@ -1,6 +1,6 @@
-import { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
-import { BridgeCard } from "./BridgeCard.tsx";
+import type { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import Grid from "@mui/material/Grid2";
+import { BridgeCard } from "./BridgeCard.tsx";
 
 export interface BridgeListProps {
   bridges: BridgeDataWithMetadata[];

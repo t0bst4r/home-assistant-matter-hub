@@ -1,4 +1,4 @@
-import {
+import type {
   BridgeDataWithMetadata,
   CreateBridgeRequest,
   UpdateBridgeRequest,

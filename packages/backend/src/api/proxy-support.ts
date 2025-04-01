@@ -1,5 +1,5 @@
-import express from "express";
 import path from "node:path";
+import type express from "express";
 
 const ingressPath = "x-ingress-path";
 const forwardedPrefix = "x-forwarded-prefix";
@@ -39,7 +39,7 @@ export function supportProxyLocation(
   if (baseUrl.endsWith("/")) {
     baseUrl = baseUrl.slice(0, -1);
   }
-  if (!req.url.startsWith(baseUrl + "/")) {
+  if (!req.url.startsWith(`${baseUrl}/`)) {
     res
       .status(400)
       .contentType("text/plain")
@@ -55,7 +55,7 @@ export function supportProxyLocation(
 function buildPath(...paths: string[]): string {
   let result = path.posix.join(...paths);
   if (!result.startsWith("/")) {
-    result = "/" + result;
+    result = `/${result}`;
   }
   return result;
 }

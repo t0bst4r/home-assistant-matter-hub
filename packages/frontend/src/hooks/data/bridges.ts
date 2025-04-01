@@ -1,22 +1,22 @@
-import { useCallback, useMemo } from "react";
-import {
+import type {
   BridgeDataWithMetadata,
   CreateBridgeRequest,
   UpdateBridgeRequest,
 } from "@home-assistant-matter-hub/common";
-import { AsyncError } from "../../state/utils/async.ts";
-import {
-  selectBridge,
-  selectBridges,
-  selectUsedPorts,
-} from "../../state/bridges/bridge-selectors.ts";
+import { useCallback, useMemo } from "react";
 import {
   createBridge,
   deleteBridge,
   resetBridge,
   updateBridge,
 } from "../../state/bridges/bridge-actions.ts";
+import {
+  selectBridge,
+  selectBridges,
+  selectUsedPorts,
+} from "../../state/bridges/bridge-selectors.ts";
 import { useAppDispatch, useAppSelector } from "../../state/hooks.ts";
+import type { AsyncError } from "../../state/utils/async.ts";
 
 export function useBridges() {
   return useAppSelector(selectBridges);
@@ -40,9 +40,8 @@ export function useCreateBridge(): (
       const res = await dispatch(createBridge(req));
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
-      } else {
-        return res.payload as BridgeDataWithMetadata;
       }
+      return res.payload as BridgeDataWithMetadata;
     },
     [dispatch],
   );
@@ -57,9 +56,8 @@ export function useUpdateBridge(): (
       const res = await dispatch(updateBridge(req));
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
-      } else {
-        return res.payload as BridgeDataWithMetadata;
       }
+      return res.payload as BridgeDataWithMetadata;
     },
     [dispatch],
   );
@@ -74,9 +72,8 @@ export function useResetBridge(): (
       const res = await dispatch(resetBridge(bridgeId));
       if (res.meta.requestStatus === "rejected") {
         throw (res as { error: AsyncError }).error;
-      } else {
-        return res.payload as BridgeDataWithMetadata;
       }
+      return res.payload as BridgeDataWithMetadata;
     },
     [dispatch],
   );

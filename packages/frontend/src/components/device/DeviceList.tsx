@@ -1,4 +1,4 @@
-import { DeviceData } from "@home-assistant-matter-hub/common";
+import type { DeviceData } from "@home-assistant-matter-hub/common";
 import {
   List,
   ListItem,
@@ -11,10 +11,10 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { PropsWithChildren, useMemo } from "react";
-import { ClusterState } from "../cluster/ClusterState.tsx";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { type PropsWithChildren, useMemo } from "react";
+import { ClusterState } from "../cluster/ClusterState.tsx";
 
 export interface DeviceListProps {
   readonly devices: DeviceData[];
@@ -60,7 +60,7 @@ export const DeviceList = ({ devices }: DeviceListProps) => {
                     }}
                   >
                     {device.endpointType} (
-                    {"0x" + device.endpointCode.padStart(4, "0")})
+                    {`0x${device.endpointCode.padStart(4, "0")}`})
                   </Typography>
                 </GeneralInfo>
               </TableCell>

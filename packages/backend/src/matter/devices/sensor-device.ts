@@ -1,11 +1,11 @@
 import {
-  SensorDeviceAttributes,
+  type SensorDeviceAttributes,
   SensorDeviceClass,
 } from "@home-assistant-matter-hub/common";
-import { TemperatureSensorType } from "./sensor/temperature-sensor.js";
+import type { EndpointType } from "@matter/main";
+import type { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { HumiditySensorType } from "./sensor/humidity-sensor.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { EndpointType } from "@matter/main";
+import { TemperatureSensorType } from "./sensor/temperature-sensor.js";
 
 export function SensorDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
@@ -16,7 +16,8 @@ export function SensorDevice(
 
   if (deviceClass === SensorDeviceClass.temperature) {
     return TemperatureSensorType.set({ homeAssistantEntity });
-  } else if (deviceClass === SensorDeviceClass.humidity) {
+  }
+  if (deviceClass === SensorDeviceClass.humidity) {
     return HumiditySensorType.set({ homeAssistantEntity });
   }
   return undefined;

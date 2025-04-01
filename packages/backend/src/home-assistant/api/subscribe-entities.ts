@@ -1,13 +1,13 @@
+import crypto from "node:crypto";
 import {
   type Connection,
   type Context,
-  getCollection,
   type HassEntities,
   type UnsubscribeFunc,
+  getCollection,
 } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store.js";
 import { atLeastHaVersion } from "home-assistant-js-websocket/dist/util.js";
-import crypto from "node:crypto";
 
 // COPIED FROM home-assistant-js-websocket/lib/entities.ts
 
@@ -154,16 +154,13 @@ export const entitiesColl = (conn: Connection, entityIds: string[]) => {
   if (atLeastHaVersion(conn.haVersion, 2022, 4, 0)) {
     return getCollection(
       conn,
-      "_ent_" + createEntitiesHash(entityIds),
+      `_ent_${createEntitiesHash(entityIds)}`,
       undefined,
       (conn: Connection, store: Store<HassEntities>) =>
         subscribeUpdates(conn, store, entityIds),
     );
-  } else {
-    throw new Error(
-      `Home Assistant version ${conn.haVersion} is not supported`,
-    );
   }
+  throw new Error(`Home Assistant version ${conn.haVersion} is not supported`);
 };
 
 export const subscribeEntities = (

@@ -1,8 +1,12 @@
+import backend from "@home-assistant-matter-hub/backend/package.json" assert {
+  type: "json",
+};
+import common from "@home-assistant-matter-hub/common/package.json" assert {
+  type: "json",
+};
+import _ from "lodash";
 import { describe, expect, it } from "vitest";
 import own from "../package.json" assert { type: "json" };
-import backend from "@home-assistant-matter-hub/backend/package.json" assert { type: "json" };
-import common from "@home-assistant-matter-hub/common/package.json" assert { type: "json" };
-import _ from "lodash";
 
 describe("home-assistant-matter-hub", () => {
   it("should include all necessary dependencies", () => {

@@ -1,11 +1,11 @@
-import { OnOffServer as Base } from "@matter/main/behaviors";
-import {
+import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { Agent } from "@matter/main";
+import { OnOffServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { Agent } from "@matter/main";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export interface OnOffConfig {
   isOn?: (state: HomeAssistantEntityState, agent: Agent) => boolean;

@@ -1,15 +1,15 @@
+import type * as http from "node:http";
+import type { Environment } from "@matter/main";
 import express from "express";
-import { matterApi } from "./matter-api.js";
-import * as http from "node:http";
-import { accessLogger } from "./access-log.js";
-import { webUi } from "./web-ui.js";
-import { Environment } from "@matter/main";
-import { register, Service } from "../environment/register.js";
-import { supportIngress, supportProxyLocation } from "./proxy-support.js";
+import basicAuth from "express-basic-auth";
 import AccessControl from "express-ip-access-control";
 import nocache from "nocache";
-import { BetterLogger, LoggerService } from "../environment/logger.js";
-import basicAuth from "express-basic-auth";
+import { type BetterLogger, LoggerService } from "../environment/logger.js";
+import { type Service, register } from "../environment/register.js";
+import { accessLogger } from "./access-log.js";
+import { matterApi } from "./matter-api.js";
+import { supportIngress, supportProxyLocation } from "./proxy-support.js";
+import { webUi } from "./web-ui.js";
 
 export interface WebApiProps {
   readonly port: number;

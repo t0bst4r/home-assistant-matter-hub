@@ -1,7 +1,7 @@
-import { Outlet } from "react-router";
 import { useEffect } from "react";
-import { useAppDispatch } from "../state/hooks.ts";
+import { Outlet } from "react-router";
 import { loadBridges } from "../state/bridges/bridge-actions.ts";
+import { useAppDispatch } from "../state/hooks.ts";
 
 export const AppPage = () => {
   const dispatch = useAppDispatch();

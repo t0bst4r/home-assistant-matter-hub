@@ -7,8 +7,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "cleanup": "npx rimraf node_modules dist",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "build": "tsc",
     "test": "vitest run"
   },

@@ -1,4 +1,4 @@
-import { MediaInputClusterState } from "@home-assistant-matter-hub/common";
+import type { MediaInputClusterState } from "@home-assistant-matter-hub/common";
 import InputIcon from "@mui/icons-material/Input";
 import { useMemo } from "react";
 

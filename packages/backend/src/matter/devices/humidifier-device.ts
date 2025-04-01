@@ -1,17 +1,17 @@
-import { OnOffPlugInUnitDevice } from "@matter/main/devices";
-import { OnOffServer } from "../behaviors/on-off-server.js";
-import { BasicInformationServer } from "../behaviors/basic-information-server.js";
-import { IdentifyServer } from "../behaviors/identify-server.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import {
-  LevelControlConfig,
-  LevelControlServer,
-} from "../behaviors/level-control-server.js";
-import {
+import type {
   HomeAssistantEntityState,
   HumidiferDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
-import { EndpointType } from "@matter/main";
+import type { EndpointType } from "@matter/main";
+import { OnOffPlugInUnitDevice } from "@matter/main/devices";
+import { BasicInformationServer } from "../behaviors/basic-information-server.js";
+import { IdentifyServer } from "../behaviors/identify-server.js";
+import {
+  type LevelControlConfig,
+  LevelControlServer,
+} from "../behaviors/level-control-server.js";
+import { OnOffServer } from "../behaviors/on-off-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 const humidifierLevelConfig: LevelControlConfig = {
   getValue: (state: HomeAssistantEntityState) => {

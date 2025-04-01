@@ -1,15 +1,15 @@
+import type { Logger } from "@matter/general";
+import type { Environment } from "@matter/main";
 import {
-  Connection,
-  createConnection,
-  createLongLivedTokenAuth,
+  type Connection,
   ERR_CANNOT_CONNECT,
   ERR_INVALID_AUTH,
+  createConnection,
+  createLongLivedTokenAuth,
   getConfig,
 } from "home-assistant-js-websocket";
-import { Environment } from "@matter/main";
-import { register, Service } from "../environment/register.js";
-import { Logger } from "@matter/general";
 import { LoggerService } from "../environment/logger.js";
+import { type Service, register } from "../environment/register.js";
 
 export interface HomeAssistantClientProps {
   readonly url: string;
@@ -56,13 +56,13 @@ export class HomeAssistantClient implements Service {
       );
       await new Promise((resolve) => setTimeout(resolve, 5000));
       return this.initialize();
-    } else if (reason === ERR_INVALID_AUTH) {
+    }
+    if (reason === ERR_INVALID_AUTH) {
       throw new Error(
         "Authentication failed while connecting to home assistant",
       );
-    } else {
-      throw new Error(`Unable to connect to home assistant: ${reason}`);
     }
+    throw new Error(`Unable to connect to home assistant: ${reason}`);
   }
 
   private async waitForHomeAssistantToBeUpAndRunning(): Promise<void> {

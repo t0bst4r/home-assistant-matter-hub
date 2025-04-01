@@ -1,11 +1,11 @@
-import {
+import type {
   HomeAssistantEntityInformation,
   MediaPlayerDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { MediaInputServer as Base } from "@matter/main/behaviors";
 import { MediaInput } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export class MediaInputServer extends Base {
   override async initialize() {

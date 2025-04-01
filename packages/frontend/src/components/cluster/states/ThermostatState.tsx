@@ -1,15 +1,15 @@
 import {
-  ThermostatClusterState,
+  type ThermostatClusterState,
   ThermostatSystemMode,
 } from "@home-assistant-matter-hub/common";
-import { SvgIcon } from "@mui/material";
-import PowerOffIcon from "@mui/icons-material/PowerOff";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AirIcon from "@mui/icons-material/Air";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BedtimeIcon from "@mui/icons-material/Bedtime";
 import DryCleaningIcon from "@mui/icons-material/DryCleaning";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import PowerOffIcon from "@mui/icons-material/PowerOff";
+import type { SvgIcon } from "@mui/material";
 
 export interface ThermostatStateProps {
   state: ThermostatClusterState;

@@ -1,6 +1,6 @@
 import {
+  type RvcOperationalStateClusterState,
   RvcOperationalState as RvcOperationalStateEnum,
-  RvcOperationalStateClusterState,
 } from "@home-assistant-matter-hub/common";
 
 export interface RvcOperationalStateProps {

@@ -1,5 +1,5 @@
-import express from "express";
-import { Logger } from "@matter/general";
+import type { Logger } from "@matter/general";
+import type express from "express";
 
 export function accessLogger(
   logger: Logger,
@@ -9,7 +9,7 @@ export function accessLogger(
   next: express.NextFunction,
 ) => void {
   return (req, res, next) => {
-    res.on("finish", function () {
+    res.on("finish", () => {
       logger.debug(
         `${req.method} ${decodeURI(req.originalUrl)} ${res.statusCode} ${res.statusMessage} from ${req.socket.remoteAddress}`,
       );

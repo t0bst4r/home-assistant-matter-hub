@@ -1,35 +1,35 @@
 import {
-  BooleanStateClusterState,
+  type BooleanStateClusterState,
   ClusterId,
-  ColorControlClusterState,
-  DoorLockClusterState,
-  FanControlClusterState,
-  LevelControlClusterState,
-  MediaInputClusterState,
-  OccupancySensingClusterState,
-  OnOffClusterState,
-  RelativeHumidityMeasurementClusterState,
-  RvcOperationalStateClusterState,
-  RvcRunModeClusterState,
-  TemperatureMeasurementClusterState,
-  ThermostatClusterState,
-  WindowCoveringClusterState,
+  type ColorControlClusterState,
+  type DoorLockClusterState,
+  type FanControlClusterState,
+  type LevelControlClusterState,
+  type MediaInputClusterState,
+  type OccupancySensingClusterState,
+  type OnOffClusterState,
+  type RelativeHumidityMeasurementClusterState,
+  type RvcOperationalStateClusterState,
+  type RvcRunModeClusterState,
+  type TemperatureMeasurementClusterState,
+  type ThermostatClusterState,
+  type WindowCoveringClusterState,
 } from "@home-assistant-matter-hub/common";
-import { FC } from "react";
-import { OnOffState } from "./OnOffState.tsx";
-import { ColorControlState } from "./ColorControlState.tsx";
-import { LevelControlState } from "./LevelControlState.tsx";
-import { DoorLockState } from "./DoorLockState.tsx";
-import { WindowCoveringState } from "./WindowCoveringState.tsx";
-import { TemperatureMeasurementState } from "./TemperatureMeasurementState.tsx";
-import { OccupancySensingState } from "./OccupancySensingState.tsx";
+import type { FC } from "react";
 import { BooleanState } from "./BooleanState.tsx";
-import { RelativeHumidityMeasurementState } from "./RelativeHumidityMeasurementState.tsx";
-import { ThermostatState } from "./ThermostatState.tsx";
+import { ColorControlState } from "./ColorControlState.tsx";
+import { DoorLockState } from "./DoorLockState.tsx";
 import { FanControlState } from "./FanControlState.tsx";
+import { LevelControlState } from "./LevelControlState.tsx";
 import { MediaInputState } from "./MediaInputState.tsx";
-import { RvcRunModeState } from "./RvcRunModeState.tsx";
+import { OccupancySensingState } from "./OccupancySensingState.tsx";
+import { OnOffState } from "./OnOffState.tsx";
+import { RelativeHumidityMeasurementState } from "./RelativeHumidityMeasurementState.tsx";
 import { RvcOperationalState } from "./RvcOperationalState.tsx";
+import { RvcRunModeState } from "./RvcRunModeState.tsx";
+import { TemperatureMeasurementState } from "./TemperatureMeasurementState.tsx";
+import { ThermostatState } from "./ThermostatState.tsx";
+import { WindowCoveringState } from "./WindowCoveringState.tsx";
 
 export const clusterRenderers: Record<
   ClusterId,

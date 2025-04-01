@@ -1,4 +1,4 @@
-import { LevelControlClusterState } from "@home-assistant-matter-hub/common";
+import type { LevelControlClusterState } from "@home-assistant-matter-hub/common";
 import { useMemo } from "react";
 
 export interface LevelControlStateProps {
@@ -17,7 +17,6 @@ export const LevelControlState = ({ state }: LevelControlStateProps) => {
 
   if (percentage == null) {
     return <></>;
-  } else {
-    return <>{Math.round(percentage * 100)} %</>;
   }
+  return <>{Math.round(percentage * 100)} %</>;
 };

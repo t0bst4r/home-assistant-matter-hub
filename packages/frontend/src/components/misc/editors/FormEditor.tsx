@@ -1,14 +1,14 @@
-import type { JSONSchema7 } from "json-schema";
 import { withTheme } from "@rjsf/core";
-import {
+import { Theme } from "@rjsf/mui";
+import type {
   CustomValidator,
   FormValidation,
   RJSFValidationError,
 } from "@rjsf/utils";
-import { Theme } from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
-import { ValidationError } from "./validation-error.ts";
+import type { JSONSchema7 } from "json-schema";
 import { useCallback } from "react";
+import type { ValidationError } from "./validation-error.ts";
 
 const Form = withTheme(Theme);
 

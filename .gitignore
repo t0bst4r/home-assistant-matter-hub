@@ -15,6 +15,7 @@ node_modules/
 # Build Results and Caching
 dist/
 .nx/
+packages/docs/_build/
 
 *.tsbuildinfo
 tmp/
