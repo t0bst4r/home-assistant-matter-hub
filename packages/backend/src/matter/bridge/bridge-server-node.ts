@@ -83,6 +83,8 @@ export class BridgeServerNode extends ServerNode {
       return;
     }
     try {
+      this.statusReason = "The bridge is starting... Please wait.";
+      this.status = BridgeStatus.Starting;
       await this.deviceManager.loadDevices(this.bridgeData);
       await super.start();
       this.status = BridgeStatus.Running;
@@ -114,7 +116,7 @@ export class BridgeServerNode extends ServerNode {
     } catch (e) {
       this.log.error("Failed to update bridge due to error:", e);
       await super.cancel();
-      this.statusReason = `Failed to start bridge due to error:\n${e?.toString()}`;
+      this.statusReason = `Failed to update bridge due to error:\n${e?.toString()}`;
       this.status = BridgeStatus.Failed;
     }
   }

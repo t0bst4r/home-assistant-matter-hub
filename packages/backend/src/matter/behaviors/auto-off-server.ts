@@ -28,7 +28,7 @@ export class AutoOffServer extends Base {
       Date.now() - lastPressed < this.internal.turnOffTimeout;
   }
 
-  override async on() {
+  async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
     await homeAssistant.callAction(action);

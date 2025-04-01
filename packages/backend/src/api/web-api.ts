@@ -4,7 +4,6 @@ import * as http from "node:http";
 import { accessLogger } from "./access-log.js";
 import { webUi } from "./web-ui.js";
 import { Environment } from "@matter/main";
-import { BridgeService } from "../matter/bridge-service.js";
 import { register, Service } from "../environment/register.js";
 import { supportIngress, supportProxyLocation } from "./proxy-support.js";
 import AccessControl from "express-ip-access-control";
@@ -42,13 +41,11 @@ export class WebApi implements Service {
   }
 
   private async initialize() {
-    const bridgeService = await this.environment.load(BridgeService);
-
     const api = express.Router();
     api
       .use(express.json())
       .use(nocache())
-      .use("/matter", matterApi(bridgeService));
+      .use("/matter", matterApi(this.environment));
 
     const middlewares: express.Handler[] = [
       this.accessLogger,

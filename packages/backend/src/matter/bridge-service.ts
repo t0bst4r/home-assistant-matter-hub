@@ -28,7 +28,7 @@ export class BridgeService implements Service {
     this.bridgeStorage = await this.environment.load(BridgeStorage);
     for (const data of this.bridgeStorage.bridges) {
       const bridge = await this.addBridge(data);
-      await bridge.start();
+      void bridge.start();
     }
   }
 

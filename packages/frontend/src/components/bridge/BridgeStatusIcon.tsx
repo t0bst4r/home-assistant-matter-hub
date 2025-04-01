@@ -2,6 +2,7 @@ import { BridgeStatus } from "@home-assistant-matter-hub/common";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 export interface BridgeStatusIconProps {
   status: BridgeStatus;
@@ -10,6 +11,8 @@ export interface BridgeStatusIconProps {
 
 export const BridgeStatusIcon = ({ status }: BridgeStatusIconProps) => {
   switch (status) {
+    case BridgeStatus.Starting:
+      return <RestartAltIcon fontSize="inherit" color="info" />;
     case BridgeStatus.Running:
       return <PlayCircleOutlineIcon fontSize="inherit" color="success" />;
     case BridgeStatus.Stopped:

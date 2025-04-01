@@ -10,6 +10,7 @@ export interface BridgeStatusHintProps {
 const severity: Record<BridgeStatus, AlertColor> = {
   [BridgeStatus.Failed]: "error",
   [BridgeStatus.Stopped]: "warning",
+  [BridgeStatus.Starting]: "info",
   [BridgeStatus.Running]: "success",
 };
 

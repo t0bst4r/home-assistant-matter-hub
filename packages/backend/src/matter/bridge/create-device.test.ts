@@ -19,6 +19,7 @@ import {
   SensorDeviceAttributes,
   SensorDeviceClass,
   MediaPlayerDeviceFeature,
+  VacuumDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import { createDevice } from "./create-device.js";
 import _ from "lodash";
@@ -39,6 +40,14 @@ const testEntities: Record<
       },
     ),
   ),
+  [HomeAssistantDomain.vacuum]: [
+    createEntity<VacuumDeviceAttributes>("vacuum.vac1", "cleaning", {
+      supported_features: 15, // Simulating support for various vacuum features
+      battery_level: 75,
+      fan_speed: "medium",
+      fan_speed_list: ["off", "low", "medium", "high"],
+    }),
+  ],
   [HomeAssistantDomain.climate]: [
     createEntity<ClimateDeviceAttributes>("climate.cl1", "on", {
       hvac_modes: [ClimateHvacMode.heat],
