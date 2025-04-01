@@ -47,7 +47,7 @@
     "build": "node build.js",
     "test": "vitest run",
     "start": "dotenvx run -f ../../.env -- ./dist/backend/cli.js start",
-    "pack": "mkdir -p pack && npm pack --pack-destination pack --json | jq -r .[0].filename > pack/package-name.txt"
+    "pack": "mkdir -p pack && pnpm pack --pack-destination pack --json | jq -r .filename > pack/package-name.txt"
   },
   "dependencies": {
     "@matter/main": "0.13.0-alpha.0-20250401-82b90831a",
@@ -67,10 +67,10 @@
     "ws": "8.18.1"
   },
   "devDependencies": {
-    "@home-assistant-matter-hub/build-utils": "*",
-    "@home-assistant-matter-hub/backend": "*",
-    "@home-assistant-matter-hub/frontend": "*",
-    "@home-assistant-matter-hub/common": "*"
+    "@home-assistant-matter-hub/build-utils": "workspace:*",
+    "@home-assistant-matter-hub/backend": "workspace:*",
+    "@home-assistant-matter-hub/frontend": "workspace:*",
+    "@home-assistant-matter-hub/common": "workspace:*"
   },
   "nx": {
     "targets": {

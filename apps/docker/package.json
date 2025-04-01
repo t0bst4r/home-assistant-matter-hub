@@ -5,19 +5,19 @@
   "type": "module",
   "scripts": {
     "cleanup": "npx rimraf addon/package.tgz standalone/package.tgz",
-    "build": "",
+    "build": "echo 'Performing build'",
     "build:addon": "(cd ./addon && ./build.sh)",
     "build:standalone": "(cd ./standalone && ./build.sh)",
     "retrieve-package": "node retrieve-package.js",
-    "nx-release-publish": "",
+    "nx-release-publish": "echo 'Performing nx-release-publish'",
     "publish:addon": "(cd addon && ./build.sh --latest --push --all-platforms)",
     "publish:standalone": "(cd standalone && ./build.sh --latest --push --all-platforms)"
   },
   "dependencies": {
-    "home-assistant-matter-hub": "*"
+    "home-assistant-matter-hub": "workspace:*"
   },
   "devDependencies": {
-    "@home-assistant-matter-hub/build-utils": "*"
+    "@home-assistant-matter-hub/build-utils": "workspace:*"
   },
   "nx": {
     "targets": {
