@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["CHANGELOG.md"]
+    "ignore": ["CHANGELOG.md", "**/package.json"]
   },
   "formatter": {
     "enabled": true,

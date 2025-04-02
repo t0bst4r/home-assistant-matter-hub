@@ -51,11 +51,11 @@ jobs:
       - name: Bumb version
         id: version
         run: |
-          PREV_PACKAGE_VERSION=$(node -p "require('home-assistant-matter-hub/package.json').version")
+          PREV_PACKAGE_VERSION=$(node -p "require('./apps/home-assistant-matter-hub/package.json').version")
 
           npx nx release version
 
-          NEXT_PACKAGE_VERSION=$(node -p "require('home-assistant-matter-hub/package.json').version")
+          NEXT_PACKAGE_VERSION=$(node -p "require('./apps/home-assistant-matter-hub/package.json').version")
           echo "package-version=$NEXT_PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
           if [ "$PREV_PACKAGE_VERSION" == "$NEXT_PACKAGE_VERSION" ]; then
             RELEASE_REQUIRED="no"

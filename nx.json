@@ -38,7 +38,10 @@
       }
     },
     "version": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "preserveLocalDependencyProtocols": true
+      }
     },
     "conventionalCommits": {
       "types": {

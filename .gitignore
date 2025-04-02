@@ -16,6 +16,9 @@ node_modules/
 dist/
 .nx/
 packages/docs/_build/
+apps/home-assistant-matter-hub/pack
+apps/home-assistant-matter-hub/README.md
+apps/home-assistant-matter-hub/LICENSE
 
 *.tsbuildinfo
 tmp/
