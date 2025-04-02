@@ -79,7 +79,13 @@ export function MediaPlayerDevice(
     device = device.with(OnOffServer.set({ config: muteOnOffConfig }));
   }
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.VOLUME_SET)) {
-    device = device.with(LevelControlServer.set({ config: volumeLevelConfig }));
+    const levelControl = testBit(
+      supportedFeatures,
+      MediaPlayerDeviceFeature.VOLUME_MUTE,
+    )
+      ? LevelControlServer.with("OnOff")
+      : LevelControlServer;
+    device = device.with(levelControl.set({ config: volumeLevelConfig }));
   }
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.SELECT_SOURCE)) {
     device = device.with(MediaInputServer);

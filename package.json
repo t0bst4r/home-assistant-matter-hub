@@ -5,7 +5,6 @@
   "type": "module",
   "packageManager": "pnpm@10.7.1",
   "scripts": {
-    "enable-remote-caching": "nx login",
     "cleanup": "nx run-many -t cleanup --parallel 100 && nx reset && npx rimraf node_modules",
     "lint": "biome check",
     "lint:fix": "biome check --write",

@@ -22,10 +22,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: "pnpm"
           registry-url: https://registry.npmjs.org/
       - name: NX cache
         uses: actions/cache@v4
@@ -44,7 +45,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: npm ci
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Bumb version
         id: version
@@ -77,11 +79,11 @@ jobs:
 
       - name: Build
         if: steps.version.outputs.release-required == 'yes'
-        run: npx nx run-many -t lint test build
+        run: npx nx run-many -t test build
 
-      - name: Prettier
+      - name: Lint
         if: steps.version.outputs.release-required == 'yes'
-        run: npm run prettier
+        run: pnpm run lint
 
       - name: Commit, tag and push
         if: steps.version.outputs.release-required == 'yes'

@@ -4,6 +4,8 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import type { Agent } from "@matter/main";
 import { OnOffServer as Base } from "@matter/main/behaviors";
+import { OnOff } from "@matter/main/clusters";
+import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
@@ -19,8 +21,10 @@ export interface OnOffConfig {
   };
 }
 
-export class OnOffServer extends Base {
-  declare state: OnOffServer.State;
+const FeaturedBased = Base.with("Lighting");
+
+export class OnOffServerBase extends FeaturedBased {
+  declare state: OnOffServerBase.State;
 
   override async initialize() {
     super.initialize();
@@ -35,7 +39,7 @@ export class OnOffServer extends Base {
     });
   }
 
-  async on() {
+  override async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
     const data = this.state.config?.turnOn?.data;
@@ -58,8 +62,10 @@ export class OnOffServer extends Base {
   }
 }
 
-export namespace OnOffServer {
-  export class State extends Base.State {
+export namespace OnOffServerBase {
+  export class State extends FeaturedBased.State {
     config?: OnOffConfig;
   }
 }
+
+export class OnOffServer extends OnOffServerBase.for(ClusterType(OnOff.Base)) {}
