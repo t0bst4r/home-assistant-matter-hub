@@ -53,7 +53,7 @@ export class RvcRunModeServerBase extends Base {
         await homeAssistant.callAction("vacuum.start");
         break;
       case RvcSupportedRunMode.Idle:
-        await homeAssistant.callAction("vacuum.stop");
+        await homeAssistant.callAction("vacuum.return_to_base");
         break;
       default:
         await homeAssistant.callAction("vacuum.pause");
