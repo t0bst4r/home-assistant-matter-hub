@@ -2,7 +2,10 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { distDir } from "@home-assistant-matter-hub/build-utils";
 
-const packageDist = distDir("home-assistant-matter-hub");
+const packageJsonPath = import.meta.resolve(
+  "home-assistant-matter-hub/package.json",
+);
+const packageDist = distDir(packageJsonPath);
 const filename = fs
   .readFileSync(path.join(packageDist, "package-name.txt"), "utf-8")
   .trim();

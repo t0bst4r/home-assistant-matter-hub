@@ -4,17 +4,21 @@ import * as path from "node:path";
 import { distDir } from "@home-assistant-matter-hub/build-utils";
 import { rimraf } from "rimraf";
 
+const frontendPackageJsonPath = import.meta.resolve(
+  "@home-assistant-matter-hub/frontend/package.json",
+);
+const backendPackageJsonPath = import.meta.resolve(
+  "@home-assistant-matter-hub/backend/package.json",
+);
+
 const dist = path.resolve(import.meta.dirname, "dist");
 
 await rimraf(dist);
 
-await copyDist(
-  distDir("@home-assistant-matter-hub/frontend"),
-  path.join(dist, "frontend"),
-);
+await copyDist(distDir(frontendPackageJsonPath), path.join(dist, "frontend"));
 
 await copyDist(
-  distDir("@home-assistant-matter-hub/backend"),
+  distDir(backendPackageJsonPath),
   path.join(dist, "backend"),
   250_000,
   500_000,

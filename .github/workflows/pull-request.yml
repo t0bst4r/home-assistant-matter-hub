@@ -13,17 +13,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: "pnpm"
       - name: NX cache
         uses: actions/cache@v4
         with:
           path: .nx
           key: ${{ runner.os }}-nx
 
-      - run: npm ci
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-      - run: npx nx run-many -t lint test build
-      - run: npm run prettier
+      - name: Build & Test
+        run: npx nx run-many -t test build
+      - name: Lint
+        run: pnpm run lint

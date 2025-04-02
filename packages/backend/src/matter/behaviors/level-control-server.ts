@@ -19,7 +19,12 @@ export interface LevelControlConfig {
   };
 }
 
-export class LevelControlServerBase extends Base {
+const FeaturedBase = Base.with(
+  LevelControl.Feature.OnOff,
+  LevelControl.Feature.Lighting,
+);
+
+export class LevelControlServerBase extends FeaturedBase {
   declare state: LevelControlServerBase.State;
 
   override async initialize() {
@@ -51,6 +56,7 @@ export class LevelControlServerBase extends Base {
       currentLevel: currentLevel,
       minLevel: minLevel,
       maxLevel: maxLevel,
+      onLevel: currentLevel ?? this.state.onLevel,
     });
   }
 
@@ -77,11 +83,11 @@ export class LevelControlServerBase extends Base {
 }
 
 export namespace LevelControlServerBase {
-  export class State extends Base.State {
+  export class State extends FeaturedBase.State {
     config!: LevelControlConfig;
   }
 }
 
 export class LevelControlServer extends LevelControlServerBase.for(
   ClusterType(LevelControl.Base),
-).with("OnOff") {}
+) {}

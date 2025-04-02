@@ -1,5 +1,7 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { OnOffServer as Base } from "@matter/main/behaviors";
+import { OnOff } from "@matter/main/clusters";
+import { ClusterType } from "@matter/main/types";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
 export interface AutoOffConfig {
@@ -9,9 +11,11 @@ export interface AutoOffConfig {
   };
 }
 
-export class AutoOffServer extends Base {
-  declare state: AutoOffServer.State;
-  declare internal: AutoOffServer.Internal;
+const FeaturedBased = Base.with("Lighting");
+
+export class AutoOffServerBase extends FeaturedBased {
+  declare state: AutoOffServerBase.State;
+  declare internal: AutoOffServerBase.Internal;
 
   override async initialize() {
     super.initialize();
@@ -28,7 +32,7 @@ export class AutoOffServer extends Base {
       Date.now() - lastPressed < this.internal.turnOffTimeout;
   }
 
-  async on() {
+  override async on() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
     await homeAssistant.callAction(action);
@@ -40,12 +44,16 @@ export class AutoOffServer extends Base {
   }
 }
 
-export namespace AutoOffServer {
-  export class State extends Base.State {
+export namespace AutoOffServerBase {
+  export class State extends FeaturedBased.State {
     config?: AutoOffConfig;
   }
 
-  export class Internal extends Base.Internal {
+  export class Internal extends FeaturedBased.Internal {
     turnOffTimeout!: number;
   }
 }
+
+export class AutoOffServer extends AutoOffServerBase.for(
+  ClusterType(OnOff.Base),
+) {}

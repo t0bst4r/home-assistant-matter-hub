@@ -23,7 +23,7 @@ export function createEnvironment(
 
 function notEmpty(val: string | undefined | null): string | undefined {
   const value = val?.trim();
-  if (value === undefined || value.length === 0) {
+  if (value == null || value.length === 0) {
     return undefined;
   }
   return value;

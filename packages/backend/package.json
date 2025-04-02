@@ -13,10 +13,12 @@
   },
   "dependencies": {
     "@home-assistant-matter-hub/common": "workspace:*",
-    "@matter/main": "0.13.0-alpha.0-20250401-82b90831a",
-    "@matter/nodejs": "0.13.0-alpha.0-20250401-82b90831a",
+    "@matter/main": "0.13.0-alpha.0-20250402-672547f02",
+    "@matter/nodejs": "0.13.0-alpha.0-20250402-672547f02",
+    "@matter/general": "0.13.0-alpha.0-20250402-672547f02",
     "ajv": "8.17.1",
     "async-lock": "1.4.1",
+    "color": "5.0.0",
     "express": "5.1.0",
     "express-basic-auth": "1.2.1",
     "express-ip-access-control": "1.1.3",
@@ -29,7 +31,9 @@
     "ws": "8.18.1"
   },
   "devDependencies": {
+    "@home-assistant-matter-hub/build-utils": "workspace:*",
     "@types/async-lock": "^1.4.2",
+    "@types/color": "^4.2.0",
     "@types/express": "^5.0.1",
     "@types/lodash": "^4.17.16",
     "@types/strip-color": "^0.1.2",

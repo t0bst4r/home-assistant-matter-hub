@@ -2,26 +2,20 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export function distDir(pkgName) {
-  const packagePath = fileURLToPath(
-    import.meta.resolve(`${pkgName}/package.json`),
+export function distDir(packageJsonPath) {
+  const packagePath = fileURLToPath(import.meta.resolve(packageJsonPath));
+  const packageJson = JSON.parse(
+    fs.readFileSync(packagePath, { encoding: "utf8" }),
   );
-  const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
   if (!packageJson.destination) {
-    console.error(`Destination directory not found for ${pkgName}`);
+    console.error(`Destination directory not found for ${packageJsonPath}`);
     process.exit(1);
   }
   return path.join(path.dirname(packagePath), packageJson.destination);
 }
 
-export function fileInPackage(pkgName, filePath) {
-  const packagePath = fileURLToPath(
-    import.meta.resolve(`${pkgName}/package.json`),
-  );
-  return path.join(path.dirname(packagePath), filePath);
-}
-
 /**
+ * esbuild plugin to prevent packages from being bundled
  * @param {string} sourcesRoot
  * @param {string[]} files
  * @returns import("esbuild").Plugin

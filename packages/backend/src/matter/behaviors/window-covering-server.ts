@@ -23,9 +23,9 @@ export interface WindowCoveringConfig {
 const FeaturedBase = Base.with(
   "Lift",
   "PositionAwareLift",
-  "AbsolutePosition",
   "Tilt",
   "PositionAwareTilt",
+  "AbsolutePosition",
 );
 
 export class WindowCoveringServerBase extends FeaturedBase {
@@ -92,6 +92,9 @@ export class WindowCoveringServerBase extends FeaturedBase {
         : {}),
       ...(this.features.positionAwareLift
         ? {
+            currentPositionLiftPercentage: currentLift
+              ? currentLift / 100
+              : null,
             currentPositionLiftPercent100ths: currentLift,
             targetPositionLiftPercent100ths:
               this.state.targetPositionLiftPercent100ths ?? currentLift,
@@ -99,6 +102,9 @@ export class WindowCoveringServerBase extends FeaturedBase {
         : {}),
       ...(this.features.positionAwareTilt
         ? {
+            currentPositionTiltPercentage: currentTilt
+              ? currentTilt / 100
+              : null,
             currentPositionTiltPercent100ths: currentTilt,
             targetPositionTiltPercent100ths:
               this.state.targetPositionTiltPercent100ths ?? currentTilt,
