@@ -20,7 +20,6 @@ import { SceneDevice } from "../devices/scene-device.js";
 import { ScriptDevice } from "../devices/script-device.js";
 import { SensorDevice } from "../devices/sensor-device.js";
 import { SwitchDevice } from "../devices/switch-device.js";
-import { VacuumDevice } from "../devices/vacuum-device.js";
 
 export function createDevice(
   lockKey: string,
@@ -58,5 +57,4 @@ const deviceCtrs: Record<
   scene: SceneDevice,
   media_player: MediaPlayerDevice,
   humidifier: HumidifierDevice,
-  vacuum: VacuumDevice,
 };

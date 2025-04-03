@@ -15,5 +15,4 @@ export enum HomeAssistantDomain {
   script = "script",
   sensor = "sensor",
   switch = "switch",
-  vacuum = "vacuum",
 }

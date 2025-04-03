@@ -1,4 +1,4 @@
-import { LogFormat, Logger, LogLevel as MatterLogLevel } from "@matter/general";
+import { LogFormat, Logger, LogLevel as MatterLogLevel, logLevelFromString as parseLogLevel } from "@matter/general";
 import type { Environment } from "@matter/main";
 
 export enum CustomLogLevel {
@@ -30,7 +30,7 @@ function logLevelFromString(
   if (level.toUpperCase() in customNames) {
     return customNames[level.toUpperCase() as keyof typeof CustomLogLevel];
   }
-  return MatterLogLevel(level);
+  return parseLogLevel(level);
 }
 
 export class LoggerService {
