@@ -28,18 +28,21 @@ export class FanControlServerBase extends FeaturedBase {
     this.reactTo(
       this.events.percentSetting$Changed,
       this.targetPercentSettingChanged,
+      { offline: true },
     );
     this.reactTo(this.events.fanMode$Changed, this.targetFanModeChanged);
     if (this.features.multiSpeed) {
       this.reactTo(
         this.events.speedSetting$Changed,
         this.targetSpeedSettingChanged,
+        { offline: true },
       );
     }
     if (this.features.airflowDirection) {
       this.reactTo(
         this.events.airflowDirection$Changed,
         this.targetAirflowDirectionChanged,
+        { offline: true },
       );
     }
   }
