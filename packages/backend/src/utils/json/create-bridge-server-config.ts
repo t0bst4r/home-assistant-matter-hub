@@ -4,6 +4,7 @@ import type { Environment } from "@matter/main";
 import { AggregatorEndpoint } from "@matter/main/endpoints";
 import { ServerNode } from "@matter/main/node";
 import type { BridgeServerNodeConfig } from "../../matter/bridge/bridge-server-node.js";
+import { trimToLength } from "../trim-to-length.js";
 
 export function createBridgeServerConfig(
   environment: Environment,
@@ -22,7 +23,7 @@ export function createBridgeServerConfig(
     },
     basicInformation: {
       uniqueId: data.id,
-      nodeLabel: data.name,
+      nodeLabel: trimToLength(data.name, 32, "..."),
       vendorId: data.basicInformation.vendorId,
       vendorName: data.basicInformation.vendorName,
       productId: data.basicInformation.productId,
