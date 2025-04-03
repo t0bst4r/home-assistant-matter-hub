@@ -46,7 +46,12 @@ export function VacuumDevice(
   const device = VacuumEndpointType.set({ homeAssistantEntity });
   console.log(supportedFeatures);
   if (testBit(supportedFeatures, VacuumDeviceFeature.START)) {
-    return device.with(OnOffServer.set({ config: vacuumOnOffConfig }));
+    return device.with(
+      OnOffServer
+        // TODO: remove after official matter-js 0.13.0 release
+        .with("Lighting")
+        .set({ config: vacuumOnOffConfig }),
+    );
   }
   return device;
 }

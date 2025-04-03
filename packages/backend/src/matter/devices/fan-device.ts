@@ -43,7 +43,10 @@ export function FanDevice(
     IdentifyServer,
     BasicInformationServer,
     HomeAssistantEntityBehavior,
-    OnOffServer.set({ config: fanOnOffConfig }),
+    OnOffServer
+      // TODO: remove after official matter-js 0.13.0 release
+      .with("Lighting")
+      .set({ config: fanOnOffConfig }),
     FanControlServer.with(...FanControlFeatures(supportedFeatures)),
   );
   return device.set({ homeAssistantEntity });

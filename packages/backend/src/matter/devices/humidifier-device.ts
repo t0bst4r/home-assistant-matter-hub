@@ -36,7 +36,7 @@ const HumidifierEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer,
+  OnOffServer.with("Lighting"),
   LevelControlServer.with("OnOff", "Lighting").set({
     config: humidifierLevelConfig,
   }),

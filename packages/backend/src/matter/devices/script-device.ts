@@ -9,7 +9,7 @@ const ScriptDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer.set({
+  OnOffServer.with("Lighting").set({
     config: {
       turnOn: {
         action: "script.turn_on",
