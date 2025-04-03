@@ -70,12 +70,7 @@ const ClimateDeviceType = (
   const additionalClusters: ClusterBehavior.Type[] = [];
 
   if (supportsOnOff) {
-    additionalClusters.push(
-      OnOffServer
-        // TODO: remove after official matter-js 0.13.0 release
-        .with("Lighting")
-        .set({ config: climateOnOffConfig }),
-    );
+    additionalClusters.push(OnOffServer.set({ config: climateOnOffConfig }));
   }
 
   if (supportsHumidity) {
