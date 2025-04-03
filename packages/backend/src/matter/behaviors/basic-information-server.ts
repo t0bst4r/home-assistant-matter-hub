@@ -3,6 +3,7 @@ import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/
 import { VendorId } from "@matter/main";
 import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { trimToLength } from "../../utils/trim-to-length.js";
 import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 
@@ -46,37 +47,15 @@ export class BasicInformationServer extends Base {
 }
 
 function ellipse(maxLength: number, value?: string) {
-  return trimToLength(value, maxLength, "ellipsis");
+  return trimToLength(value, maxLength, "...");
 }
 
 function hash(maxLength: number, value?: string) {
-  return trimToLength(value, maxLength, "hash");
-}
-
-function trimToLength(
-  value: string | number | null | undefined,
-  maxLength: number,
-  type: "ellipsis" | "hash",
-): string | undefined {
-  const stringValue = value?.toString();
-  if (!stringValue?.trim().length) {
-    return undefined;
-  }
-  if (stringValue.length <= maxLength) {
-    return stringValue;
-  }
-  const suffix = createSuffix(stringValue, type);
-  return stringValue.substring(0, maxLength - suffix.length) + suffix;
-}
-
-function createSuffix(value: string, type: "ellipsis" | "hash") {
-  if (type === "hash") {
-    const hashLength = 4;
-    return crypto
-      .createHash("md5")
-      .update(value)
-      .digest("hex")
-      .substring(0, hashLength);
-  }
-  return "...";
+  const hashLength = 4;
+  const suffix = crypto
+    .createHash("md5")
+    .update(value ?? "")
+    .digest("hex")
+    .substring(0, hashLength);
+  return trimToLength(value, maxLength, suffix);
 }
