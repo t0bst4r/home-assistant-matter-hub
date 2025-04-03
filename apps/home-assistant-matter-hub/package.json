@@ -1,7 +1,7 @@
 {
   "name": "home-assistant-matter-hub",
   "description": "",
-  "version": "3.0.0-alpha.77",
+  "version": "3.0.0-alpha.78",
   "private": false,
   "destination": "./pack",
   "type": "module",
@@ -75,12 +75,18 @@
     "targets": {
       "start": {
         "cache": false,
-        "dependsOn": ["build"]
+        "dependsOn": [
+          "build"
+        ]
       },
       "pack": {
         "cache": true,
-        "dependsOn": ["build"],
-        "outputs": ["{projectRoot}/pack"]
+        "dependsOn": [
+          "build"
+        ],
+        "outputs": [
+          "{projectRoot}/pack"
+        ]
       },
       "build": {
         "inputs": [
