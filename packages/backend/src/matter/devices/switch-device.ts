@@ -9,7 +9,7 @@ const SwitchEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer,
+  OnOffServer.with("Lighting"),
 );
 
 export function SwitchDevice(

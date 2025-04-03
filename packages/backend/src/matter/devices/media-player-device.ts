@@ -35,7 +35,7 @@ const FallbackEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  OnOffServer,
+  OnOffServer.with("Lighting"),
 );
 
 const SpeakerEndpointType = SpeakerDevice.with(
@@ -76,7 +76,12 @@ export function MediaPlayerDevice(
   // OnOffServer on a separate endpoint for this device.
   let device = SpeakerEndpointType;
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.VOLUME_MUTE)) {
-    device = device.with(OnOffServer.set({ config: muteOnOffConfig }));
+    device = device.with(
+      OnOffServer
+        // TODO: remove after official matter-js 0.13.0 release
+        .with("Lighting")
+        .set({ config: muteOnOffConfig }),
+    );
   }
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.VOLUME_SET)) {
     const levelControl = testBit(
@@ -85,7 +90,12 @@ export function MediaPlayerDevice(
     )
       ? LevelControlServer.with("OnOff")
       : LevelControlServer;
-    device = device.with(levelControl.set({ config: volumeLevelConfig }));
+    device = device.with(
+      levelControl
+        // TODO: remove after official matter-js 0.13.0 release
+        .with("Lighting")
+        .set({ config: volumeLevelConfig }),
+    );
   }
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.SELECT_SOURCE)) {
     device = device.with(MediaInputServer);
