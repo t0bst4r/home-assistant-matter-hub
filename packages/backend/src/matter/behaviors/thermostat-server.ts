@@ -28,17 +28,21 @@ export class ThermostatServerBase extends FeaturedBase {
     await this.env.load(HomeAssistantConfig);
 
     this.update(homeAssistant.entity);
-    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
+    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged, {
+      offline: true,
+    });
     if (this.features.cooling) {
       this.reactTo(
         this.events.occupiedCoolingSetpoint$Changed,
         this.coolingSetpointChanged,
+        { offline: true },
       );
     }
     if (this.features.heating) {
       this.reactTo(
         this.events.occupiedHeatingSetpoint$Changed,
         this.heatingSetpointChanged,
+        { offline: true },
       );
     }
     this.reactTo(homeAssistant.onChange, this.update);
