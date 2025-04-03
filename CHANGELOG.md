@@ -1,3 +1,15 @@
+## 3.0.0-alpha.79 (2025-04-03)
+
+### 🐛 Fixes
+
+- fix OnOffServer after Matter.js 0.13.0-nightly upgrade ([26c3ee7](https://github.com/t0bst4r/home-assistant-matter-hub/commit/26c3ee7))
+- **bridge:** since matter 1.4 bridge names are limited to 32 characters ([d6bb614](https://github.com/t0bst4r/home-assistant-matter-hub/commit/d6bb614))
+- **climate & fan:** correctly react to property changes ([08a4d68](https://github.com/t0bst4r/home-assistant-matter-hub/commit/08a4d68))
+
+### ❤️ Thank You
+
+- Tobias Glatthar @t0bst4r
+
 ## 3.0.0-alpha.78 (2025-04-03)
 
 ### 🐛 Fixes
