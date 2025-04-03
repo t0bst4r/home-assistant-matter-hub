@@ -1,3 +1,13 @@
+## 3.0.0-alpha.80 (2025-04-03)
+
+### 🐛 Fixes
+
+- upgrade to latest matter.js to fix on-off and connectivity issues ([91d05eb](https://github.com/t0bst4r/home-assistant-matter-hub/commit/91d05eb))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.79 (2025-04-03)
 
 ### 🐛 Fixes
