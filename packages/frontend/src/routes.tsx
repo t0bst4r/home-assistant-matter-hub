@@ -16,6 +16,7 @@ export const navigation = {
   documentation: documentationUrl,
   faq: {
     multiFabric: `${documentationUrl}/connect-multiple-fabrics`,
+    bridgeConfig: `${documentationUrl}/bridge-configuration`,
   },
 };
 

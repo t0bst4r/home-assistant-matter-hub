@@ -1,6 +1,6 @@
 {
   "name": "@home-assistant-matter-hub/backend",
-  "version": "3.0.0-alpha.80",
+  "version": "3.0.0-alpha.81",
   "private": true,
   "type": "module",
   "destination": "./dist",
