@@ -15,8 +15,8 @@ const basicInformation: BridgeBasicInformation = {
   productId: 0x8000,
   productName: "MatterHub",
   productLabel: "Home Assistant Matter Hub",
-  hardwareVersion: 2024,
-  softwareVersion: 2024,
+  hardwareVersion: new Date().getFullYear(),
+  softwareVersion: new Date().getFullYear(),
 };
 
 export async function startHandler(
