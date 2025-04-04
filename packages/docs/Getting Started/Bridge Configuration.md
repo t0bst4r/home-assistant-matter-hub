@@ -80,12 +80,13 @@ Example configuration:
 }
 ```
 
+## Issues with labels
+
 > [!WARNING]
 >
 > - Labels and areas in Home Assistant are technically represented by their "slugs".
 > - Slugs are technical identifiers used in the background.
 > - Slugs are always lowercase and only allow a-z and underscores, so everything else will be replaced with an `underscore`.
-
 > - Even when renaming a label or area, the slug doesn't change. Never.
 >
 > You can retrieve the slug using the following templates in Home Assistant:

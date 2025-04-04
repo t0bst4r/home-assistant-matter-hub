@@ -9,7 +9,7 @@ const InputButtonEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  AutoOffServer.set({
+  AutoOffServer.with("Lighting").set({
     config: {
       turnOn: {
         action: "input_button.press",
