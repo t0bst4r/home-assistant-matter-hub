@@ -3,9 +3,11 @@ import {
   bridgeConfigSchema,
 } from "@home-assistant-matter-hub/common";
 import { LibraryBooks, TextFields } from "@mui/icons-material";
-import { Box, Button, Stack } from "@mui/material";
+import { Alert, Box, Button, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import Link from "@mui/material/Link";
 import { useCallback, useState } from "react";
+import { navigation } from "../../routes.tsx";
 import { FormEditor } from "../misc/editors/FormEditor";
 import { JsonEditor } from "../misc/editors/JsonEditor";
 import type { ValidationError } from "../misc/editors/validation-error.ts";
@@ -71,68 +73,81 @@ export const BridgeConfigEditor = (props: BridgeConfigEditorProps) => {
   };
 
   return (
-    <Stack spacing={2}>
-      <Box display="flex" justifyContent={"flex-end"}>
-        <Button
-          onClick={() => toggleEditor()}
-          title={
-            editorMode === BridgeEditorMode.FIELDS_EDITOR
-              ? "JSON editor"
-              : "Form editor"
-          }
-        >
-          {editorMode === BridgeEditorMode.FIELDS_EDITOR ? (
-            <TextFields />
-          ) : (
-            <LibraryBooks />
-          )}
-        </Button>
-      </Box>
+    <>
+      <Alert severity="warning" variant="outlined">
+        Please consult{" "}
+        <Link href={navigation.faq.bridgeConfig} target="_blank">
+          the documentation
+        </Link>{" "}
+        for proper bridge configurations.{" "}
+        <strong>
+          Especially if you are using labels, see the "Labels" section.
+        </strong>
+      </Alert>
 
-      {editorMode === BridgeEditorMode.FIELDS_EDITOR && (
-        <FormEditor
-          value={config ?? {}}
-          onChange={onChange}
-          schema={bridgeConfigSchema}
-          customValidate={validatePort}
-        />
-      )}
-
-      {editorMode === BridgeEditorMode.JSON_EDITOR && (
-        <JsonEditor
-          value={config ?? {}}
-          onChange={onChange}
-          schema={bridgeConfigSchema}
-          customValidate={validatePort}
-        />
-      )}
-
-      <Grid container>
-        <Grid size={{ xs: 6, sm: 4, md: 3 }}>
+      <Stack spacing={2}>
+        <Box display="flex" justifyContent={"flex-end"}>
           <Button
-            fullWidth
-            variant="outlined"
-            color="error"
-            onClick={props.onCancel}
+            onClick={() => toggleEditor()}
+            title={
+              editorMode === BridgeEditorMode.FIELDS_EDITOR
+                ? "JSON editor"
+                : "Form editor"
+            }
           >
-            Cancel
+            {editorMode === BridgeEditorMode.FIELDS_EDITOR ? (
+              <TextFields />
+            ) : (
+              <LibraryBooks />
+            )}
           </Button>
+        </Box>
+
+        {editorMode === BridgeEditorMode.FIELDS_EDITOR && (
+          <FormEditor
+            value={config ?? {}}
+            onChange={onChange}
+            schema={bridgeConfigSchema}
+            customValidate={validatePort}
+          />
+        )}
+
+        {editorMode === BridgeEditorMode.JSON_EDITOR && (
+          <JsonEditor
+            value={config ?? {}}
+            onChange={onChange}
+            schema={bridgeConfigSchema}
+            customValidate={validatePort}
+          />
+        )}
+
+        <Grid container>
+          <Grid size={{ xs: 6, sm: 4, md: 3 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="error"
+              onClick={props.onCancel}
+            >
+              Cancel
+            </Button>
+          </Grid>
+          <Grid
+            size={{ xs: 0, sm: 4, md: 6 }}
+            sx={{ display: { xs: "none", sm: "block" } }}
+          />
+          <Grid size={{ xs: 6, sm: 4, md: 3 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              disabled={!isValid}
+              onClick={saveAction}
+            >
+              Save
+            </Button>
+          </Grid>
         </Grid>
-        <Grid
-          size={{ xs: 0, sm: 4, md: 6 }}
-          sx={{ display: { xs: "none", sm: "block" } }}
-        />
-        <Grid size={{ xs: 6, sm: 4, md: 3 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            disabled={!isValid}
-            onClick={saveAction}
-          >
-            Save
-          </Button>
-        </Grid>
-      </Grid>
-    </Stack>
+      </Stack>
+    </>
   );
 };

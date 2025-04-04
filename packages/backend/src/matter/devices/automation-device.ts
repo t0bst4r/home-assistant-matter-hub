@@ -9,7 +9,7 @@ const AutomationDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,
   IdentifyServer,
   HomeAssistantEntityBehavior,
-  AutoOffServer.set({
+  AutoOffServer.with("Lighting").set({
     config: {
       turnOn: {
         action: "automation.trigger",
