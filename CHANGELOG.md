@@ -1,3 +1,13 @@
+## 3.0.0-alpha.81 (2025-04-04)
+
+### 🐛 Fixes
+
+- **automation, scene, input_button, button:** add 'lighting' feature to allow onOff to work properly ([2f0bf90](https://github.com/t0bst4r/home-assistant-matter-hub/commit/2f0bf90))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.80 (2025-04-03)
 
 ### 🐛 Fixes
