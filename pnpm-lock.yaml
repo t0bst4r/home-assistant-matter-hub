@@ -70,14 +70,14 @@ importers:
   apps/home-assistant-matter-hub:
     dependencies:
       '@matter/general':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       '@matter/main':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       '@matter/nodejs':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       ajv:
         specifier: 8.17.1
         version: 8.17.1
@@ -137,14 +137,14 @@ importers:
         specifier: workspace:*
         version: link:../common
       '@matter/general':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       '@matter/main':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       '@matter/nodejs':
-        specifier: 0.13.0-alpha.0-20250403-1e0d4620e
-        version: 0.13.0-alpha.0-20250403-1e0d4620e
+        specifier: 0.13.0-alpha.0-20250408-c916c7e8
+        version: 0.13.0-alpha.0-20250408-c916c7e8
       ajv:
         specifier: 8.17.1
         version: 8.17.1
@@ -1226,27 +1226,27 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@matter/general@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-Db898p/sO3K7NiWBwqS6i0NdKvov7tI5S4Tt48GKDEcEqcz80EeyaRte5zybP+g2oxoRhr1SvaAFLGQwxrlthQ==}
+  '@matter/general@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-iQ2EnGzoMieFUW56ALFXkbwWihm68wHLhvRlV0V/PJ4yVBY8JAxn+L2RZ6UzzKmLIL7Smzd4YtfwphhI2yAdyg==}
 
-  '@matter/main@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-aO7BBrcSJFhJrcW7sgmTQWmoAFJgNWywEqVvivvGLcv64twXIYR6I9yptA89cRmIxzAlZCknnNCvX+V9lKWo4w==}
+  '@matter/main@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-LBaN3bzAcj676BzNvhLbaiFuNs+zda38MPQLmm7w2vmrK1HeYZhtCr2Xlt76oTNIR5bwh5oiYI22n2CpNYa4iQ==}
 
-  '@matter/model@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-7j0sZCoAtX2fsMlZ+GkkPUqx/Rz6fpe+hJcsa/i4mPhRzj/6jqLmk1E4jCj6C6OVscZICfhS/3klsI+SqmI8ow==}
+  '@matter/model@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-1pczrCHWxGRY85V7idsFBV4O7t/yXfy29c2vWtQdTQ5IP4qILqocf6qgSK/6jqvKag8x8Ph8Dt/L2EHe/Rjc4A==}
 
-  '@matter/node@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-8NibdCS3fIzILvNsWk9hW5so7qp2ql+K8B7AOFKaU4muasVXlz/wQPlOz7d8mdjkDWt21ty9p2ZZpSXwIVZqxA==}
+  '@matter/node@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-i43KtL4ybHW4NuvSBPeyjvFCUekIL/EF054YFP9/+XioplgsSVRskaeLr0YVvCIfDfAmEwCcdmfvaFLjc/vlDw==}
 
-  '@matter/nodejs@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-My24jensHaTsE4bz42EvAeA2FHTxQS4pCNWcXfKaTvxHZjqrwaVRrh42pFU4ASEaTkOG8oAmb9JIpQt9QHjamg==}
+  '@matter/nodejs@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-3vA1mPacdP4SF4mdaRFyzev+Fjsznte3bMYCIhz93Qji/8DuKVTtHEcxq9gqLbcAkfisbguwe63O+axg4vzf4w==}
     engines: {node: '>=18.0.0'}
 
-  '@matter/protocol@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-craHirbtA1dAYrLh/VC0tYFLNFviKbcBQpO9QhdYLBgD4kaXCr6/C0wPQFHn+0zomWS78zoLtrCABbzy3vLn/g==}
+  '@matter/protocol@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-HchrugjNPnR7ZcPoWcGX+7bRdHlBofWWJVoD6z7deZVLCycaddq/o3W5KsRol4HBFyVVmxlnaK5GE14VcdWw4g==}
 
-  '@matter/types@0.13.0-alpha.0-20250403-1e0d4620e':
-    resolution: {integrity: sha512-F/oHMBgJ5nOCU04jE44tirNp2TdMQXuj/HHybNphhGr1ZK8elozIQmh816dqzcJrYaN91dQ3H0Wh19uRjd9Eiw==}
+  '@matter/types@0.13.0-alpha.0-20250408-c916c7e8':
+    resolution: {integrity: sha512-zd7OXUbsWEdgD6J1CxPuCyHvtLHbaPGoYXmgLtVAgT6sjnmDH/4wFWdYVavTOIhhenVzg4aQ30sdi62HGyHGrw==}
 
   '@mui/core-downloads-tracker@6.4.10':
     resolution: {integrity: sha512-cblGjlM6+xsptwyaALw8RbRIUoqmKxOqLxlk2LkTDhxqUuql1YSOKKLH3w+Yd2QLz28b7MR65sx1OjsRZUfOSQ==}
@@ -5230,53 +5230,53 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@matter/general@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/general@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
       '@noble/curves': 1.8.1
 
-  '@matter/main@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/main@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/model': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/node': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/protocol': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/types': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/model': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/node': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/protocol': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/types': 0.13.0-alpha.0-20250408-c916c7e8
       '@noble/curves': 1.8.1
     optionalDependencies:
-      '@matter/nodejs': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/nodejs': 0.13.0-alpha.0-20250408-c916c7e8
 
-  '@matter/model@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/model@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
       '@noble/curves': 1.8.1
 
-  '@matter/node@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/node@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/model': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/protocol': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/types': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/model': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/protocol': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/types': 0.13.0-alpha.0-20250408-c916c7e8
       '@noble/curves': 1.8.1
 
-  '@matter/nodejs@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/nodejs@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/node': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/protocol': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/types': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/node': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/protocol': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/types': 0.13.0-alpha.0-20250408-c916c7e8
       node-localstorage: 3.0.5
 
-  '@matter/protocol@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/protocol@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/model': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/types': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/model': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/types': 0.13.0-alpha.0-20250408-c916c7e8
       '@noble/curves': 1.8.1
 
-  '@matter/types@0.13.0-alpha.0-20250403-1e0d4620e':
+  '@matter/types@0.13.0-alpha.0-20250408-c916c7e8':
     dependencies:
-      '@matter/general': 0.13.0-alpha.0-20250403-1e0d4620e
-      '@matter/model': 0.13.0-alpha.0-20250403-1e0d4620e
+      '@matter/general': 0.13.0-alpha.0-20250408-c916c7e8
+      '@matter/model': 0.13.0-alpha.0-20250408-c916c7e8
       '@noble/curves': 1.8.1
 
   '@mui/core-downloads-tracker@6.4.10': {}
