@@ -1,9 +1,14 @@
-import { VacuumState } from "@home-assistant-matter-hub/common";
+import {
+  VacuumDeviceFeature,
+  VacuumState,
+} from "@home-assistant-matter-hub/common";
 import { RvcRunMode } from "@matter/main/clusters";
+import { testBit } from "../../../../utils/test-bit.js";
 import {
   RvcRunModeServer,
   RvcSupportedRunMode,
 } from "../../../behaviors/rvc-run-mode-server.js";
+import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 
 export const VacuumRvcRunModeServer = RvcRunModeServer({
   getCurrentMode: (entity) =>
@@ -25,5 +30,13 @@ export const VacuumRvcRunModeServer = RvcRunModeServer({
 
   start: () => ({ action: "vacuum.start" }),
   returnToBase: () => ({ action: "vacuum.return_to_base" }),
-  pause: () => ({ action: "vacuum.pause" }),
+  pause: (_, agent) => {
+    const supportedFeatures =
+      agent.get(HomeAssistantEntityBehavior).entity.state.attributes
+        .supported_features ?? 0;
+    if (testBit(supportedFeatures, VacuumDeviceFeature.PAUSE)) {
+      return { action: "vacuum.pause" };
+    }
+    return { action: "vacuum.stop" };
+  },
 });
