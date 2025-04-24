@@ -74,7 +74,6 @@ export class BridgeDeviceManager {
         const endpointId = endpointIds[entity.entity_id];
         return this.upsertDevice(
           entity,
-          bridgeData.featureFlags ?? {},
           endpointId,
           updateEndpoints.find((e) => e.id === endpointId),
         );
@@ -85,13 +84,12 @@ export class BridgeDeviceManager {
 
   private async upsertDevice(
     entity: HomeAssistantEntityInformation,
-    featureFlags: BridgeFeatureFlags,
     endpointId: string,
     endpoint: Endpoint | undefined,
   ): Promise<string | undefined> {
     let endpointType: EndpointType | undefined;
     try {
-      endpointType = createDevice(lockKey(entity), entity, featureFlags);
+      endpointType = createDevice(lockKey(entity), entity);
     } catch (e) {
       if (e instanceof InvalidDeviceError) {
         this.log.warn(`Invalid device detected. Reason: ${e.message}`);
