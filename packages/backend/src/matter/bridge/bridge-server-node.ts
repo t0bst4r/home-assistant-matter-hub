@@ -68,7 +68,7 @@ export class BridgeServerNode extends ServerNode {
       ...config,
       parts: [...(config.parts ?? []), aggregator],
     });
-    new BridgeDataProvider(this.env, bridgeData);
+    new BridgeDataProvider(this.env, () => this.bridgeData);
     this.log = environment.get(LoggerService).get(`Bridge / ${bridgeData.id}`);
     this.aggregator = aggregator;
     this.deviceManager = new BridgeDeviceManager(
