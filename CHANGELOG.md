@@ -13,6 +13,10 @@
 ### ⚠️  Breaking Changes
 
 - Due to the growing code base and its complexity, I've decided to simplify the application by removing non-compliant workarounds.
+- **binary_sensor**: All binary sensors which have an unsupported or unknown device_class, fall back to the OnOffSensor type. If your controller does not support this, make sure to configure a correct device class on your binary sensor (e.g. by using a template helper with the correct class).
+- **fan**: Fans are now fully matter compliant using all available Fan Modes
+- **cover**: Covers can still be inverted to match the position in Home Assistant, but the "swap" feature is dropped. If you want to achieve this, please create your own template helper.
+- **media_player**: media players are not mapped to OnOffPlugInUnits anymore, but to Speaker devices. If your controller does not support speakers (e.g. Alexa), make sure to create helper entities in home assistant (e.g. input_boolean or template switch) to control your media_player.
 
 ### ❤️ Thank You
 
