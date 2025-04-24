@@ -3,22 +3,24 @@ import { RvcOperationalStateServer as Base } from "@matter/main/behaviors/rvc-op
 import { RvcOperationalState } from "@matter/main/clusters/rvc-operational-state";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import type { ValueGetter } from "./utils/cluster-config.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 import OperationalState = RvcOperationalState.OperationalState;
 import ErrorState = RvcOperationalState.ErrorState;
 
 export interface RvcOperationalStateServerConfig {
   getOperationalState: ValueGetter<OperationalState>;
+  pause: ValueSetter<void>;
+  resume: ValueSetter<void>;
 }
 
 class RvcOperationalStateServerBase extends Base {
   declare state: RvcOperationalStateServerBase.State;
 
   override async initialize() {
-    await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
+    await super.initialize();
   }
 
   private update(entity: HomeAssistantEntityInformation) {
@@ -26,9 +28,15 @@ class RvcOperationalStateServerBase extends Base {
       entity.state,
       this.agent,
     );
+    const operationalStateList = Object.values(OperationalState)
+      .filter((id): id is number => !Number.isNaN(+id))
+      .map((id) => ({
+        operationalStateId: id,
+      }));
 
     applyPatchState(this.state, {
       operationalState,
+      operationalStateList,
       operationalError: {
         errorStateId:
           operationalState === OperationalState.Error
@@ -37,6 +45,32 @@ class RvcOperationalStateServerBase extends Base {
       },
     });
   }
+
+  override pause =
+    async (): Promise<RvcOperationalState.OperationalCommandResponse> => {
+      const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+      await homeAssistant.callAction(
+        this.state.config.pause(void 0, this.agent),
+      );
+      return {
+        commandResponseState: {
+          errorStateId: ErrorState.NoError,
+        },
+      };
+    };
+
+  override resume =
+    async (): Promise<RvcOperationalState.OperationalCommandResponse> => {
+      const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+      await homeAssistant.callAction(
+        this.state.config.resume(void 0, this.agent),
+      );
+      return {
+        commandResponseState: {
+          errorStateId: ErrorState.NoError,
+        },
+      };
+    };
 }
 
 namespace RvcOperationalStateServerBase {

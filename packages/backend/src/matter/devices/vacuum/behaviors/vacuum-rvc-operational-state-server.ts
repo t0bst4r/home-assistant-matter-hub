@@ -19,4 +19,10 @@ export const VacuumRvcOperationalStateServer = RvcOperationalStateServer({
         return RvcOperationalState.OperationalState.Error;
     }
   },
+  pause: () => ({
+    action: "vacuum.pause",
+  }),
+  resume: () => ({
+    action: "vacuum.start",
+  }),
 });
