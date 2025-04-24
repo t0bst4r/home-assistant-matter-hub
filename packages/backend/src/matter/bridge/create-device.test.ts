@@ -138,16 +138,11 @@ const testEntities: Record<
   ],
 };
 
-const featureFlags: BridgeFeatureFlags = {
-  matterSpeakers: true,
-  matterFans: true,
-};
-
 describe("createDevice", () => {
   it("should not use any unknown clusterId", () => {
     const entities = Object.values(testEntities).flat();
     const devices = entities.map((entity) =>
-      createDevice(`lock_${entity.entity_id}`, entity, featureFlags),
+      createDevice(`lock_${entity.entity_id}`, entity),
     );
     const endpoints = devices
       .filter((d): d is EndpointType => d != null)

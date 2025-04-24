@@ -23,13 +23,6 @@ const adjustPosition = (position: number, agent: Agent) => {
   if (featureFlags.coverDoNotInvertPercentage !== true) {
     percentValue = 100 - percentValue;
   }
-  if (featureFlags.coverSwapOpenClose === true) {
-    if (percentValue === 0) {
-      percentValue = 100;
-    } else if (percentValue === 100) {
-      percentValue = 0;
-    }
-  }
   return percentValue;
 };
 

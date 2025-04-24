@@ -15,9 +15,7 @@ import { navigation } from "../../routes.tsx";
 
 const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
-  featureFlags: {
-    matterSpeakers: false,
-  },
+  featureFlags: {},
   filter: {
     include: [],
     exclude: [],
