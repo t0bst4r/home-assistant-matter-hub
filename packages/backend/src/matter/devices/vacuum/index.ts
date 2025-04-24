@@ -1,7 +1,4 @@
-import {
-  type BridgeFeatureFlags,
-  VacuumDeviceFeature,
-} from "@home-assistant-matter-hub/common";
+import { VacuumDeviceFeature } from "@home-assistant-matter-hub/common";
 import type { EndpointType } from "@matter/main";
 import { RoboticVacuumCleanerDevice } from "@matter/main/devices";
 import { testBit } from "../../../utils/test-bit.js";
@@ -22,7 +19,6 @@ const VacuumEndpointType = RoboticVacuumCleanerDevice.with(
 
 export function VacuumDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
-  _featureFlags?: BridgeFeatureFlags,
 ): EndpointType | undefined {
   if (homeAssistantEntity.entity.state === undefined) {
     return undefined;

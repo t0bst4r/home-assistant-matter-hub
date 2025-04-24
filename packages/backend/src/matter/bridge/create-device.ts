@@ -25,22 +25,18 @@ import { VacuumDevice } from "../devices/vacuum/index.js";
 export function createDevice(
   lockKey: string,
   entity: HomeAssistantEntityInformation,
-  featureFlags?: BridgeFeatureFlags,
 ): EndpointType | undefined {
   const domain = entity.entity_id.split(".")[0] as HomeAssistantDomain;
   const factory = deviceCtrs[domain];
   if (!factory) {
     return undefined;
   }
-  return factory({ entity, lockKey }, featureFlags);
+  return factory({ entity, lockKey });
 }
 
 const deviceCtrs: Record<
   HomeAssistantDomain,
-  (
-    homeAssistant: HomeAssistantEntityBehavior.State,
-    featureFlags?: BridgeFeatureFlags,
-  ) => EndpointType | undefined
+  (homeAssistant: HomeAssistantEntityBehavior.State) => EndpointType | undefined
 > = {
   light: LightDevice,
   switch: SwitchDevice,

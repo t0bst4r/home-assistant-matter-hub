@@ -195,14 +195,12 @@ export class FanControlServerBase extends FeaturedBase {
   }
 
   private getFanModeSequence() {
-    const { matterFans } = this.env.get(BridgeDataProvider).featureFlags;
-    const auto = this.features.auto && matterFans === true;
     if (this.features.multiSpeed) {
-      return auto
+      return this.features.auto
         ? FanControl.FanModeSequence.OffLowMedHighAuto
         : FanControl.FanModeSequence.OffLowMedHigh;
     }
-    return auto
+    return this.features.auto
       ? FanControl.FanModeSequence.OffHighAuto
       : FanControl.FanModeSequence.OffHigh;
   }

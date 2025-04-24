@@ -32,12 +32,8 @@ const deviceClasses: Partial<Record<BinarySensorDeviceClass, CombinedType>> = {
 
 export function BinarySensorDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,
-  featureFlags?: BridgeFeatureFlags,
 ): EndpointType {
-  const defaultDeviceType =
-    featureFlags?.useOnOffSensorAsDefaultForBinarySensors
-      ? OnOffSensorType
-      : ContactSensorType;
+  const defaultDeviceType = OnOffSensorType;
 
   const attributes = homeAssistantEntity.entity.state
     .attributes as BinarySensorDeviceAttributes;
