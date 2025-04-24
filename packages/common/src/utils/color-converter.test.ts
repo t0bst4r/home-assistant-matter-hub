@@ -134,21 +134,11 @@ describe("ColorConverter", () => {
 
     it("should respect boundaries", () => {
       expect(
-        ColorConverter.temperatureKelvinToMireds(1000, "none", [150, 500]),
+        ColorConverter.temperatureKelvinToMireds(1000, [150, 500]),
       ).toBeCloseTo(500, 0);
       expect(
-        ColorConverter.temperatureKelvinToMireds(10000, "none", [150, 500]),
+        ColorConverter.temperatureKelvinToMireds(10000, [150, 500]),
       ).toBeCloseTo(150, 0);
-    });
-
-    it("should handle rounding", () => {
-      const value = ColorConverter.temperatureKelvinToMireds(6494);
-      expect(
-        ColorConverter.temperatureKelvinToMireds(6494, "floor"),
-      ).toBeCloseTo(Math.floor(value), 0);
-      expect(
-        ColorConverter.temperatureKelvinToMireds(6494, "ceil"),
-      ).toBeCloseTo(Math.ceil(value), 0);
     });
   });
 });

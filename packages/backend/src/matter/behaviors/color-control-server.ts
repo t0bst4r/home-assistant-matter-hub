@@ -1,22 +1,34 @@
 import {
   ColorConverter,
   type HomeAssistantEntityInformation,
-  type HomeAssistantEntityState,
-  type LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
-import { ClusterType } from "@matter/main/types";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import type {
+  Feature,
+  FeatureSelection,
+} from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { getMatterColorMode } from "./utils/color-control-server-utils.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
-const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
+export type ColorControlMode =
+  | ColorControl.ColorMode.CurrentHueAndCurrentSaturation
+  | ColorControl.ColorMode.ColorTemperatureMireds;
 
 export interface ColorControlConfig {
-  expandMinMaxTemperature?: boolean;
+  getCurrentMode: ValueGetter<ColorControlMode | undefined>;
+  getCurrentKelvin: ValueGetter<number | undefined>;
+  getMinColorTempKelvin: ValueGetter<number | undefined>;
+  getMaxColorTempKelvin: ValueGetter<number | undefined>;
+  getColor: ValueGetter<ColorInstance | undefined>;
+
+  setTemperature: ValueSetter<number>;
+  setColor: ValueSetter<ColorInstance>;
 }
+
+const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
 
 export class ColorControlServerBase extends FeaturedBase {
   declare state: ColorControlServerBase.State;
@@ -29,26 +41,29 @@ export class ColorControlServerBase extends FeaturedBase {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
-    const attributes = entity.state.attributes as LightDeviceAttributes;
-    const currentKelvin = attributes.color_temp_kelvin;
-    let minKelvin = attributes.min_color_temp_kelvin ?? 1500;
-    let maxKelvin = attributes.max_color_temp_kelvin ?? 8000;
-    if (this.state.config?.expandMinMaxTemperature === true) {
-      minKelvin = Math.min(
-        minKelvin,
-        currentKelvin ?? Number.POSITIVE_INFINITY,
-      );
-      maxKelvin = Math.max(
-        maxKelvin,
-        currentKelvin ?? Number.NEGATIVE_INFINITY,
-      );
-      if (minKelvin > maxKelvin) {
-        [minKelvin, maxKelvin] = [maxKelvin, minKelvin];
-      }
-    }
-    const [hue, saturation] = this.getMatterColor(entity.state) ?? [0, 0];
+    const config = this.state.config;
+    const currentKelvin = config.getCurrentKelvin(entity.state, this.agent);
+    let minKelvin =
+      config.getMinColorTempKelvin(entity.state, this.agent) ?? 1500;
+    let maxKelvin =
+      config.getMaxColorTempKelvin(entity.state, this.agent) ?? 8000;
+
+    minKelvin = Math.min(
+      minKelvin,
+      maxKelvin,
+      currentKelvin ?? Number.POSITIVE_INFINITY,
+    );
+    maxKelvin = Math.max(
+      minKelvin,
+      maxKelvin,
+      currentKelvin ?? Number.NEGATIVE_INFINITY,
+    );
+    const color = config.getColor(entity.state, this.agent);
+    const [hue, saturation] = color ? ColorConverter.toMatterHS(color) : [0, 0];
     applyPatchState(this.state, {
-      colorMode: getMatterColorMode(attributes.color_mode, this.features),
+      colorMode: this.getColorModeFromFeatures(
+        config.getCurrentMode(entity.state, this.agent),
+      ),
       ...(this.features.hueSaturation
         ? {
             currentHue: hue,
@@ -57,12 +72,15 @@ export class ColorControlServerBase extends FeaturedBase {
         : {}),
       ...(this.features.colorTemperature
         ? {
-            coupleColorTempToLevelMinMireds:
-              ColorConverter.temperatureKelvinToMireds(maxKelvin, "floor"),
-            colorTempPhysicalMinMireds:
-              ColorConverter.temperatureKelvinToMireds(maxKelvin, "floor"),
-            colorTempPhysicalMaxMireds:
-              ColorConverter.temperatureKelvinToMireds(minKelvin, "ceil"),
+            coupleColorTempToLevelMinMireds: Math.floor(
+              ColorConverter.temperatureKelvinToMireds(maxKelvin),
+            ),
+            colorTempPhysicalMinMireds: Math.floor(
+              ColorConverter.temperatureKelvinToMireds(maxKelvin),
+            ),
+            colorTempPhysicalMaxMireds: Math.ceil(
+              ColorConverter.temperatureKelvinToMireds(minKelvin),
+            ),
             startUpColorTemperatureMireds:
               ColorConverter.temperatureKelvinToMireds(
                 currentKelvin ?? maxKelvin,
@@ -77,17 +95,19 @@ export class ColorControlServerBase extends FeaturedBase {
 
   override async moveToColorTemperatureLogic(targetMireds: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const current = homeAssistant.entity
-      .state as HomeAssistantEntityState<LightDeviceAttributes>;
+    const current = homeAssistant.entity.state;
+    const currentKelvin = this.state.config.getCurrentKelvin(
+      current,
+      this.agent,
+    );
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(targetMireds);
 
-    if (current.attributes.color_temp_kelvin === targetKelvin) {
+    if (currentKelvin === targetKelvin) {
       return;
     }
 
-    await homeAssistant.callAction("light.turn_on", {
-      color_temp_kelvin: targetKelvin,
-    });
+    const action = this.state.config.setTemperature(targetKelvin, this.agent);
+    await homeAssistant.callAction(action);
   }
 
   override async moveToHueLogic(targetHue: number) {
@@ -109,48 +129,49 @@ export class ColorControlServerBase extends FeaturedBase {
     targetSaturation: number,
   ) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const [currentHue, currentSaturation] =
-      this.getMatterColor(homeAssistant.entity.state) ?? [];
+    const haColor = this.state.config.getColor(
+      homeAssistant.entity.state,
+      this.agent,
+    );
+    const [currentHue, currentSaturation] = haColor
+      ? ColorConverter.toMatterHS(haColor)
+      : [];
     if (currentHue === targetHue && currentSaturation === targetSaturation) {
       return;
     }
     const color = ColorConverter.fromMatterHS(targetHue, targetSaturation);
-    const [hue, saturation] = ColorConverter.toHomeAssistantHS(color);
-    await homeAssistant.callAction("light.turn_on", {
-      hs_color: [hue, saturation],
-    });
+    const action = this.state.config.setColor(color, this.agent);
+    await homeAssistant.callAction(action);
   }
 
-  private getMatterColor(
-    entity: HomeAssistantEntityState<LightDeviceAttributes>,
-  ): [hue: number, saturation: number] | undefined {
-    let color: ColorInstance | undefined = undefined;
-    if (entity.attributes.hs_color != null) {
-      const [hue, saturation] = entity.attributes.hs_color;
-      color = ColorConverter.fromHomeAssistantHS(hue, saturation);
-    } else if (entity.attributes.rgbww_color != null) {
-      const [r, g, b, cw, ww] = entity.attributes.rgbww_color;
-      color = ColorConverter.fromRGBWW(r, g, b, cw, ww);
-    } else if (entity.attributes.rgbw_color != null) {
-      const [r, g, b, w] = entity.attributes.rgbw_color;
-      color = ColorConverter.fromRGBW(r, g, b, w);
-    } else if (entity.attributes.rgb_color != null) {
-      const [r, g, b] = entity.attributes.rgb_color;
-      color = ColorConverter.fromRGB(r, g, b);
-    } else if (entity.attributes.xy_color != null) {
-      const [x, y] = entity.attributes.xy_color;
-      color = ColorConverter.fromXY(x, y);
+  private getColorModeFromFeatures(mode: ColorControlMode | undefined) {
+    // This cluster is only used with HueSaturation, ColorTemperature or Both.
+    // It is never used without any of them.
+    if (this.features.colorTemperature && this.features.hueSaturation) {
+      return mode ?? ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
     }
-    return color ? ColorConverter.toMatterHS(color) : undefined;
+    if (this.features.colorTemperature) {
+      return ColorControl.ColorMode.ColorTemperatureMireds;
+    }
+    if (this.features.hueSaturation) {
+      return ColorControl.ColorMode.CurrentHueAndCurrentSaturation;
+    }
+    throw new Error(
+      "ColorControlServer does not support either HueSaturation or ColorTemperature",
+    );
   }
 }
 
 export namespace ColorControlServerBase {
   export class State extends FeaturedBase.State {
-    config?: ColorControlConfig;
+    config!: ColorControlConfig;
   }
 }
 
-export class ColorControlServer extends ColorControlServerBase.for(
-  ClusterType(ColorControl.Base),
-) {}
+export function ColorControlServer(config: ColorControlConfig) {
+  const server = ColorControlServerBase.set({ config });
+  return {
+    with: (features: FeatureSelection<ColorControl.Cluster>) =>
+      server.with(...features),
+  };
+}

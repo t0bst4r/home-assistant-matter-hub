@@ -1,13 +1,19 @@
-import {
-  type HomeAssistantEntityInformation,
-  VacuumState,
-} from "@home-assistant-matter-hub/common";
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { RvcOperationalStateServer as Base } from "@matter/main/behaviors/rvc-operational-state";
 import { RvcOperationalState } from "@matter/main/clusters/rvc-operational-state";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter } from "./utils/cluster-config.js";
+import OperationalState = RvcOperationalState.OperationalState;
+import ErrorState = RvcOperationalState.ErrorState;
 
-export class RvcOperationalStateServer extends Base {
+export interface RvcOperationalStateServerConfig {
+  getOperationalState: ValueGetter<OperationalState>;
+}
+
+class RvcOperationalStateServerBase extends Base {
+  declare state: RvcOperationalStateServerBase.State;
+
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
@@ -16,34 +22,31 @@ export class RvcOperationalStateServer extends Base {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
-    const state = entity.state.state as VacuumState;
-    const operationalState = this.getOperationalState(state);
+    const operationalState = this.state.config.getOperationalState(
+      entity.state,
+      this.agent,
+    );
+
     applyPatchState(this.state, {
       operationalState,
       operationalError: {
         errorStateId:
-          operationalState === RvcOperationalState.OperationalState.Error
-            ? RvcOperationalState.ErrorState.Stuck
-            : RvcOperationalState.ErrorState.NoError,
+          operationalState === OperationalState.Error
+            ? ErrorState.Stuck
+            : ErrorState.NoError,
       },
     });
   }
+}
 
-  private getOperationalState(
-    state: VacuumState | "unavailable",
-  ): RvcOperationalState.OperationalState {
-    switch (state) {
-      case VacuumState.docked:
-        return RvcOperationalState.OperationalState.Docked;
-      case VacuumState.returning:
-        return RvcOperationalState.OperationalState.SeekingCharger;
-      case VacuumState.cleaning:
-        return RvcOperationalState.OperationalState.Running;
-      case VacuumState.paused:
-      case VacuumState.idle:
-        return RvcOperationalState.OperationalState.Paused;
-      default:
-        return RvcOperationalState.OperationalState.Error;
-    }
+namespace RvcOperationalStateServerBase {
+  export class State extends Base.State {
+    config!: RvcOperationalStateServerConfig;
   }
+}
+
+export function RvcOperationalStateServer(
+  config: RvcOperationalStateServerConfig,
+) {
+  return RvcOperationalStateServerBase.set({ config });
 }

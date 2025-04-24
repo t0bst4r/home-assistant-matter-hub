@@ -7,7 +7,11 @@ import { Behavior, EventEmitter } from "@matter/main";
 import AsyncLock from "async-lock";
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import { LoggerService } from "../../environment/logger.js";
-import { HomeAssistantActions } from "../../home-assistant/home-assistant-actions.js";
+import {
+  type HomeAssistantAction,
+  HomeAssistantActions,
+} from "../../home-assistant/home-assistant-actions.js";
+import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
 
 export class HomeAssistantEntityBehavior extends Behavior {
@@ -17,6 +21,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
   declare events: HomeAssistantEntityBehavior.Events;
 
   override async initialize() {
+    await this.env.load(HomeAssistantConfig);
     this.internal.logger = this.env
       .get(LoggerService)
       .get(`HomeAssistant / ${this.entityId}`);
@@ -38,7 +43,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
     return this.entity.state.state !== "unavailable";
   }
 
-  async callAction(action: string, data?: object | undefined) {
+  async callAction(action: HomeAssistantAction) {
     const actions = this.env.get(HomeAssistantActions);
     const lock = this.env.get(AsyncLock);
     const lockKey = this.state.lockKey;
@@ -47,12 +52,9 @@ export class HomeAssistantEntityBehavior extends Behavior {
     const target: HassServiceTarget = {
       entity_id: this.entityId,
     };
-    const [domain, service] = action.split(".");
     setTimeout(async () => {
       await lock.acquire(lockKey, async () =>
-        actions
-          .callAction(domain, service, data, target, false)
-          .catch((error) => log.error(error)),
+        actions.call(action, target, false).catch((error) => log.error(error)),
       );
     }, 0);
   }

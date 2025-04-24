@@ -5,6 +5,11 @@ import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.j
 import { LoggerService } from "../environment/logger.js";
 import { HomeAssistantClient } from "./home-assistant-client.js";
 
+export interface HomeAssistantAction {
+  action: string;
+  data?: object | undefined;
+}
+
 export class HomeAssistantActions {
   private readonly log: Logger;
 
@@ -15,6 +20,21 @@ export class HomeAssistantActions {
   constructor(private readonly environment: Environment) {
     environment.set(HomeAssistantActions, this);
     this.log = environment.get(LoggerService).get("HomeAssistantActions");
+  }
+
+  call<T = void>(
+    action: HomeAssistantAction,
+    target: HassServiceTarget,
+    returnResponse?: boolean,
+  ): Promise<T> {
+    const [domain, actionName] = action.action.split(".");
+    return this.callAction(
+      domain,
+      actionName,
+      action.data,
+      target,
+      returnResponse,
+    );
   }
 
   async callAction<T = void>(

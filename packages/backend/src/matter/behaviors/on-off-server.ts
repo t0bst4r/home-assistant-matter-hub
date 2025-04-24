@@ -2,28 +2,22 @@ import type {
   HomeAssistantEntityInformation,
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import type { Agent } from "@matter/main";
 import { OnOffServer as Base } from "@matter/main/behaviors";
-import { OnOff } from "@matter/main/clusters";
-import { ClusterType } from "@matter/main/types";
+import type { OnOff } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export interface OnOffConfig {
-  isOn?: (state: HomeAssistantEntityState, agent: Agent) => boolean;
-  turnOn?: {
-    action: string;
-    data?: object;
-  };
-  turnOff?: {
-    action: string;
-    data?: object;
-  };
+  isOn?: ValueGetter<boolean>;
+  turnOn?: ValueSetter<void> | null;
+  turnOff?: ValueSetter<void> | null;
 }
 
-const FeaturedBased = Base.with("Lighting");
+const FeaturedBase = Base.with("Lighting");
 
-export class OnOffServerBase extends FeaturedBased {
+class OnOffServerBase extends FeaturedBase {
   declare state: OnOffServerBase.State;
 
   override async initialize() {
@@ -33,39 +27,60 @@ export class OnOffServerBase extends FeaturedBased {
     this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private update({ state }: HomeAssistantEntityInformation) {
+  protected update({ state }: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
       onOff: this.isOn(state),
     });
   }
 
+  private isOn(entity: HomeAssistantEntityState): boolean {
+    return (
+      this.state.config?.isOn?.(entity, this.agent) ??
+      (this.agent.get(HomeAssistantEntityBehavior).isAvailable &&
+        entity.state !== "off")
+    );
+  }
+
   override async on() {
+    const { turnOn } = this.state.config;
+    if (turnOn === null) {
+      setTimeout(this.callback(this.autoReset), 1000);
+      return;
+    }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const action = this.state.config?.turnOn?.action ?? "homeassistant.turn_on";
-    const data = this.state.config?.turnOn?.data;
-    await homeAssistant.callAction(action, data);
+    await homeAssistant.callAction(
+      turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
+    );
   }
 
   override async off() {
+    const { turnOff } = this.state.config;
+    if (turnOff === null) {
+      setTimeout(this.callback(this.autoReset), 1000);
+      return;
+    }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const action =
-      this.state.config?.turnOff?.action ?? "homeassistant.turn_off";
-    const data = this.state.config?.turnOff?.data;
-    await homeAssistant.callAction(action, data);
+    await homeAssistant.callAction(
+      turnOff?.(void 0, this.agent) ?? { action: "homeassistant.turn_off" },
+    );
   }
 
-  private isOn(state: HomeAssistantEntityState) {
-    const isOn =
-      this.state.config?.isOn ??
-      ((e) => e.state !== "off" && e.state !== "unavailable");
-    return isOn(state, this.agent);
+  private autoReset() {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    this.update(homeAssistant.entity);
   }
 }
 
-export namespace OnOffServerBase {
-  export class State extends FeaturedBased.State {
-    config?: OnOffConfig;
+namespace OnOffServerBase {
+  export class State extends FeaturedBase.State {
+    config!: OnOffConfig;
   }
 }
 
-export class OnOffServer extends OnOffServerBase.for(ClusterType(OnOff.Base)) {}
+export function OnOffServer(config: OnOffConfig = {}) {
+  const server = OnOffServerBase.set({ config });
+  return {
+    with: (features: FeatureSelection<OnOff.Cluster> = []) =>
+      server.with(...features),
+  };
+}

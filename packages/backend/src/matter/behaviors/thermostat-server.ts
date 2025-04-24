@@ -1,28 +1,55 @@
-import {
-  type ClimateDeviceAttributes,
-  ClimateDeviceFeature,
-  type HomeAssistantEntityInformation,
-} from "@home-assistant-matter-hub/common";
-import type { Logger } from "@matter/main";
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { ThermostatServer as Base } from "@matter/main/behaviors";
 import { Thermostat } from "@matter/main/clusters";
-import { ClusterType } from "@matter/main/types";
-import { LoggerService } from "../../environment/logger.js";
+import type { HomeAssistantAction } from "../../home-assistant/home-assistant-actions.js";
 import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { testBit } from "../../utils/test-bit.js";
+import { Temperature } from "../../utils/converters/temperature.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import * as utils from "./utils/thermostat-server-utils.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+import SystemMode = Thermostat.SystemMode;
+import RunningMode = Thermostat.ThermostatRunningMode;
+import type {
+  Feature,
+  FeatureSelection,
+} from "../../utils/feature-selection.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
+export interface ThermostatRunningState {
+  heat: boolean;
+  cool: boolean;
+  fan: boolean;
+  heatStage2: false;
+  coolStage2: false;
+  fanStage2: false;
+  fanStage3: false;
+}
+
+export interface ThermostatServerConfig {
+  supportsTemperatureRange: ValueGetter<boolean>;
+  getMinTemperature: ValueGetter<Temperature | undefined>;
+  getMaxTemperature: ValueGetter<Temperature | undefined>;
+  getCurrentTemperature: ValueGetter<Temperature | undefined>;
+  getTargetHeatingTemperature: ValueGetter<Temperature | undefined>;
+  getTargetCoolingTemperature: ValueGetter<Temperature | undefined>;
+
+  getSystemMode: ValueGetter<SystemMode>;
+  getRunningMode: ValueGetter<RunningMode>;
+
+  setSystemMode: ValueSetter<SystemMode>;
+  setTargetTemperature: ValueSetter<Temperature>;
+  setTargetTemperatureRange: ValueSetter<{
+    low: Temperature;
+    high: Temperature;
+  }>;
+}
+
 export class ThermostatServerBase extends FeaturedBase {
   declare state: ThermostatServerBase.State;
-  declare internal: ThermostatServerBase.Internal;
 
   override async initialize() {
     await super.initialize();
-    this.internal.logger = this.env.get(LoggerService).get("ThermostatServer");
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     await this.env.load(HomeAssistantConfig);
@@ -49,37 +76,32 @@ export class ThermostatServerBase extends FeaturedBase {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
-    const config = this.env.get(HomeAssistantConfig);
+    const config = this.state.config;
+    const minSetpointLimit = config
+      .getMinTemperature(entity.state, this.agent)
+      ?.celsius(true);
+    const maxSetpointLimit = config
+      .getMaxTemperature(entity.state, this.agent)
+      ?.celsius(true);
+    const localTemperature = config
+      .getCurrentTemperature(entity.state, this.agent)
+      ?.celsius(true);
+    const targetHeatingTemperature =
+      config
+        .getTargetHeatingTemperature(entity.state, this.agent)
+        ?.celsius(true) ?? this.state.occupiedHeatingSetpoint;
+    const targetCoolingTemperature =
+      config
+        .getTargetHeatingTemperature(entity.state, this.agent)
+        ?.celsius(true) ?? this.state.occupiedCoolingSetpoint;
 
-    if (this.internal.homeAssistantUnit !== config.unitSystem.temperature) {
-      this.internal.logger.notice(
-        `Switching unit of ${entity.entity_id} to '${config.unitSystem.temperature}'`,
-      );
-      this.internal.homeAssistantUnit = config.unitSystem.temperature;
-    }
-
-    const attributes = entity.state.attributes as ClimateDeviceAttributes;
-    const unit = this.internal.homeAssistantUnit;
-    const minSetpointLimit = utils.homeAssistantToMatterTemperature(
-      attributes.min_temp,
-      unit,
-    );
-    const maxSetpointLimit = utils.homeAssistantToMatterTemperature(
-      attributes.max_temp,
-      unit,
-    );
+    const systemMode = this.getSystemMode(entity);
+    const runningMode = config.getRunningMode(entity.state, this.agent);
 
     applyPatchState(this.state, {
-      localTemperature:
-        utils.homeAssistantToMatterTemperature(
-          attributes.current_temperature,
-          unit,
-        ) ?? null,
-      systemMode: utils.getMatterSystemMode(entity.state.state, this.features),
-      thermostatRunningState: utils.getMatterRunningState(
-        attributes.hvac_action,
-        entity.state.state,
-      ),
+      localTemperature: localTemperature,
+      systemMode: systemMode,
+      thermostatRunningState: this.getRunningState(systemMode, runningMode),
       controlSequenceOfOperation:
         this.features.cooling && this.features.heating
           ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
@@ -88,9 +110,7 @@ export class ThermostatServerBase extends FeaturedBase {
             : Thermostat.ControlSequenceOfOperation.HeatingOnly,
       ...(this.features.heating
         ? {
-            occupiedHeatingSetpoint:
-              this.getHeatingTemperature(attributes, unit) ??
-              this.state.occupiedHeatingSetpoint,
+            occupiedHeatingSetpoint: targetHeatingTemperature,
             minHeatSetpointLimit: minSetpointLimit,
             maxHeatSetpointLimit: maxSetpointLimit,
             absMinHeatSetpointLimit: minSetpointLimit,
@@ -99,9 +119,7 @@ export class ThermostatServerBase extends FeaturedBase {
         : {}),
       ...(this.features.cooling
         ? {
-            occupiedCoolingSetpoint:
-              this.getCoolingTemperature(attributes, unit) ??
-              this.state.occupiedCoolingSetpoint,
+            occupiedCoolingSetpoint: targetCoolingTemperature,
             minCoolSetpointLimit: minSetpointLimit,
             maxCoolSetpointLimit: maxSetpointLimit,
             absMinCoolSetpointLimit: minSetpointLimit,
@@ -111,9 +129,7 @@ export class ThermostatServerBase extends FeaturedBase {
       ...(this.features.autoMode
         ? {
             minSetpointDeadBand: 0,
-            thermostatRunningMode: utils.getMatterRunningMode(
-              attributes.hvac_action,
-            ),
+            thermostatRunningMode: runningMode,
           }
         : {}),
     });
@@ -122,152 +138,184 @@ export class ThermostatServerBase extends FeaturedBase {
   override async setpointRaiseLower(
     request: Thermostat.SetpointRaiseLowerRequest,
   ) {
+    const config = this.state.config;
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const state = homeAssistant.entity.state;
-    const attributes = state.attributes as ClimateDeviceAttributes;
 
-    let cool = this.getCoolingTemperature(
-      attributes,
-      this.internal.homeAssistantUnit,
-    );
-    let heat = this.getHeatingTemperature(
-      attributes,
-      this.internal.homeAssistantUnit,
-    );
+    let cool = config.getTargetCoolingTemperature(state, this.agent);
+    let heat = config.getTargetHeatingTemperature(state, this.agent);
 
-    if (
-      request.mode !== Thermostat.SetpointRaiseLowerMode.Cool &&
-      heat != null
-    ) {
-      heat += request.amount / 10;
-    }
-    if (
-      request.mode !== Thermostat.SetpointRaiseLowerMode.Heat &&
-      cool != null
-    ) {
-      cool += request.amount / 10;
-    }
-
-    await this.setTemperatureFromMatter(heat, cool);
-  }
-
-  private async systemModeChanged(systemMode: Thermostat.SystemMode) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const current = utils.getMatterSystemMode(
-      homeAssistant.entity.state.state,
-      this.features,
-    );
-    if (systemMode === current) {
+    if (!heat && !cool) {
       return;
     }
-    await homeAssistant.callAction("climate.set_hvac_mode", {
-      hvac_mode: utils.getHvacModeFromMatter(systemMode),
-    });
-  }
+    heat = (heat ?? cool)!;
+    cool = (cool ?? heat)!;
 
-  private supportsTempRange(attributes: ClimateDeviceAttributes) {
-    const supportedFeatures = attributes.supported_features ?? 0;
-    return testBit(
-      supportedFeatures,
-      ClimateDeviceFeature.TARGET_TEMPERATURE_RANGE,
-    );
+    const adjustedCool =
+      request.mode !== Thermostat.SetpointRaiseLowerMode.Heat
+        ? cool.plus(request.amount / 1000, "°C")
+        : cool;
+    const adjustedHeat =
+      request.mode !== Thermostat.SetpointRaiseLowerMode.Cool
+        ? heat.plus(request.amount / 1000, "°C")
+        : heat;
+    await this.setTemperature(adjustedHeat, adjustedCool, request.mode);
   }
 
   private async heatingSetpointChanged(value: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const attributes = homeAssistant.entity.state
-      .attributes as ClimateDeviceAttributes;
-    const heating = this.getHeatingTemperature(
-      attributes,
-      this.internal.homeAssistantUnit,
-    );
-    if (heating === value) {
+    const config = this.state.config;
+    const entity = homeAssistant.entity;
+
+    const next = Temperature.celsius(value / 100);
+    if (!next) {
       return;
     }
-    await this.setTemperatureFromMatter(
-      value,
-      this.supportsTempRange(attributes)
-        ? this.state.occupiedCoolingSetpoint
-        : undefined,
+
+    const current = config.getTargetHeatingTemperature(
+      entity.state,
+      this.agent,
+    );
+
+    if (next.equals(current)) {
+      return;
+    }
+
+    await this.setTemperature(
+      next,
+      Temperature.celsius(this.state.occupiedCoolingSetpoint / 100)!,
+      Thermostat.SetpointRaiseLowerMode.Heat,
     );
   }
 
   private async coolingSetpointChanged(value: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const attributes = homeAssistant.entity.state
-      .attributes as ClimateDeviceAttributes;
-    const cooling = this.getCoolingTemperature(
-      attributes,
-      this.internal.homeAssistantUnit,
-    );
-    if (cooling === value) {
+    const config = this.state.config;
+    const entity = homeAssistant.entity;
+
+    const next = Temperature.celsius(value / 100);
+    if (!next) {
       return;
     }
-    await this.setTemperatureFromMatter(
-      this.supportsTempRange(attributes)
-        ? this.state.occupiedHeatingSetpoint
-        : undefined,
-      value,
+
+    const current = config.getTargetCoolingTemperature(
+      entity.state,
+      this.agent,
+    );
+
+    if (next.equals(current)) {
+      return;
+    }
+
+    await this.setTemperature(
+      Temperature.celsius(this.state.occupiedHeatingSetpoint / 100)!,
+      next,
+      Thermostat.SetpointRaiseLowerMode.Cool,
     );
   }
 
-  private async setTemperatureFromMatter(heat?: number, cool?: number) {
-    if (heat == null && cool == null) {
-      return;
-    }
-
-    const unit = this.internal.homeAssistantUnit;
-
-    let data: object;
-    if (heat != null && cool != null) {
-      data = {
-        target_temp_low: utils.matterToHomeAssistantTemperature(heat, unit),
-        target_temp_high: utils.matterToHomeAssistantTemperature(cool, unit),
-      };
-    } else {
-      data = {
-        temperature: utils.matterToHomeAssistantTemperature(heat ?? cool, unit),
-      };
-    }
-
+  private async setTemperature(
+    low: Temperature,
+    high: Temperature,
+    mode: Thermostat.SetpointRaiseLowerMode,
+  ) {
+    const config = this.state.config;
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("climate.set_temperature", data);
+
+    const supportsTemperatureRange = config.supportsTemperatureRange(
+      homeAssistant.entity.state,
+      this.agent,
+    );
+
+    let action: HomeAssistantAction;
+    if (supportsTemperatureRange) {
+      action = config.setTargetTemperatureRange({ low, high }, this.agent);
+    } else {
+      const both = mode === Thermostat.SetpointRaiseLowerMode.Heat ? low : high;
+      action = config.setTargetTemperature(both, this.agent);
+    }
+    await homeAssistant.callAction(action);
   }
 
-  private getHeatingTemperature(
-    attributes: ClimateDeviceAttributes,
-    unit: string,
-  ) {
-    return utils.homeAssistantToMatterTemperature(
-      attributes.target_temp_low ??
-        attributes.target_temperature ??
-        attributes.temperature,
-      unit,
+  private async systemModeChanged(systemMode: Thermostat.SystemMode) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const current = this.getSystemMode(homeAssistant.entity);
+    if (systemMode === current) {
+      return;
+    }
+    await homeAssistant.callAction(
+      this.state.config.setSystemMode(systemMode, this.agent),
     );
   }
 
-  private getCoolingTemperature(
-    attributes: ClimateDeviceAttributes,
-    unit: string,
-  ) {
-    return utils.homeAssistantToMatterTemperature(
-      attributes.target_temp_high ??
-        attributes.target_temperature ??
-        attributes.temperature,
-      unit,
-    );
+  private getSystemMode(entity: HomeAssistantEntityInformation) {
+    let systemMode = this.state.config.getSystemMode(entity.state, this.agent);
+    if (systemMode === Thermostat.SystemMode.Auto) {
+      systemMode = this.features.autoMode
+        ? SystemMode.Auto
+        : this.features.heating
+          ? SystemMode.Heat
+          : this.features.cooling
+            ? SystemMode.Cool
+            : SystemMode.Sleep;
+    }
+    return systemMode;
+  }
+
+  private getRunningState(
+    systemMode: SystemMode,
+    runningMode: RunningMode,
+  ): ThermostatRunningState {
+    const allOff: ThermostatRunningState = {
+      cool: false,
+      fan: false,
+      heat: false,
+      heatStage2: false,
+      coolStage2: false,
+      fanStage2: false,
+      fanStage3: false,
+    };
+    const heat = { ...allOff, heat: true };
+    const cool = { ...allOff, cool: true };
+    const dry = { ...allOff, heat: true, fan: true };
+    const fanOnly = { ...allOff, fan: true };
+    switch (systemMode) {
+      case SystemMode.Heat:
+      case SystemMode.EmergencyHeat:
+        return heat;
+      case SystemMode.Cool:
+      case SystemMode.Precooling:
+        return cool;
+      case SystemMode.Dry:
+        return dry;
+      case SystemMode.FanOnly:
+        return fanOnly;
+      case SystemMode.Off:
+      case SystemMode.Sleep:
+        return allOff;
+      case SystemMode.Auto:
+        switch (runningMode) {
+          case RunningMode.Heat:
+            return heat;
+          case RunningMode.Cool:
+            return cool;
+          case RunningMode.Off:
+            return allOff;
+        }
+    }
   }
 }
 
 export namespace ThermostatServerBase {
-  export class State extends FeaturedBase.State {}
-
-  export class Internal extends FeaturedBase.Internal {
-    homeAssistantUnit!: string;
-    logger!: Logger;
+  export class State extends FeaturedBase.State {
+    config!: ThermostatServerConfig;
   }
 }
 
-export class ThermostatServer extends ThermostatServerBase.for(
-  ClusterType(Thermostat.Base),
-) {}
+export function ThermostatServer(config: ThermostatServerConfig) {
+  const server = ThermostatServerBase.set({ config });
+  return {
+    with: (features: FeatureSelection<Thermostat.Complete>) =>
+      server.with(...features),
+  };
+}
