@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { FanMode } from "./fan-mode.js";
 import MFanMode = FanControl.FanMode;
 import FanModeSequence = FanControl.FanModeSequence;
-import * as utils from "../../matter/behaviors/utils/fan-control-server-utils.js";
 
 describe("FanMode", () => {
   describe("speedPercent", () => {

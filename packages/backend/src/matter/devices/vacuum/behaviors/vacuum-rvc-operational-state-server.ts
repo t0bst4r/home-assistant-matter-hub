@@ -1,6 +1,11 @@
-import { VacuumState } from "@home-assistant-matter-hub/common";
+import {
+  VacuumDeviceFeature,
+  VacuumState,
+} from "@home-assistant-matter-hub/common";
 import { RvcOperationalState } from "@matter/main/clusters";
+import { testBit } from "../../../../utils/test-bit.js";
 import { RvcOperationalStateServer } from "../../../behaviors/rvc-operational-state-server.js";
+import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 
 export const VacuumRvcOperationalStateServer = RvcOperationalStateServer({
   getOperationalState(entity): RvcOperationalState.OperationalState {
@@ -19,9 +24,15 @@ export const VacuumRvcOperationalStateServer = RvcOperationalStateServer({
         return RvcOperationalState.OperationalState.Error;
     }
   },
-  pause: () => ({
-    action: "vacuum.pause",
-  }),
+  pause: (_, agent) => {
+    const supportedFeatures =
+      agent.get(HomeAssistantEntityBehavior).entity.state.attributes
+        .supported_features ?? 0;
+    if (testBit(supportedFeatures, VacuumDeviceFeature.PAUSE)) {
+      return { action: "vacuum.pause" };
+    }
+    return { action: "vacuum.stop" };
+  },
   resume: () => ({
     action: "vacuum.start",
   }),
