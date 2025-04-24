@@ -1,3 +1,23 @@
+## 3.0.0-alpha.83 (2025-04-24)
+
+### 🐛 Fixes
+
+- ⚠️  remove feature flags ([75b2335](https://github.com/t0bst4r/home-assistant-matter-hub/commit/75b2335))
+- enable update of feature flags without restarting the addon ([a5bacab](https://github.com/t0bst4r/home-assistant-matter-hub/commit/a5bacab))
+
+### 📚 Documentation Changes
+
+- add more details to bridge configuration ([3cf2c7d](https://github.com/t0bst4r/home-assistant-matter-hub/commit/3cf2c7d))
+- update supported device types accordingly ([ca332ff](https://github.com/t0bst4r/home-assistant-matter-hub/commit/ca332ff))
+
+### ⚠️  Breaking Changes
+
+- Due to the growing code base and its complexity, I've decided to simplify the application by removing non-compliant workarounds.
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.82 (2025-04-24)
 
 ### 🐛 Fixes
