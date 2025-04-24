@@ -4,18 +4,16 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import { TemperatureMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import type { Temperature } from "../../utils/converters/temperature.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { homeAssistantToMatterTemperature } from "./utils/thermostat-server-utils.js";
+import type { ValueGetter } from "./utils/cluster-config.js";
 
 export interface TemperatureMeasurementConfig {
-  getValue: (state: HomeAssistantEntityState) => number | null;
-  getUnitOfMeasurement?: (
-    state: HomeAssistantEntityState,
-  ) => "K" | "°C" | "°F" | string | null;
+  getValue: ValueGetter<Temperature | undefined>;
 }
 
-export class TemperatureMeasurementServer extends Base {
-  declare state: TemperatureMeasurementServer.State;
+class TemperatureMeasurementServerBase extends Base {
+  declare state: TemperatureMeasurementServerBase.State;
 
   override async initialize() {
     await super.initialize();
@@ -26,20 +24,27 @@ export class TemperatureMeasurementServer extends Base {
 
   private update(entity: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
-      measuredValue: this.getTemperature(entity.state),
+      measuredValue: this.getTemperature(entity.state) ?? null,
     });
   }
 
-  private getTemperature(entity: HomeAssistantEntityState): number | null {
-    const value = this.state.config.getValue(entity);
-    const unitOfMeasurement =
-      this.state.config.getUnitOfMeasurement?.(entity) ?? "C";
-    return homeAssistantToMatterTemperature(value, unitOfMeasurement) ?? null;
+  private getTemperature(entity: HomeAssistantEntityState): number | undefined {
+    const value = this.state.config.getValue(entity, this.agent);
+    if (!value) {
+      return undefined;
+    }
+    return Math.round(value.celsius() * 100);
   }
 }
 
-export namespace TemperatureMeasurementServer {
+namespace TemperatureMeasurementServerBase {
   export class State extends Base.State {
     config!: TemperatureMeasurementConfig;
   }
+}
+
+export function TemperatureMeasurementServer(
+  config: TemperatureMeasurementConfig,
+) {
+  return TemperatureMeasurementServerBase.set({ config });
 }

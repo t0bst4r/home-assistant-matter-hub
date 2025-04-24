@@ -187,17 +187,10 @@ export abstract class ColorConverter {
    */
   public static temperatureKelvinToMireds(
     temperatureKelvin: number,
-    rounding: "floor" | "ceil" | "none" = "none",
     boundaries: [min: number, max: number] = [0, 65279],
   ): number {
-    let result = 1_000_000 / temperatureKelvin;
+    const result = 1_000_000 / temperatureKelvin;
     const [min, max] = boundaries;
-    result = Math.min(Math.max(result, min), max);
-    if (rounding === "floor") {
-      result = Math.floor(result);
-    } else if (rounding === "ceil") {
-      result = Math.ceil(result);
-    }
-    return result;
+    return Math.min(Math.max(result, min), max);
   }
 }

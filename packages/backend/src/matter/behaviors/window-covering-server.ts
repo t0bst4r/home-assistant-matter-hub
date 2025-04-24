@@ -1,8 +1,6 @@
-import {
-  type CoverDeviceAttributes,
-  CoverDeviceState,
-  type HomeAssistantEntityInformation,
-  type HomeAssistantEntityState,
+import type {
+  HomeAssistantEntityInformation,
+  HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import {
   WindowCoveringServer as Base,
@@ -10,15 +8,11 @@ import {
   MovementType,
 } from "@matter/main/behaviors";
 import { WindowCovering } from "@matter/main/clusters";
-import { ClusterType } from "@matter/main/types";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { convertCoverValue } from "./utils/window-covering-server-utils.js";
-
-export interface WindowCoveringConfig {
-  invertPercentage?: boolean;
-  swapOpenAndClose?: boolean;
-}
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+import MovementStatus = WindowCovering.MovementStatus;
 
 const FeaturedBase = Base.with(
   "Lift",
@@ -27,6 +21,35 @@ const FeaturedBase = Base.with(
   "PositionAwareTilt",
   "AbsolutePosition",
 );
+
+export interface WindowCoveringConfig {
+  getCurrentLiftPosition: ValueGetter<number | null>;
+  getCurrentTiltPosition: ValueGetter<number | null>;
+  getMovementStatus: ValueGetter<MovementStatus>;
+
+  stopCover: ValueSetter<void>;
+  openCoverLift: ValueSetter<void>;
+  closeCoverLift: ValueSetter<void>;
+  /**
+   * "cover.set_cover_position", {
+   *       tilt_position: targetPosition,
+   *     }
+   * invertPercentage?: boolean;
+   * swapOpenAndClose?: boolean;
+   */
+  setLiftPosition: ValueSetter<number>;
+
+  openCoverTilt: ValueSetter<void>;
+  closeCoverTilt: ValueSetter<void>;
+  /**
+   * "cover.set_cover_tilt_position", {
+   *       tilt_position: targetPosition,
+   *     }
+   *     invertPercentage?: boolean;
+   * swapOpenAndClose?: boolean;
+   */
+  setTiltPosition: ValueSetter<number>;
+}
 
 export class WindowCoveringServerBase extends FeaturedBase {
   declare state: WindowCoveringServerBase.State;
@@ -39,24 +62,25 @@ export class WindowCoveringServerBase extends FeaturedBase {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
-    const state =
-      entity.state as HomeAssistantEntityState<CoverDeviceAttributes>;
-    const coverState = state.state as CoverDeviceState;
-    const movementStatus: WindowCovering.MovementStatus =
-      coverState === CoverDeviceState.opening
-        ? WindowCovering.MovementStatus.Opening
-        : coverState === CoverDeviceState.closing
-          ? WindowCovering.MovementStatus.Closing
-          : WindowCovering.MovementStatus.Stopped;
+    const config = this.state.config;
+    const state = entity.state as HomeAssistantEntityState;
+    const movementStatus = config.getMovementStatus(state, this.agent);
 
-    const currentLift = this.getCurrentPosition(
-      state.attributes.current_position,
-      coverState,
+    const normalize = (value: number | null) => {
+      if (value == null) {
+        return value;
+      }
+      return Math.min(100, Math.abs(value));
+    };
+
+    const currentLift = normalize(
+      config.getCurrentLiftPosition(state, this.agent),
     );
-    const currentTilt = this.getCurrentPosition(
-      state.attributes.current_tilt_position,
-      coverState,
+    const currentLift100ths = currentLift ? currentLift * 100 : null;
+    const currentTilt = normalize(
+      config.getCurrentTiltPosition(state, this.agent),
     );
+    const currentTilt100ths = currentTilt ? currentTilt * 100 : null;
 
     applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type:
@@ -80,58 +104,33 @@ export class WindowCoveringServerBase extends FeaturedBase {
         ? {
             installedOpenLimitLift: 0,
             installedClosedLimitLift: 100_00,
-            currentPositionLift: currentLift,
+            currentPositionLift: currentLift100ths,
           }
         : {}),
       ...(this.features.absolutePosition && this.features.tilt
         ? {
             installedOpenLimitTilt: 0,
             installedClosedLimitTilt: 100_00,
-            currentPositionTilt: currentTilt,
+            currentPositionTilt: currentTilt100ths,
           }
         : {}),
       ...(this.features.positionAwareLift
         ? {
-            currentPositionLiftPercentage: currentLift
-              ? currentLift / 100
-              : null,
-            currentPositionLiftPercent100ths: currentLift,
+            currentPositionLiftPercentage: currentLift,
+            currentPositionLiftPercent100ths: currentLift100ths,
             targetPositionLiftPercent100ths:
-              this.state.targetPositionLiftPercent100ths ?? currentLift,
+              this.state.targetPositionLiftPercent100ths ?? currentLift100ths,
           }
         : {}),
       ...(this.features.positionAwareTilt
         ? {
-            currentPositionTiltPercentage: currentTilt
-              ? currentTilt / 100
-              : null,
-            currentPositionTiltPercent100ths: currentTilt,
+            currentPositionTiltPercentage: currentTilt,
+            currentPositionTiltPercent100ths: currentTilt100ths,
             targetPositionTiltPercent100ths:
-              this.state.targetPositionTiltPercent100ths ?? currentTilt,
+              this.state.targetPositionTiltPercent100ths ?? currentTilt100ths,
           }
         : {}),
     });
-  }
-
-  private getCurrentPosition(
-    percentage: number | undefined,
-    coverState: CoverDeviceState,
-  ) {
-    let currentValue = this.convertValue(percentage);
-    if (currentValue != null) {
-      currentValue *= 100;
-      currentValue = Math.abs(currentValue);
-      if (currentValue > 100_00) {
-        currentValue = 100_00;
-      }
-    } else {
-      if (coverState === CoverDeviceState.open) {
-        currentValue = 0;
-      } else if (coverState === CoverDeviceState.closed) {
-        currentValue = 100_00;
-      }
-    }
-    return currentValue;
   }
 
   override async handleMovement(
@@ -140,12 +139,14 @@ export class WindowCoveringServerBase extends FeaturedBase {
     direction: MovementDirection,
     targetPercent100ths?: number,
   ) {
+    const currentLift = this.state.currentPositionLiftPercent100ths ?? 0;
+    const currentTilt = this.state.currentPositionTiltPercent100ths ?? 0;
     if (type === MovementType.Lift) {
       if (targetPercent100ths != null && this.features.absolutePosition) {
         await this.handleGoToLiftPosition(targetPercent100ths);
       } else if (
         direction === MovementDirection.Close ||
-        (targetPercent100ths != null && targetPercent100ths > 0)
+        (targetPercent100ths != null && targetPercent100ths > currentLift)
       ) {
         await this.handleLiftClose();
       } else if (direction === MovementDirection.Open) {
@@ -156,7 +157,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
         await this.handleGoToTiltPosition(targetPercent100ths);
       } else if (
         direction === MovementDirection.Close ||
-        (targetPercent100ths != null && targetPercent100ths > 0)
+        (targetPercent100ths != null && targetPercent100ths > currentTilt)
       ) {
         await this.handleTiltClose();
       } else if (direction === MovementDirection.Open) {
@@ -164,74 +165,85 @@ export class WindowCoveringServerBase extends FeaturedBase {
       }
     }
   }
+
   override async handleStopMovement() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("cover.stop_cover");
+    await homeAssistant.callAction(
+      this.state.config.stopCover(void 0, this.agent),
+    );
   }
 
   private async handleLiftOpen() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("cover.open_cover");
+    await homeAssistant.callAction(
+      this.state.config.openCoverLift(void 0, this.agent),
+    );
   }
+
   private async handleLiftClose() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("cover.close_cover");
+    await homeAssistant.callAction(
+      this.state.config.closeCoverLift(void 0, this.agent),
+    );
   }
+
   private async handleGoToLiftPosition(targetPercent100ths: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const attributes = homeAssistant.entity.state
-      .attributes as CoverDeviceAttributes;
-    const currentPosition = attributes.current_position;
-    const targetPosition = this.convertValue(targetPercent100ths / 100);
-    if (targetPosition == null || targetPosition === currentPosition) {
+    const config = this.state.config;
+    const currentPosition = config.getCurrentLiftPosition(
+      homeAssistant.entity.state,
+      this.agent,
+    );
+    const targetPosition = targetPercent100ths / 100;
+    if (targetPosition === currentPosition) {
       return;
     }
-    await homeAssistant.callAction("cover.set_cover_position", {
-      position: targetPosition,
-    });
+    await homeAssistant.callAction(
+      config.setLiftPosition(targetPosition, this.agent),
+    );
   }
 
   private async handleTiltOpen() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("cover.open_cover_tilt");
-  }
-  private async handleTiltClose() {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("cover.close_cover_tilt");
-  }
-  private async handleGoToTiltPosition(targetPercent100ths: number) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const attributes = homeAssistant.entity.state
-      .attributes as CoverDeviceAttributes;
-    const currentPosition = attributes.current_tilt_position;
-    const targetPosition = this.convertValue(targetPercent100ths / 100);
-    if (targetPosition == null || targetPosition === currentPosition) {
-      return;
-    }
-    await homeAssistant.callAction("cover.set_cover_tilt_position", {
-      tilt_position: targetPosition,
-    });
+    await homeAssistant.callAction(
+      this.state.config.openCoverTilt(void 0, this.agent),
+    );
   }
 
-  private convertValue(percentage: number | undefined | null): number | null {
-    let value = percentage;
-    if (value === -1) {
-      value = 0;
+  private async handleTiltClose() {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    await homeAssistant.callAction(
+      this.state.config.closeCoverTilt(void 0, this.agent),
+    );
+  }
+
+  private async handleGoToTiltPosition(targetPercent100ths: number) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const config = this.state.config;
+    const currentPosition = config.getCurrentTiltPosition(
+      homeAssistant.entity.state,
+      this.agent,
+    );
+    const targetPosition = targetPercent100ths / 100;
+    if (targetPosition === currentPosition) {
+      return;
     }
-    return convertCoverValue(
-      value,
-      this.state.config?.invertPercentage === true,
-      this.state.config?.swapOpenAndClose === true,
+    await homeAssistant.callAction(
+      config.setTiltPosition(targetPosition, this.agent),
     );
   }
 }
 
 export namespace WindowCoveringServerBase {
   export class State extends FeaturedBase.State {
-    config?: WindowCoveringConfig;
+    config!: WindowCoveringConfig;
   }
 }
 
-export class WindowCoveringServer extends WindowCoveringServerBase.for(
-  ClusterType(WindowCovering.Base),
-) {}
+export function WindowCoveringServer(config: WindowCoveringConfig) {
+  const server = WindowCoveringServerBase.set({ config });
+  return {
+    with: (features: FeatureSelection<WindowCovering.Complete>) =>
+      server.with(...features),
+  };
+}

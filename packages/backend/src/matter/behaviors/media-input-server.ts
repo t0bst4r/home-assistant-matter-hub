@@ -1,13 +1,20 @@
-import type {
-  HomeAssistantEntityInformation,
-  MediaPlayerDeviceAttributes,
-} from "@home-assistant-matter-hub/common";
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { MediaInputServer as Base } from "@matter/main/behaviors";
 import { MediaInput } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
-export class MediaInputServer extends Base {
+export interface MediaInputServerConfig {
+  getCurrentSource: ValueGetter<string | undefined>;
+  getSourceList: ValueGetter<string[] | undefined>;
+
+  selectSource: ValueSetter<string>;
+}
+
+class MediaInputServerBase extends Base {
+  declare state: MediaInputServerBase.State;
+
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
@@ -16,15 +23,17 @@ export class MediaInputServer extends Base {
   }
 
   private update(entity: HomeAssistantEntityInformation) {
-    const attributes = entity.state.attributes as MediaPlayerDeviceAttributes;
+    const config = this.state.config;
     let source_idx = 0;
-    const inputList = attributes.source_list?.map((source) => ({
+    const sourceList = config.getSourceList(entity.state, this.agent)?.sort();
+    const inputList = sourceList?.map((source) => ({
       index: source_idx++,
       inputType: MediaInput.InputType.Other,
       name: source,
       description: source,
     }));
-    let currentInput = attributes.source_list?.indexOf(attributes.source ?? "");
+    const currentSource = config.getCurrentSource(entity.state, this.agent);
+    let currentInput = sourceList?.indexOf(currentSource ?? "");
     if (currentInput === -1 || currentInput == null) {
       currentInput = 0;
     }
@@ -37,11 +46,22 @@ export class MediaInputServer extends Base {
   override async selectInput(request: MediaInput.SelectInputRequest) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const target = this.state.inputList[request.index];
-    await homeAssistant.callAction("media_player.select_source", {
-      source: target.name,
-    });
+    await homeAssistant.callAction(
+      this.state.config.selectSource(target.name, this.agent),
+    );
   }
 
   override async showInputStatus() {}
+
   override async hideInputStatus() {}
+}
+
+namespace MediaInputServerBase {
+  export class State extends Base.State {
+    config!: MediaInputServerConfig;
+  }
+}
+
+export function MediaInputServer(config: MediaInputServerConfig) {
+  return MediaInputServerBase.set({ config });
 }

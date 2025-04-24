@@ -5,22 +5,22 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import type { EndpointType } from "@matter/main";
 import type { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
-import { AutomationDevice } from "../devices/automation-device.js";
-import { BinarySensorDevice } from "../devices/binary-sensor-device.js";
-import { ButtonDevice } from "../devices/button-device.js";
-import { ClimateDevice } from "../devices/climate-device.js";
-import { CoverDevice } from "../devices/cover-device.js";
-import { FanDevice } from "../devices/fan-device.js";
-import { HumidifierDevice } from "../devices/humidifier-device.js";
-import { InputButtonDevice } from "../devices/input-button-device.js";
-import { LightDevice } from "../devices/light-device.js";
-import { LockDevice } from "../devices/lock-device.js";
-import { MediaPlayerDevice } from "../devices/media-player-device.js";
-import { SceneDevice } from "../devices/scene-device.js";
-import { ScriptDevice } from "../devices/script-device.js";
-import { SensorDevice } from "../devices/sensor-device.js";
-import { SwitchDevice } from "../devices/switch-device.js";
-import { VacuumDevice } from "../devices/vacuum-device.js";
+import { AutomationDevice } from "../devices/automation/index.js";
+import { BinarySensorDevice } from "../devices/binary-sensor/index.js";
+import { ButtonDevice } from "../devices/button/index.js";
+import { ClimateDevice } from "../devices/climate/index.js";
+import { CoverDevice } from "../devices/cover/index.js";
+import { FanDevice } from "../devices/fan/index.js";
+import { HumidifierDevice } from "../devices/humidifier/index.js";
+import { InputButtonDevice } from "../devices/input-button/index.js";
+import { LightDevice } from "../devices/light/index.js";
+import { LockDevice } from "../devices/lock/index.js";
+import { MediaPlayerDevice } from "../devices/media-player/index.js";
+import { SceneDevice } from "../devices/scene/index.js";
+import { ScriptDevice } from "../devices/script/index.js";
+import { SensorDevice } from "../devices/sensor/index.js";
+import { SwitchDevice } from "../devices/switch/index.js";
+import { VacuumDevice } from "../devices/vacuum/index.js";
 
 export function createDevice(
   lockKey: string,

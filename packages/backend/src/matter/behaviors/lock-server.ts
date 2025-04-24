@@ -1,13 +1,20 @@
-import type {
-  HomeAssistantEntityInformation,
-  HomeAssistantEntityState,
-} from "@home-assistant-matter-hub/common";
+import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { DoorLockServer as Base } from "@matter/main/behaviors";
 import { DoorLock } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+import LockState = DoorLock.LockState;
 
-export class LockServer extends Base {
+export interface LockServerConfig {
+  getLockState: ValueGetter<LockState>;
+  lock: ValueSetter<void>;
+  unlock: ValueSetter<void>;
+}
+
+class LockServerBase extends Base {
+  declare state: LockServerBase.State;
+
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
@@ -17,7 +24,7 @@ export class LockServer extends Base {
 
   private update(entity: HomeAssistantEntityInformation) {
     applyPatchState(this.state, {
-      lockState: this.getMatterLockState(entity.state),
+      lockState: this.state.config.getLockState(entity.state, this.agent),
       lockType: DoorLock.LockType.DeadBolt,
       operatingMode: DoorLock.OperatingMode.Normal,
       actuatorEnabled: true,
@@ -33,22 +40,23 @@ export class LockServer extends Base {
 
   override async lockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("lock.lock");
+    await homeAssistant.callAction(this.state.config.lock(void 0, this.agent));
   }
 
   override async unlockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction("lock.unlock");
-  }
-
-  private getMatterLockState(state: HomeAssistantEntityState) {
-    return mapHAState[state.state] ?? DoorLock.LockState.NotFullyLocked;
+    await homeAssistant.callAction(
+      this.state.config.unlock(void 0, this.agent),
+    );
   }
 }
 
-const mapHAState: Record<string, DoorLock.LockState> = {
-  locked: DoorLock.LockState.Locked,
-  locking: DoorLock.LockState.Locked,
-  unlocked: DoorLock.LockState.Unlocked,
-  unlocking: DoorLock.LockState.Unlocked,
-};
+namespace LockServerBase {
+  export class State extends Base.State {
+    config!: LockServerConfig;
+  }
+}
+
+export function LockServer(config: LockServerConfig) {
+  return LockServerBase.set({ config });
+}

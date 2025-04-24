@@ -5,13 +5,14 @@ import type {
 import { RelativeHumidityMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter } from "./utils/cluster-config.js";
 
 export interface HumidityMeasurementConfig {
-  getValue: (state: HomeAssistantEntityState) => number | null;
+  getValue: ValueGetter<number | null>;
 }
 
-export class HumidityMeasurementServer extends Base {
-  declare state: HumidityMeasurementServer.State;
+class HumidityMeasurementServerBase extends Base {
+  declare state: HumidityMeasurementServerBase.State;
 
   override async initialize() {
     await super.initialize();
@@ -29,7 +30,7 @@ export class HumidityMeasurementServer extends Base {
     config: HumidityMeasurementConfig,
     entity: HomeAssistantEntityState,
   ): number | null {
-    const humidity = config.getValue(entity);
+    const humidity = config.getValue(entity, this.agent);
     if (humidity == null) {
       return null;
     }
@@ -37,8 +38,12 @@ export class HumidityMeasurementServer extends Base {
   }
 }
 
-export namespace HumidityMeasurementServer {
+namespace HumidityMeasurementServerBase {
   export class State extends Base.State {
     config!: HumidityMeasurementConfig;
   }
+}
+
+export function HumidityMeasurementServer(config: HumidityMeasurementConfig) {
+  return HumidityMeasurementServerBase.set({ config });
 }

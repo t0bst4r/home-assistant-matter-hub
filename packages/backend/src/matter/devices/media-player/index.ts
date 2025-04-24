@@ -1,0 +1,55 @@
+import {
+  type MediaPlayerDeviceAttributes,
+  MediaPlayerDeviceFeature,
+} from "@home-assistant-matter-hub/common";
+import { LevelControl } from "@matter/main/clusters";
+import { SpeakerDevice } from "@matter/main/devices";
+import { FeatureSelection } from "../../../utils/feature-selection.js";
+import { testBit } from "../../../utils/test-bit.js";
+import { BasicInformationServer } from "../../behaviors/basic-information-server.js";
+import { IdentifyServer } from "../../behaviors/identify-server.js";
+import { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
+import { MediaPlayerLevelControlServer } from "./behaviors/media-player-level-control-server.js";
+import { MediaPlayerMediaInputServer } from "./behaviors/media-player-media-input-server.js";
+import { MediaPlayerOnOffServer } from "./behaviors/media-player-on-off-server.js";
+
+const SpeakerEndpointType = SpeakerDevice.with(
+  BasicInformationServer,
+  IdentifyServer,
+  HomeAssistantEntityBehavior,
+);
+
+export function MediaPlayerDevice(
+  homeAssistantEntity: HomeAssistantEntityBehavior.State,
+) {
+  const attributes = homeAssistantEntity.entity.state
+    .attributes as MediaPlayerDeviceAttributes;
+  const supportedFeatures = attributes.supported_features ?? 0;
+
+  // TODO: Support power control, which needs to be implemented as another
+  // OnOffServer on a separate endpoint for this device.
+
+  let device = SpeakerEndpointType;
+  const supportsMute = testBit(
+    supportedFeatures,
+    MediaPlayerDeviceFeature.VOLUME_MUTE,
+  );
+  const supportsVolume = testBit(
+    supportedFeatures,
+    MediaPlayerDeviceFeature.VOLUME_SET,
+  );
+
+  if (supportsMute) {
+    device = device.with(MediaPlayerOnOffServer.with());
+  }
+
+  if (supportsVolume) {
+    device = device.with(
+      MediaPlayerLevelControlServer.with(supportsMute ? ["OnOff"] : []),
+    );
+  }
+  if (testBit(supportedFeatures, MediaPlayerDeviceFeature.SELECT_SOURCE)) {
+    device = device.with(MediaPlayerMediaInputServer);
+  }
+  return device.set({ homeAssistantEntity });
+}
