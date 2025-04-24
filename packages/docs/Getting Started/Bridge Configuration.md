@@ -3,12 +3,24 @@
 Using the User Interface you can set up multiple bridges and configure each to use different filters for your entities.
 Each bridge will be completely independent of the others and uses its own port for matter.
 
+You can access the bridge configuration by opening the web UI:
+
+- If you are running the Home Assistant Add On: click on `Open Web UI`
+- If you are running the docker container: open `host-ip:port` (default port is 8482 if you didn't change it)
+
 > [!NOTE]
 > You can use **one** bridge to connect to **multiple** controllers.
 > See [this guide](../Guides/Connect%20Multiple%20Fabrics.md) for details how to set this up.
 
 > [!WARNING]
 > Alexa only supports port `5540`. Therefore, you cannot create multiple bridges to connect with Alexa.
+> 
+> There are users who managed to get it work using the following approach:
+> 1. Create a bridge with port 5540
+> 2. Connect your Alexa with that bridge
+> 3. Change the port of the bridge
+> 4. Verify if it is still working
+> 5. Repeat for the next bridge
 
 Every bridge has to have a `name` (string), `port` (number) and `filter` (object) property. The filter property has to
 include an `include` (array) and an `exclude` (array) property.
