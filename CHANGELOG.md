@@ -1,3 +1,28 @@
+## 3.0.0-alpha.82 (2025-04-24)
+
+### 🐛 Fixes
+
+- **vacuum:** proper implement pause, resume and mode change commands ([c29ed54](https://github.com/t0bst4r/home-assistant-matter-hub/commit/c29ed54))
+- **vacuum:** consider supported features when pausing a vacuum ([70ac3af](https://github.com/t0bst4r/home-assistant-matter-hub/commit/70ac3af))
+
+### 📚 Documentation Changes
+
+- adjust documentation for vacuums ([9096337](https://github.com/t0bst4r/home-assistant-matter-hub/commit/9096337))
+
+### 🚧 Chores
+
+- always use current year for software and hardware version ([f4f8ed9](https://github.com/t0bst4r/home-assistant-matter-hub/commit/f4f8ed9))
+- ⚠️  major refactoring due to the growing number of supported device types ([75a1df3](https://github.com/t0bst4r/home-assistant-matter-hub/commit/75a1df3))
+
+### ⚠️  Breaking Changes
+
+- Almost every aspect of the device implementations were touched. I've tried to test as much as possible locally until everything was back working. But since there are so many edge cases in different devices, I probably couldn't verify everything.
+
+### ❤️ Thank You
+
+- Gustav Åkerström @gustavakerstrom
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.81 (2025-04-04)
 
 ### 🐛 Fixes
