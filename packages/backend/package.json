@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@home-assistant-matter-hub/common": "workspace:*",
-    "@matter/main": "0.13.0-alpha.0-20250424-4760af1f3",
-    "@matter/nodejs": "0.13.0-alpha.0-20250424-4760af1f3",
-    "@matter/general": "0.13.0-alpha.0-20250424-4760af1f3",
+    "@matter/main": "0.13.0",
+    "@matter/nodejs": "0.13.0",
+    "@matter/general": "0.13.0",
     "ajv": "8.17.1",
     "async-lock": "1.4.1",
     "color": "5.0.0",
