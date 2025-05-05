@@ -38,7 +38,7 @@ class RvcRunModeServerBase extends Base {
         this.agent,
       ),
     });
-  }
+  }  
 
   override changeToMode = async (
     request: ModeBase.ChangeToModeRequest,

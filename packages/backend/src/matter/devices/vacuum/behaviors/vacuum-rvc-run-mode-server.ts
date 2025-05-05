@@ -11,10 +11,16 @@ import {
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 
 export const VacuumRvcRunModeServer = RvcRunModeServer({
-  getCurrentMode: (entity) =>
-    [VacuumState.cleaning].includes(entity.state as VacuumState)
-      ? RvcSupportedRunMode.Cleaning
-      : RvcSupportedRunMode.Idle,
+  getCurrentMode: (entity) => {
+    console.log(entity);
+    const state = entity.state as VacuumState;
+
+    if (state === VacuumState.cleaning) {
+      return RvcSupportedRunMode.Cleaning;
+    }
+
+    return RvcSupportedRunMode.Idle;
+  },
   getSupportedModes: () => [
     {
       label: "Idle",

@@ -13,6 +13,7 @@ import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { createDevice } from "./create-device.js";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
+import { RvcSupportedRunMode } from "../behaviors/rvc-run-mode-server.js";
 
 export class BridgeDeviceManager {
   private readonly log: BetterLogger;
@@ -112,7 +113,39 @@ export class BridgeDeviceManager {
       return;
     }
 
-    await this.aggregator.add(new Endpoint(endpointType, { id: endpointId }));
+    await this.aggregator.add(new Endpoint(endpointType, 
+      { 
+        id: endpointId, 
+        serviceArea: {
+          supportedAreas: [
+            {
+                areaId: 1,
+                mapId: null,
+                areaInfo: {
+                    locationInfo: {
+                        locationName: "Kitchen",
+                        floorNumber: null,
+                        areaType: null,
+                    },
+                    landmarkInfo: null,
+                },
+            },
+            {
+                areaId: 2,
+                mapId: null,
+                areaInfo: {
+                    locationInfo: {
+                        locationName: "Living Room",
+                        floorNumber: null,
+                        areaType: null,
+                    },
+                    landmarkInfo: null,
+                },
+            },
+        ],
+        currentArea: null,
+      },
+    }));
     return entity.entity_id;
   }
 
