@@ -1,0 +1,69 @@
+import { ServiceAreaServer } from "../../../behaviors/service-area-server.js";
+import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
+import { ServiceArea } from "@matter/main/clusters/service-area";
+
+export const VacuumServiceAreaServer = ServiceAreaServer({
+  getServiceAreas: async (entity, agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const result = await homeAssistant.callQueryAction<{
+      response: Record<
+        string,
+        { rooms: Record<number, string>; map_id: number }
+      >;
+    }>({ action: "tplink.get_rooms", data: { map_id: -1 } });
+    const { rooms, map_id } = result.response[entity.entity_id];
+
+    console.log({rooms});
+
+    const r = Object.entries(rooms).map(([id, name]) => ({
+      areaId: Number.parseInt(id),
+      // mapId: map_id,
+      mapId: null,
+      areaInfo: {
+        landmarkInfo: null,
+        locationInfo: {
+          areaType: null,
+          floorNumber: null,
+          locationName: name,
+        },
+      },
+    }));
+
+    console.log(r);
+
+    return r;
+  },
+
+  getCurrentServiceArea: async (entity, agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    return await homeAssistant.callQueryAction<number>({
+      action: "tplink.get_current_room",
+    });
+  },
+
+  getMaps: async (entity, agent): Promise<ServiceArea.Map[]> => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const result = await homeAssistant.callQueryAction<{
+      response: Record<
+        string,
+        {
+          maps: {
+            id: number;
+            name: string;
+          }[];
+        }
+      >;
+    }>({ action: "tplink.get_maps" });
+
+    const response = result.response[entity.entity_id];
+
+    return response.maps.map((map) => ({
+      mapId: map.id,
+      name: map.name,
+    }));
+  },
+
+  selectAreas: (a) => {
+    return { action: "tplink.select_room", params: { room_id: 1 } };
+  },
+});

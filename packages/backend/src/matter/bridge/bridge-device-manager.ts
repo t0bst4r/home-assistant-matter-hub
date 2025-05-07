@@ -113,39 +113,7 @@ export class BridgeDeviceManager {
       return;
     }
 
-    await this.aggregator.add(new Endpoint(endpointType, 
-      { 
-        id: endpointId, 
-        serviceArea: {
-          supportedAreas: [
-            {
-                areaId: 1,
-                mapId: null,
-                areaInfo: {
-                    locationInfo: {
-                        locationName: "Kitchen",
-                        floorNumber: null,
-                        areaType: null,
-                    },
-                    landmarkInfo: null,
-                },
-            },
-            {
-                areaId: 2,
-                mapId: null,
-                areaInfo: {
-                    locationInfo: {
-                        locationName: "Living Room",
-                        floorNumber: null,
-                        areaType: null,
-                    },
-                    landmarkInfo: null,
-                },
-            },
-        ],
-        currentArea: null,
-      },
-    }));
+    await this.aggregator.add(new Endpoint(endpointType, { id: endpointId }));
     return entity.entity_id;
   }
 
