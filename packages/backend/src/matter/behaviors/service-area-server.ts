@@ -4,6 +4,7 @@ import { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { MaybePromise } from "@matter/general";
 
 export interface ServiceAreaServerConfig {
   getServiceAreas: ValueGetter<Promise<ServiceArea.Area[]>>;
@@ -24,36 +25,23 @@ class ServiceAreaServerBase extends Base {
   }
 
   private async update(entity: HomeAssistantEntityInformation) {
-    console.log(this.state);
-    // try {
-    //       // @ts-ignore
-    //   delete this.state.estimatedEndTime;
-    // } catch {}
-    // console.log(this.state);
-
-    applyPatchState(this.state, {
+    const statePatchObject: Partial<ServiceAreaServerBase.State> = {
       supportedAreas: await this.state.config.getServiceAreas(
         entity.state,
         this.agent
       ),
+      supportedMaps: await this.state.config.getMaps(entity.state, this.agent),
       currentArea: null,
-      estimatedEndTime: null,
-      // supportedMaps: await this.state.config.getMaps(entity.state, this.agent),
-    });
+      estimatedEndTime: null
+    }
 
-    // this.state
-    // applyPatchState(this.state, {
-    //   // currentArea: await this.state.config.getCurrentServiceArea(entity.state, this.agent),
-    //   supportedAreas: await this.state.config.getServiceAreas(entity.state, this.agent),
-    //   supportedMaps: await this.state.config.getMaps(entity.state, this.agent),
-    //   // currentArea: null,
-    //   // selectedAreas: [1],
-    //   // estimatedEndTime: null,
-    // });
-    // Object.assign(this.state, {
-    //   supportedAreas: await this.state.config.getServiceAreas(entity.state, this.agent),
-    //   supportedMaps: await this.state.config.getMaps(entity.state, this.agent)
-    // });
+    const isRunning = false;
+
+    if (isRunning) {
+      statePatchObject.currentArea = await this.state.config.getCurrentServiceArea(entity.state, this.agent);
+    }
+
+    applyPatchState(this.state, statePatchObject);
   }
 
   override async selectAreas({
@@ -69,6 +57,18 @@ class ServiceAreaServerBase extends Base {
       status: ServiceArea.SelectAreasStatus.Success,
       statusText: "Selected areas successfully",
     };
+  }
+
+  override skipArea(request: ServiceArea.SkipAreaRequest): MaybePromise<ServiceArea.SkipAreaResponse> {
+    return super.skipArea(request);
+  }
+
+  override removeSupportedAreasEntry(areaId: number): void {
+    super.removeSupportedAreasEntry(areaId);
+  }
+
+  override removeSupportedMapsEntry(mapId: number): void {
+    super.removeSupportedMapsEntry(mapId);
   }
 }
 

@@ -1,0 +1,42 @@
+diff --git a/dist/cjs/behaviors/service-area/ServiceAreaServer.js b/dist/cjs/behaviors/service-area/ServiceAreaServer.js
+index 8a05be0a1a10933f87375fe5cab2f4bf46958aa3..41b4771e959d0ce46c16384d83c367ee17228e79 100644
+--- a/dist/cjs/behaviors/service-area/ServiceAreaServer.js
++++ b/dist/cjs/behaviors/service-area/ServiceAreaServer.js
+@@ -94,9 +94,6 @@ class ServiceAreaBaseServer extends ServiceAreaBase {
+         if (mapIds.has(null)) {
+           throw new import_types.ValidationError(`Areas must not have a null mapId when supportedMaps is defined`);
+         }
+-        if (mapIds.size !== areas.length) {
+-          throw new import_types.ValidationError(`Areas must have a unique mapId`);
+-        }
+       } else {
+         if (!mapIds.has(null) || mapIds.size > 1) {
+           throw new import_types.ValidationError(`Areas must have a null mapId when supportedMaps is empty`);
+diff --git a/dist/esm/behaviors/service-area/ServiceAreaServer.js b/dist/esm/behaviors/service-area/ServiceAreaServer.js
+index ac793f3999927bbdcaca270a6c75e252989c2d3f..26bf5a5f170615f77adf7e74f772f65ac66c8313 100644
+--- a/dist/esm/behaviors/service-area/ServiceAreaServer.js
++++ b/dist/esm/behaviors/service-area/ServiceAreaServer.js
+@@ -70,9 +70,6 @@ class ServiceAreaBaseServer extends ServiceAreaBase {
+         if (mapIds.has(null)) {
+           throw new ValidationError(`Areas must not have a null mapId when supportedMaps is defined`);
+         }
+-        if (mapIds.size !== areas.length) {
+-          throw new ValidationError(`Areas must have a unique mapId`);
+-        }
+       } else {
+         if (!mapIds.has(null) || mapIds.size > 1) {
+           throw new ValidationError(`Areas must have a null mapId when supportedMaps is empty`);
+diff --git a/src/behaviors/service-area/ServiceAreaServer.ts b/src/behaviors/service-area/ServiceAreaServer.ts
+index 82e0f6b507aabf1b17f9c8498b6aae767cf51c32..7578c48536569e6f587afcc982d9fee3e24fe9d2 100644
+--- a/src/behaviors/service-area/ServiceAreaServer.ts
++++ b/src/behaviors/service-area/ServiceAreaServer.ts
+@@ -107,9 +107,6 @@ export class ServiceAreaBaseServer extends ServiceAreaBase {
+                 if (mapIds.has(null)) {
+                     throw new ValidationError(`Areas must not have a null mapId when supportedMaps is defined`);
+                 }
+-                if (mapIds.size !== areas.length) {
+-                    throw new ValidationError(`Areas must have a unique mapId`);
+-                }
+             } else {
+                 if (!mapIds.has(null) || mapIds.size > 1) {
+                     throw new ValidationError(`Areas must have a null mapId when supportedMaps is empty`);

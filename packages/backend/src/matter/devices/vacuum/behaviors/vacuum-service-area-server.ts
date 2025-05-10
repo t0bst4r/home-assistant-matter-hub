@@ -13,12 +13,9 @@ export const VacuumServiceAreaServer = ServiceAreaServer({
     }>({ action: "tplink.get_rooms", data: { map_id: -1 } });
     const { rooms, map_id } = result.response[entity.entity_id];
 
-    console.log({rooms});
-
     const r = Object.entries(rooms).map(([id, name]) => ({
       areaId: Number.parseInt(id),
-      // mapId: map_id,
-      mapId: null,
+      mapId: map_id,
       areaInfo: {
         landmarkInfo: null,
         locationInfo: {

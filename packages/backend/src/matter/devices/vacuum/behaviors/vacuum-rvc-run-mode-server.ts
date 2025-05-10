@@ -30,7 +30,7 @@ export const VacuumRvcRunModeServer = RvcRunModeServer({
     {
       label: "Cleaning",
       mode: RvcSupportedRunMode.Cleaning,
-      modeTags: [{ value: RvcRunMode.ModeTag.Cleaning }],
+      modeTags: [{ value: RvcRunMode.ModeTag.Cleaning, }],
     },
   ],
 
