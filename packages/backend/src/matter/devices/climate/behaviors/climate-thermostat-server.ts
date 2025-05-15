@@ -78,7 +78,7 @@ const config: ThermostatServerConfig = {
   getMinTemperature: (entity, agent) => getTemp(agent, entity, "min_temp"),
   getMaxTemperature: (entity, agent) => getTemp(agent, entity, "max_temp"),
   getCurrentTemperature: (entity, agent) =>
-    getTemp(agent, entity, "temperature"),
+    getTemp(agent, entity, "current_temperature"),
   getTargetHeatingTemperature: (entity, agent) =>
     getTemp(agent, entity, "target_temp_low") ??
     getTemp(agent, entity, "target_temperature") ??
