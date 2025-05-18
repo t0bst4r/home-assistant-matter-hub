@@ -43,7 +43,7 @@ The `type` can be one of:
 - `domain` - the domain you want to include or exclude
 - `platform` - the integration you want to include or exclude
 - `entity_category` -
-  the [entity category](https://developers.home-assistant.io/docs/core/entity/#registry-properties) (`configuration` /
+  the [entity category](https://developers.home-assistant.io/docs/core/entity/#registry-properties) (`config` /
   `diagnostic`) you want to include or exclude
 - `label` - the slug of a label you want to include or exclude
 - `area` - the slug of an area you want to include or exclude
