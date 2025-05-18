@@ -47,7 +47,6 @@ export class ColorControlServerBase extends FeaturedBase {
       config.getMinColorTempKelvin(entity.state, this.agent) ?? 1500;
     let maxKelvin =
       config.getMaxColorTempKelvin(entity.state, this.agent) ?? 8000;
-
     minKelvin = Math.min(
       minKelvin,
       maxKelvin,
@@ -58,8 +57,25 @@ export class ColorControlServerBase extends FeaturedBase {
       maxKelvin,
       currentKelvin ?? Number.NEGATIVE_INFINITY,
     );
+
     const color = config.getColor(entity.state, this.agent);
     const [hue, saturation] = color ? ColorConverter.toMatterHS(color) : [0, 0];
+
+    const minMireds = Math.floor(
+      ColorConverter.temperatureKelvinToMireds(maxKelvin),
+    );
+    const maxMireds = Math.ceil(
+      ColorConverter.temperatureKelvinToMireds(minKelvin),
+    );
+    const startUpMireds = ColorConverter.temperatureKelvinToMireds(
+      currentKelvin ?? maxKelvin,
+    );
+    let currentMireds: number | undefined = undefined;
+    if (currentKelvin != null) {
+      currentMireds = ColorConverter.temperatureKelvinToMireds(currentKelvin);
+      currentMireds = Math.max(Math.min(currentMireds, maxMireds), minMireds);
+    }
+
     applyPatchState(this.state, {
       colorMode: this.getColorModeFromFeatures(
         config.getCurrentMode(entity.state, this.agent),
@@ -72,22 +88,11 @@ export class ColorControlServerBase extends FeaturedBase {
         : {}),
       ...(this.features.colorTemperature
         ? {
-            coupleColorTempToLevelMinMireds: Math.floor(
-              ColorConverter.temperatureKelvinToMireds(maxKelvin),
-            ),
-            colorTempPhysicalMinMireds: Math.floor(
-              ColorConverter.temperatureKelvinToMireds(maxKelvin),
-            ),
-            colorTempPhysicalMaxMireds: Math.ceil(
-              ColorConverter.temperatureKelvinToMireds(minKelvin),
-            ),
-            startUpColorTemperatureMireds:
-              ColorConverter.temperatureKelvinToMireds(
-                currentKelvin ?? maxKelvin,
-              ),
-            colorTemperatureMireds: currentKelvin
-              ? ColorConverter.temperatureKelvinToMireds(currentKelvin)
-              : undefined,
+            coupleColorTempToLevelMinMireds: minMireds,
+            colorTempPhysicalMinMireds: minMireds,
+            colorTempPhysicalMaxMireds: maxMireds,
+            startUpColorTemperatureMireds: startUpMireds,
+            colorTemperatureMireds: currentMireds,
           }
         : {}),
     });
