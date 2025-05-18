@@ -32,3 +32,19 @@ This happens when either editing the bridge (even without making changes), or wh
 - `{{ areas() }}` - returns all areas
 
 If you just can't get it working with your labels, try to delete your label and re-create it.
+
+## My Vacuum does not appear in the Apple Home App
+
+Ensure that **all** home hubs in the Apple Home app are updated to **iOS/tvOS/AudioOS 18.4** or later – if **any** home hub is below 18.4, the vacuum device will not show up. To resolve this:
+
+1. **Check for updates**  
+   - **iPhone / iPad**:  
+     `Settings > General > Software Update`  
+   - **HomePod**:  
+     Open the Home app → Home Settings → Software Update  
+   - **Apple TV**:  
+     `Settings > System > Software Updates`
+
+2. **Install any pending updates**, then **restart** each hub.
+
+3. **Relaunch** the Home app and confirm the vacuum now appears under your accessories.
