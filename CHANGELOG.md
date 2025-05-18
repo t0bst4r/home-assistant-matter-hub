@@ -1,3 +1,26 @@
+## 3.0.0-alpha.84 (2025-05-18)
+
+### 🐛 Fixes
+
+- **climate:** use 'current_temperature' attribute to get current temperature ([b7475a7](https://github.com/t0bst4r/home-assistant-matter-hub/commit/b7475a7))
+- **light:** ensure color temperature is always within boundaries ([#676](https://github.com/t0bst4r/home-assistant-matter-hub/issues/676))
+
+### 📚 Documentation Changes
+
+- add warning to changelog ([810b166](https://github.com/t0bst4r/home-assistant-matter-hub/commit/810b166))
+- add hints for vacuums ([ae23c30](https://github.com/t0bst4r/home-assistant-matter-hub/commit/ae23c30))
+- fix possible values for entity-category filters ([dabdc1f](https://github.com/t0bst4r/home-assistant-matter-hub/commit/dabdc1f))
+
+### 🚧 Chores
+
+- upgrade all dependencies ([64d6407](https://github.com/t0bst4r/home-assistant-matter-hub/commit/64d6407))
+
+### ❤️ Thank You
+
+- Joonhyung Cho
+- Said Tahsin Dane @tasomaniac
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.83 (2025-04-24)
 
 ### 🐛 Fixes
