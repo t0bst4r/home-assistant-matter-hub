@@ -3,7 +3,7 @@
   "version": "dev",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
     "cleanup": "nx run-many -t cleanup --parallel 100 && nx reset && npx rimraf node_modules",
     "lint": "biome check",
@@ -19,20 +19,20 @@
   "workspaces": ["apps/*", "packages/*", "utils/*"],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@dotenvx/dotenvx": "^1.41.0",
-    "@nx/js": "20.8.0",
+    "@dotenvx/dotenvx": "^1.44.0",
+    "@nx/js": "21.0.3",
     "@swc-node/register": "~1.10.10",
-    "@swc/core": "~1.11.22",
+    "@swc/core": "~1.11.24",
     "@swc/helpers": "~0.5.17",
-    "esbuild": "^0.25.3",
+    "esbuild": "^0.25.4",
     "esbuild-plugin-noexternal": "^0.1.6",
-    "globals": "^16.0.0",
+    "globals": "^16.1.0",
     "nodemon": "^3.1.10",
-    "nx": "20.8.0",
+    "nx": "21.0.3",
     "rimraf": "^6.0.1",
-    "tsx": "^4.19.3",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "vite": "^6.3.3",
-    "vitest": "^3.1.2"
+    "vite": "^6.3.5",
+    "vitest": "^3.1.3"
   }
 }
