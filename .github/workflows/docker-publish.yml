@@ -13,6 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -31,21 +35,19 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Install dependencies and pack
         run: |
           cd apps/docker/standalone
-          npm ci
-          npm pack
+          pnpm install --frozen-lockfile
+          pnpm pack --out package.tgz
+          mv ../package.tgz .
 
       - name: Build and push Docker image (sha and latest tags)
         run: |
           cd apps/docker/standalone
-          cp ../../../../package.json .
-          cp ../../../../package-lock.json .
-          # Tag with sha and latest
-          export GIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-          # Update package.tgz if needed
-          if [ ! -f package.tgz ]; then npm pack; fi
-          ./build.sh --push --latest --all-platforms
+          ./build.sh --sha ${{ steps.vars.outputs.sha_short }} --push --latest --all-platforms
         env:
-          DOCKER_CLI_EXPERIMENTAL: enabled 
+          DOCKER_CLI_EXPERIMENTAL: enabled
