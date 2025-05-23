@@ -21,7 +21,7 @@ await copyDist(
   distDir(backendPackageJsonPath),
   path.join(dist, "backend"),
   250_000,
-  500_000,
+  600_000,
 );
 
 await copyFile(

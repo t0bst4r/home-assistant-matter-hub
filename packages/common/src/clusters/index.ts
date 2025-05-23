@@ -12,6 +12,7 @@ export * from "./window-covering.js";
 export * from "./media-input.js";
 export * from "./rvc-run-mode.js";
 export * from "./rvc-operational-state.js";
+export * from "./service-area.js";
 
 export enum ClusterId {
   homeAssistantEntity = "homeAssistantEntity",
@@ -36,4 +37,6 @@ export enum ClusterId {
   mediaInput = "mediaInput",
   rvcRunMode = "rvcRunMode",
   rvcOperationalState = "rvcOperationalState",
+  rvcCleanMode = "rvcCleanMode",
+  serviceArea = "serviceArea",
 }

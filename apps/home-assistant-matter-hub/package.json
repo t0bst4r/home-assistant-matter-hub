@@ -48,9 +48,10 @@
     "pack": "mkdir -p pack && pnpm pack --pack-destination pack --json | jq -r .filename > pack/package-name.txt"
   },
   "dependencies": {
-    "@matter/main": "0.13.0",
-    "@matter/nodejs": "0.13.0",
     "@matter/general": "0.13.0",
+    "@matter/main": "0.13.0",
+    "@matter/node": "0.13.0",
+    "@matter/nodejs": "0.13.0",
     "ajv": "8.17.1",
     "async-lock": "1.4.1",
     "color": "5.0.0",
@@ -62,14 +63,14 @@
     "nocache": "4.0.0",
     "rxjs": "7.8.2",
     "strip-color": "0.1.0",
-    "yargs": "17.7.2",
-    "ws": "8.18.2"
+    "ws": "8.18.2",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@home-assistant-matter-hub/build-utils": "workspace:*",
     "@home-assistant-matter-hub/backend": "workspace:*",
-    "@home-assistant-matter-hub/frontend": "workspace:*",
-    "@home-assistant-matter-hub/common": "workspace:*"
+    "@home-assistant-matter-hub/build-utils": "workspace:*",
+    "@home-assistant-matter-hub/common": "workspace:*",
+    "@home-assistant-matter-hub/frontend": "workspace:*"
   },
   "nx": {
     "targets": {

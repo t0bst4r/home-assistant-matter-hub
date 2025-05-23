@@ -58,6 +58,23 @@ export class HomeAssistantEntityBehavior extends Behavior {
       );
     }, 0);
   }
+
+  async callQueryAction<T>(action: HomeAssistantAction): Promise<T> {
+    const actions = this.env.get(HomeAssistantActions);
+    const lock = this.env.get(AsyncLock);
+    const lockKey = this.state.lockKey;
+    const log = this.internal.logger;
+
+    const target: HassServiceTarget = {
+      entity_id: this.entityId,
+    };
+
+    return await lock.acquire<T>(lockKey, async () =>
+      actions
+        .call<T>(action, target, true)
+        .catch((error) => console.error(error)),
+    );
+  }
 }
 
 export namespace HomeAssistantEntityBehavior {

@@ -13,9 +13,10 @@
   },
   "dependencies": {
     "@home-assistant-matter-hub/common": "workspace:*",
-    "@matter/main": "0.13.0",
-    "@matter/nodejs": "0.13.0",
     "@matter/general": "0.13.0",
+    "@matter/main": "0.13.0",
+    "@matter/node": "0.13.0",
+    "@matter/nodejs": "0.13.0",
     "ajv": "8.17.1",
     "async-lock": "1.4.1",
     "color": "5.0.0",
@@ -27,8 +28,8 @@
     "nocache": "4.0.0",
     "rxjs": "7.8.2",
     "strip-color": "0.1.0",
-    "yargs": "17.7.2",
-    "ws": "8.18.2"
+    "ws": "8.18.2",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
     "@home-assistant-matter-hub/build-utils": "workspace:*",
@@ -37,7 +38,7 @@
     "@types/express": "^5.0.2",
     "@types/lodash": "^4.17.16",
     "@types/strip-color": "^0.1.2",
-    "@types/yargs": "^17.0.33",
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "@types/yargs": "^17.0.33"
   }
 }

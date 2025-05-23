@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PACKAGE_VERSION=$(tar xfO package.tgz package/package.json | jq -r ".version")
-IMAGE_NAME="ghcr.io/t0bst4r/home-assistant-matter-hub"
+IMAGE_NAME="ghcr.io/alex-zissis/home-assistant-matter-hub"
 
 DOCKER_PUSH="false"
 TAG_LATEST="false"

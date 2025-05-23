@@ -1,0 +1,62 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # every day at 9am Sydney time (AEST/AEDT)
+  workflow_dispatch:     # allows manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/t0bst4r/home-assistant-matter-hub.git
+
+      - name: Fetch upstream
+        run: git fetch upstream
+
+      - name: Check for conflicts
+        id: check
+        run: |
+          git checkout main
+          if ! git merge --no-commit --no-ff upstream/main; then
+            git merge --abort
+            git checkout -b upstream-merge-conflict
+            git merge upstream/main
+            git add .
+            git commit -m "Merge upstream/main with conflicts"
+            git push origin upstream-merge-conflict
+            echo "conflict=true" >> $GITHUB_OUTPUT
+          else
+            git merge --abort
+            echo "conflict=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push if no conflict
+        if: steps.check.outputs.conflict == 'false'
+        run: |
+          git checkout main
+          git merge upstream/main
+          git push origin main
+
+      - name: Create PR if conflict
+        if: steps.check.outputs.conflict == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Conflict with upstream/main"
+          title: "Manual merge needed: Conflict with upstream/main"
+          body: |
+            This pull request was created automatically because the merge from upstream/main failed due to conflicts.
+          base: main
+          branch: upstream-merge-conflict

@@ -1,4 +1,7 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "utils/*"
+  - apps/*
+  - packages/*
+  - utils/*
+
+patchedDependencies:
+  '@matter/node': patches/@matter__node.patch

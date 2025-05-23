@@ -11,6 +11,7 @@ import {
   type RelativeHumidityMeasurementClusterState,
   type RvcOperationalStateClusterState,
   type RvcRunModeClusterState,
+  type ServiceAreaClusterState,
   type TemperatureMeasurementClusterState,
   type ThermostatClusterState,
   type WindowCoveringClusterState,
@@ -25,8 +26,10 @@ import { MediaInputState } from "./MediaInputState.tsx";
 import { OccupancySensingState } from "./OccupancySensingState.tsx";
 import { OnOffState } from "./OnOffState.tsx";
 import { RelativeHumidityMeasurementState } from "./RelativeHumidityMeasurementState.tsx";
+import { RvcCleanModeState } from "./RvcCleanModeState.tsx";
 import { RvcOperationalState } from "./RvcOperationalState.tsx";
 import { RvcRunModeState } from "./RvcRunModeState.tsx";
+import { ServiceAreaState } from "./ServiceAreaState.tsx";
 import { TemperatureMeasurementState } from "./TemperatureMeasurementState.tsx";
 import { ThermostatState } from "./ThermostatState.tsx";
 import { WindowCoveringState } from "./WindowCoveringState.tsx";
@@ -80,6 +83,12 @@ export const clusterRenderers: Record<
   ),
   [ClusterId.rvcOperationalState]: ({ state }) => (
     <RvcOperationalState state={state as RvcOperationalStateClusterState} />
+  ),
+  [ClusterId.rvcCleanMode]: ({ state }) => (
+    <RvcCleanModeState state={state as RvcCleanModeState} />
+  ),
+  [ClusterId.serviceArea]: ({ state }) => (
+    <ServiceAreaState state={state as ServiceAreaClusterState} />
   ),
   [ClusterId.homeAssistantEntity]: null,
   [ClusterId.descriptor]: null,
