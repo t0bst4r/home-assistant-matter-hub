@@ -68,8 +68,12 @@ export class HomeAssistantEntityBehavior extends Behavior {
     const target: HassServiceTarget = {
       entity_id: this.entityId,
     };
-      
-    return await lock.acquire<T>(lockKey, async () => actions.call<T>(action, target, true).catch((error) => console.error(error)));
+
+    return await lock.acquire<T>(lockKey, async () =>
+      actions
+        .call<T>(action, target, true)
+        .catch((error) => console.error(error)),
+    );
   }
 }
 

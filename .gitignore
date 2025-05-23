@@ -22,3 +22,6 @@ apps/home-assistant-matter-hub/LICENSE
 
 *.tsbuildinfo
 tmp/
+
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

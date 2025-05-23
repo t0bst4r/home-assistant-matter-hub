@@ -1,6 +1,9 @@
-import { ServiceAreaServer } from "../../../behaviors/service-area-server.js";
+import type { ServiceArea } from "@matter/main/clusters/service-area";
+import {
+  type CleanInfo,
+  ServiceAreaServer,
+} from "../../../behaviors/service-area-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
-import { ServiceArea } from "@matter/main/clusters/service-area";
 
 export const VacuumServiceAreaServer = ServiceAreaServer({
   getServiceAreas: async (entity, agent) => {
@@ -13,7 +16,7 @@ export const VacuumServiceAreaServer = ServiceAreaServer({
     }>({ action: "tplink.get_rooms", data: { map_id: -1 } });
     const { rooms, map_id } = result.response[entity.entity_id];
 
-    const r = Object.entries(rooms).map(([id, name]) => ({
+    return Object.entries(rooms).map(([id, name]) => ({
       areaId: Number.parseInt(id),
       mapId: map_id,
       areaInfo: {
@@ -25,10 +28,6 @@ export const VacuumServiceAreaServer = ServiceAreaServer({
         },
       },
     }));
-
-    console.log(r);
-
-    return r;
   },
 
   getCurrentServiceArea: async (entity, agent) => {
@@ -60,7 +59,28 @@ export const VacuumServiceAreaServer = ServiceAreaServer({
     }));
   },
 
-  selectAreas: (a) => {
-    return { action: "tplink.select_room", params: { room_id: 1 } };
+  getCurrentRoom: async (entity, agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const result = await homeAssistant.callQueryAction<{
+      response: Record<string, { current_room: number }>;
+    }>({
+      action: "tplink.get_current_room",
+    });
+
+    const response = result.response[entity.entity_id];
+
+    return response.current_room;
+  },
+
+  getCleanInfo: async (entity, agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const result = await homeAssistant.callQueryAction<{
+      response: Record<string, { getCleanInfo: CleanInfo }>;
+    }>({
+      action: "tplink.custom_query",
+      data: { query: "getCleanInfo" },
+    });
+
+    return result.response[entity.entity_id].getCleanInfo;
   },
 });

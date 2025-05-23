@@ -10,10 +10,10 @@ import _, { type Dictionary } from "lodash";
 import { type BetterLogger, LoggerService } from "../../environment/logger.js";
 import { HomeAssistantRegistry } from "../../home-assistant/home-assistant-registry.js";
 import { InvalidDeviceError } from "../../utils/errors/invalid-device-error.js";
+import { RvcSupportedRunMode } from "../behaviors/rvc-run-mode-server.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import { createDevice } from "./create-device.js";
 import { matchesEntityFilter } from "./matcher/matches-entity-filter.js";
-import { RvcSupportedRunMode } from "../behaviors/rvc-run-mode-server.js";
 
 export class BridgeDeviceManager {
   private readonly log: BetterLogger;

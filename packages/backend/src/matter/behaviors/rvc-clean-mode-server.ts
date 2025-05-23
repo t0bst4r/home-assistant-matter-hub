@@ -1,16 +1,19 @@
-import { ModeBase, RvcCleanMode } from "@matter/main/clusters";
-import { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
-import { RvcCleanModeServer as Base } from "@matter/main/behaviors";
-import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityInformation, VacuumFanSpeed } from "@home-assistant-matter-hub/common";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import {
+  type HomeAssistantEntityInformation,
+  VacuumFanSpeed,
+} from "@home-assistant-matter-hub/common";
 import { MaybePromise } from "@matter/general";
+import { RvcCleanModeServer as Base } from "@matter/main/behaviors";
+import { ModeBase, type RvcCleanMode } from "@matter/main/clusters";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export enum RvcSupportedCleanMode {
-    Quiet = 0,
-    Normal = 1,
-    Turbo = 2,
-    Max = 3,
+  Quiet = 0,
+  Normal = 1,
+  Turbo = 2,
+  Max = 3,
 }
 
 export interface RvcCleanModeServerConfig {
@@ -40,7 +43,9 @@ class RvcCleanModeServerBase extends Base {
     });
   }
 
-  override async changeToMode({ newMode }: ModeBase.ChangeToModeRequest): Promise<ModeBase.ChangeToModeResponse> {
+  override async changeToMode({
+    newMode,
+  }: ModeBase.ChangeToModeRequest): Promise<ModeBase.ChangeToModeResponse> {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     switch (newMode) {
       case RvcSupportedCleanMode.Quiet:
@@ -50,27 +55,30 @@ class RvcCleanModeServerBase extends Base {
         break;
       case RvcSupportedCleanMode.Normal:
         await homeAssistant.callAction(
-            this.state.config.changeFanSpeed("Standard", this.agent),
+          this.state.config.changeFanSpeed("Standard", this.agent),
         );
         break;
       case RvcSupportedCleanMode.Turbo:
         await homeAssistant.callAction(
-            this.state.config.changeFanSpeed("Turbo", this.agent),
+          this.state.config.changeFanSpeed("Turbo", this.agent),
         );
         break;
       case RvcSupportedCleanMode.Max:
         await homeAssistant.callAction(
-            this.state.config.changeFanSpeed("Max", this.agent),
+          this.state.config.changeFanSpeed("Max", this.agent),
         );
         break;
       default:
         await homeAssistant.callAction(
-            this.state.config.changeFanSpeed("Standard", this.agent),
+          this.state.config.changeFanSpeed("Standard", this.agent),
         );
         break;
     }
 
-    return {status: ModeBase.ModeChangeStatus.Success, statusText: "Successfully switched mode"};
+    return {
+      status: ModeBase.ModeChangeStatus.Success,
+      statusText: "Successfully switched mode",
+    };
   }
 }
 
