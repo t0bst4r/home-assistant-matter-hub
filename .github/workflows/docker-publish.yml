@@ -47,7 +47,9 @@ jobs:
 
       - name: Build and push Docker image (sha and latest tags)
         run: |
-          cd apps/docker/standalone
+          cd apps/docker
+          pnpm exec node retrieve-package.js
+          cd standalone
           ./build.sh --sha ${{ steps.vars.outputs.sha_short }} --push --latest --all-platforms
         env:
           DOCKER_CLI_EXPERIMENTAL: enabled
