@@ -1,3 +1,13 @@
+## 3.0.0-alpha.85 (2025-06-01)
+
+### 🚧 Chores
+
+- PSA (2025-06-01): Issues with Alexa ([#739](https://github.com/t0bst4r/home-assistant-matter-hub/pull/739))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.84 (2025-05-18)
 
 ### 🐛 Fixes
