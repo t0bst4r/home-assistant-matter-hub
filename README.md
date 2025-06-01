@@ -4,6 +4,15 @@
 
 ---
 
+## PSA (2025-06-01): Issues with Alexa
+
+In the last weeks, a lot of users reported issues with Alexa.
+It seems to be a bug in the Alexa eco-system, which we cannot fix on our site.
+
+We are currently in contact with Amazon and try to find the reasons for this.
+
+---
+
 ## About
 
 This project simulates bridges to publish your entities from Home Assistant to any Matter-compatible controller like
