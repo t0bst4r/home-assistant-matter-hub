@@ -62,7 +62,7 @@
     "nocache": "4.0.0",
     "rxjs": "7.8.2",
     "strip-color": "0.1.0",
-    "yargs": "17.7.2",
+    "yargs": "18.0.0",
     "ws": "8.18.2"
   },
   "devDependencies": {
