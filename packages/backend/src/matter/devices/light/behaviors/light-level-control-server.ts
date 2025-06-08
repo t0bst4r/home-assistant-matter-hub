@@ -13,7 +13,7 @@ const config: LevelControlConfig = {
     if (brightness != null) {
       return brightness / 255;
     }
-    return null;
+    return 0.0;
   },
   moveToLevelPercent: (brightnessPercent) => ({
     action: "light.turn_on",
