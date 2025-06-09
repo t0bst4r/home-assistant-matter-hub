@@ -44,10 +44,6 @@ describe("LightLevelControlServer", () => {
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any).constructor();
     serverInstance.agent = mockAgent;
-    serverInstance.State = {
-      config: serverFactory.State?.config ?? serverFactory?.config,
-      onLevel: 50,
-    };
     serverInstance.minLevel = 1;
     serverInstance.maxLevel = 254;
   });
