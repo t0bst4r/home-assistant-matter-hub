@@ -1,4 +1,8 @@
 import { describe, it, beforeEach, vi, expect } from "vitest";
+import type {
+  HomeAssistantEntityState,
+  LightDeviceAttributes,
+} from "@home-assistant-matter-hub/common";
 import { LightLevelControlServer } from "./light-level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../../../utils/apply-patch-state.js";
