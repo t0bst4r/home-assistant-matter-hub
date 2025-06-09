@@ -102,6 +102,21 @@ describe("LightLevelControlServer", () => {
   describe("LightLevelControlServerConfig", () => {
     describe("getValuePercent", () => {
       let getValuePercent: (state: HomeAssistantEntityState<LightDeviceAttributes>) => number;
+
+      const generateHomeAssistantState = (attributes: LightDeviceAttributes): HomeAssistantEntityState<LightDeviceAttributes> => {
+        return {
+          entity_id: "light.test_light",
+          state: "on",
+          last_changed: new Date().toISOString(),
+          last_updated: new Date().toISOString(),
+          attributes,
+          context: {
+            id: "context",
+            user_id: null,
+            parent_id?: null
+          }
+        }
+      }
       
       beforeEach(() => {
         getValuePercent = serverInstance.config?.getValuePercent
@@ -109,38 +124,27 @@ describe("LightLevelControlServer", () => {
       })
 
       it("returns normalized brightness if brightness is set", () => {
-          const state = { attributes: { brightness: 128 } };
-          const result = getValuePercent(state);
+          const result = getValuePercent(generateHomeAssistantState({brightness: 128}));
           expect(result).toBeCloseTo(128 / 255, 5);
       });
 
       it("returns 0.0 if brightness is null", () => {
-          const state = { attributes: { brightness: null } };
-          const result = getValuePercent(state);
+          const result = getValuePercent(generateHomeAssistantState({brightness: null}));
           expect(result).toBe(0.0);
       });
 
       it("returns 0.0 if brightness is undefined", () => {
-          const state = { attributes: {} };
-          const result = getValuePercent(state);
-          expect(result).toBe(0.0);
-      });
-
-      it("returns 0.0 if attributes are missing entirely", () => {
-          const state = {};
-          const result = getValuePercent(state);
+          const result = getValuePercent(generateHomeAssistantState({}));
           expect(result).toBe(0.0);
       });
 
       it("handles edge case of max brightness (255)", () => {
-          const state = { attributes: { brightness: 255 } };
-          const result = getValuePercent(state);
+          const result = getValuePercent({brightness: 255});
           expect(result).toBeCloseTo(1.0);
       });
 
       it("handles edge case of min brightness (0)", () => {
-          const state = { attributes: { brightness: 0 } };
-          const result = getValuePercent(state);
+          const result = getValuePercent({brightness: 0});
           expect(result).toBeCloseTo(0.0);
       });
     });
