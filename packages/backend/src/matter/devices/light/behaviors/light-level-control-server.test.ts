@@ -8,6 +8,7 @@ import {
   INSTALL_BEHAVIOR,
 } from "@matter/main";
 import { LightLevelControlServer } from "./light-level-control-server.js";
+import { LevelControlServerBase } from "../../../behaviors/level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../../../utils/apply-patch-state.js";
 
@@ -65,8 +66,13 @@ describe("LightLevelControlServer", () => {
       [INSTALL_BEHAVIOR]: vi.fn(),
     };
 
+    mockBaseState = new LevelControlServerBase.State();
+
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any)(mockAgent);
+    serverInstance.state = vi.fn().mockImplementation(() => {
+      return mockBaseState;
+    })
     // serverInstance.agent = mockAgent;
     // serverInstance.minLevel = 1;
     // serverInstance.maxLevel = 254;
