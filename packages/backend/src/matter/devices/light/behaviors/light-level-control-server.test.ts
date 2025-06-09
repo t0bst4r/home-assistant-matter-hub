@@ -66,7 +66,7 @@ describe("LightLevelControlServer", () => {
       [INSTALL_BEHAVIOR]: vi.fn(),
     };
 
-    mockBaseState = new LevelControlServerBase.State();
+    const mockBaseState = new LevelControlServerBase.State();
 
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any)(mockAgent);
