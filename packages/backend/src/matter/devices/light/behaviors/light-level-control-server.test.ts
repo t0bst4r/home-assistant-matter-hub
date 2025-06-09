@@ -6,14 +6,15 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import {
   INSTALL_BEHAVIOR,
-  BACKING,
-  STATE,
-  INTERNAL,
-  EVENTS
 } from "@matter/main";
 import { LightLevelControlServer } from "./light-level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../../../utils/apply-patch-state.js";
+
+const BACKING = Symbol("endpoint-owner");
+const STATE = Symbol("state");
+const INTERNAL = Symbol("internal");
+const EVENTS = Symbol("events");
 
 // 🧼 Mock the hell out of everything
 vi.mock("../custom-behaviors/home-assistant-entity-behavior", () => ({
