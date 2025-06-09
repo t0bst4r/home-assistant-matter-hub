@@ -53,8 +53,8 @@ describe("LightLevelControlServer", () => {
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any)(mockAgent);
     // serverInstance.agent = mockAgent;
-    serverInstance.minLevel = 1;
-    serverInstance.maxLevel = 254;
+    // serverInstance.minLevel = 1;
+    // serverInstance.maxLevel = 254;
   });
 
   it("calls applyPatchState with correct values during initialize", async () => {
