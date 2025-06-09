@@ -4,6 +4,9 @@ import type {
   HomeAssistantEntityStateAttributes,
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
+import {
+  INSTALL_BEHAVIOR
+} from "@matter/main";
 import { LightLevelControlServer } from "./light-level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 import { applyPatchState } from "../../../../utils/apply-patch-state.js";
@@ -44,6 +47,7 @@ describe("LightLevelControlServer", () => {
     mockAgent = {
       load: vi.fn().mockResolvedValue(behavior),
       get: vi.fn().mockReturnValue(behavior),
+      [INSTALL_BEHAVIOR]: vi.fn(),
     };
 
     const serverFactory = LightLevelControlServer;
