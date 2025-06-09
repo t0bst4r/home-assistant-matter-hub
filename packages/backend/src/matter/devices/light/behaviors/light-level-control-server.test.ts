@@ -139,12 +139,12 @@ describe("LightLevelControlServer", () => {
       });
 
       it("handles edge case of max brightness (255)", () => {
-          const result = getValuePercent({brightness: 255});
+          const result = getValuePercent(generateHomeAssistantState({brightness: 255}));
           expect(result).toBeCloseTo(1.0);
       });
 
       it("handles edge case of min brightness (0)", () => {
-          const result = getValuePercent({brightness: 0});
+          const result = getValuePercent(generateHomeAssistantState({brightness: 0}));
           expect(result).toBeCloseTo(0.0);
       });
     });
