@@ -6,6 +6,7 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import {
   INSTALL_BEHAVIOR,
+  Behavior,
 } from "@matter/main";
 import { LightLevelControlServer } from "./light-level-control-server.js";
 import { LevelControlServerBase } from "../../../behaviors/level-control-server.js";
@@ -44,6 +45,9 @@ describe("LightLevelControlServer", () => {
       subscribe: vi.fn(),
     };
 
+    const mockBaseState = new LevelControlServerBase.State();
+
+    vi.spyOn(Behavior.prototype, STATE).mockReturnValue(mockBaseState);
     const behavior = {
       entity: mockEntity,
       onChange: mockOnChange,
@@ -65,8 +69,6 @@ describe("LightLevelControlServer", () => {
       get: vi.fn().mockReturnValue(behavior),
       [INSTALL_BEHAVIOR]: vi.fn(),
     };
-
-    const mockBaseState = new LevelControlServerBase.State();
 
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any)(mockAgent);
