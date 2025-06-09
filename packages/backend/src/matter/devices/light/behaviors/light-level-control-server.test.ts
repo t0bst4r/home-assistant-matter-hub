@@ -44,8 +44,8 @@ describe("LightLevelControlServer", () => {
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any).constructor();
     serverInstance.agent = mockAgent;
-    serverInstance.state = {
-      config: serverFactory.state?.config ?? serverFactory?.config,
+    serverInstance.State = {
+      config: serverFactory.State?.config ?? serverFactory?.config,
       onLevel: 50,
     };
     serverInstance.minLevel = 1;
@@ -65,7 +65,7 @@ describe("LightLevelControlServer", () => {
   });
 
   it("calls Home Assistant action if level changes", async () => {
-    mockEntity.state.attributes.brightness = 64;
+    mockEntity.State.attributes.brightness = 64;
 
     const callActionSpy = vi.fn();
     mockAgent.get = vi.fn().mockReturnValue({
@@ -85,7 +85,7 @@ describe("LightLevelControlServer", () => {
 
   it("does not call Home Assistant action if level is the same", async () => {
     const brightness = 128;
-    mockEntity.state.attributes.brightness = brightness;
+    mockEntity.State.attributes.brightness = brightness;
     const level = Math.round((brightness / 255) * (254 - 1) + 1);
 
     const callActionSpy = vi.fn();
@@ -101,7 +101,7 @@ describe("LightLevelControlServer", () => {
 
   describe("LightLevelControlServerConfig", () => {
     describe("getValuePercent", () => {
-      const getValuePercent = LightLevelControlServer.state?.config?.getValuePercent
+      const getValuePercent = LightLevelControlServer.State?.config?.getValuePercent
           ?? (LightLevelControlServer as any).config?.getValuePercent;
 
       it("returns normalized brightness if brightness is set", () => {
