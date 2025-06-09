@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, vi, expect } from "vitest";
-import { LightLevelControlServer } from "./light-level-control-server";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior";
-import { applyPatchState } from "../../utils/apply-patch-state";
+import { LightLevelControlServer } from "./light-level-control-server.js";
+import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { applyPatchState } from "../../utils/apply-patch-state.js";
 
 // 🧼 Mock the hell out of everything
 vi.mock("../custom-behaviors/home-assistant-entity-behavior", () => ({
