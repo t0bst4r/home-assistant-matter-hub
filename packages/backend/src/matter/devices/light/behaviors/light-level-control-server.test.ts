@@ -5,7 +5,11 @@ import type {
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import {
-  INSTALL_BEHAVIOR
+  INSTALL_BEHAVIOR,
+  BACKING,
+  STATE,
+  INTERNAL,
+  EVENTS
 } from "@matter/main";
 import { LightLevelControlServer } from "./light-level-control-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
@@ -42,6 +46,9 @@ describe("LightLevelControlServer", () => {
       entity: mockEntity,
       onChange: mockOnChange,
       callAction: vi.fn(),
+      [EVENTS]: vi.fn(),
+      [INTERNAL]: vi.fn(),
+      [STATE]: vi.fn(),
     };
 
     mockAgent = {
