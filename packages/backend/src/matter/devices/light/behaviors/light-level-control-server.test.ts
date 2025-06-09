@@ -47,6 +47,9 @@ describe("LightLevelControlServer", () => {
       entity: mockEntity,
       onChange: mockOnChange,
       callAction: vi.fn(),
+      [EVENTS]: vi.fn(),
+      [INTERNAL]: vi.fn(),
+      [STATE]: vi.fn().mockImplementation(() => mockEntity.state),
       prototype: {
         [EVENTS]: vi.fn(),
         [INTERNAL]: vi.fn(),
