@@ -50,10 +50,12 @@ describe("LightLevelControlServer", () => {
       [EVENTS]: vi.fn(),
       [INTERNAL]: vi.fn(),
       [STATE]: vi.fn().mockImplementation(() => mockEntity.state),
+      state: vi.fn().mockImplementation(() => mockEntity.state),
       prototype: {
         [EVENTS]: vi.fn(),
         [INTERNAL]: vi.fn(),
         [STATE]: vi.fn().mockImplementation(() => mockEntity.state),
+        state: vi.fn().mockImplementation(() => mockEntity.state),
       }
     };
 
