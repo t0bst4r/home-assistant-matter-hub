@@ -97,7 +97,7 @@ describe("LightLevelControlServer", () => {
 
   describe("LightLevelControlServerConfig", () => {
     describe("getValuePercent", () => {
-      const getValuePercent = LightLevelControlServer.State?.config?.getValuePercent
+      const getValuePercent = serverInstance.config?.getValuePercent
           ?? (LightLevelControlServer as any).config?.getValuePercent;
 
       it("returns normalized brightness if brightness is set", () => {
