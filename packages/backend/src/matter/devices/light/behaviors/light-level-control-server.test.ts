@@ -70,7 +70,7 @@ describe("LightLevelControlServer", () => {
 
     const serverFactory = LightLevelControlServer;
     serverInstance = new (serverFactory as any)(mockAgent);
-    vi.spyOnProperty(serverInstance, "state", "get").mockReturnValue(mockBaseState);
+    vi.spyOn(serverInstance, "state").mockReturnValue(mockBaseState);
     
     // serverInstance.agent = mockAgent;
     // serverInstance.minLevel = 1;
