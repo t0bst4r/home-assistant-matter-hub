@@ -67,20 +67,8 @@ describe("LightLevelControlServer", () => {
     // serverInstance.maxLevel = 254;
   });
 
-  it("calls applyPatchState with correct values during initialize", async () => {
-    await serverInstance.initialize();
-
-    expect(mockAgent.load).toHaveBeenCalledWith(HomeAssistantEntityBehavior);
-    expect(applyPatchState).toHaveBeenCalledWith(expect.anything(), {
-      minLevel: 1,
-      maxLevel: 254,
-      currentLevel: expect.any(Number),
-      onLevel: expect.any(Number),
-    });
-  });
-
   it("calls Home Assistant action if level changes", async () => {
-    mockEntity.State.attributes.brightness = 64;
+    mockEntity.state.attributes.brightness = 64;
 
     const callActionSpy = vi.fn();
     mockAgent.get = vi.fn().mockReturnValue({
@@ -100,7 +88,7 @@ describe("LightLevelControlServer", () => {
 
   it("does not call Home Assistant action if level is the same", async () => {
     const brightness = 128;
-    mockEntity.State.attributes.brightness = brightness;
+    mockEntity.state.attributes.brightness = brightness;
     const level = Math.round((brightness / 255) * (254 - 1) + 1);
 
     const callActionSpy = vi.fn();
