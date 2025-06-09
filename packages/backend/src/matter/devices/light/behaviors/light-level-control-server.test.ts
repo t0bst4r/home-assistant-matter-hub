@@ -47,7 +47,14 @@ describe("LightLevelControlServer", () => {
 
     const mockBaseState = new LevelControlServerBase.State();
 
-    vi.spyOn(Behavior.prototype, STATE).mockReturnValue(mockBaseState);
+    vi.spyOn(Behavior.prototype, 'get').mockImplementation((arg) => {
+      switch(arg) {
+        case STATE:
+          return mockBaseState;
+        default:
+          return {};
+      }
+    });
     const behavior = {
       entity: mockEntity,
       onChange: mockOnChange,
