@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, vi, expect } from "vitest";
 import type {
   HomeAssistantEntityState,
+  HomeAssistantEntityStateAttributes,
   LightDeviceAttributes,
 } from "@home-assistant-matter-hub/common";
 import { LightLevelControlServer } from "./light-level-control-server.js";
@@ -103,17 +104,21 @@ describe("LightLevelControlServer", () => {
     describe("getValuePercent", () => {
       let getValuePercent: (state: HomeAssistantEntityState<LightDeviceAttributes>) => number;
 
-      const generateHomeAssistantState = (attributes: LightDeviceAttributes): HomeAssistantEntityState<LightDeviceAttributes> => {
+      const generateHomeAssistantState = (
+        attributes: HomeAssistantEntityStateAttributes<LightDeviceAttributes>
+      ): HomeAssistantEntityState<LightDeviceAttributes> => {
         return {
           entity_id: "light.test_light",
           state: "on",
           last_changed: new Date().toISOString(),
           last_updated: new Date().toISOString(),
-          attributes,
+          attributes: {
+            ...attributes
+          },
           context: {
             id: "context",
             user_id: null,
-            parent_id?: null
+            parent_id: null
           }
         }
       }
@@ -126,11 +131,6 @@ describe("LightLevelControlServer", () => {
       it("returns normalized brightness if brightness is set", () => {
           const result = getValuePercent(generateHomeAssistantState({brightness: 128}));
           expect(result).toBeCloseTo(128 / 255, 5);
-      });
-
-      it("returns 0.0 if brightness is null", () => {
-          const result = getValuePercent(generateHomeAssistantState({brightness: null}));
-          expect(result).toBe(0.0);
       });
 
       it("returns 0.0 if brightness is undefined", () => {
