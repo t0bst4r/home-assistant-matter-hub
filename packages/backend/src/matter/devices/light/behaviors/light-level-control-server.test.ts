@@ -97,6 +97,9 @@ describe("LightLevelControlServer", () => {
 
   describe("LightLevelControlServerConfig", () => {
     describe("getValuePercent", () => {
+      console.dir({
+        serverInstance
+      });
       const getValuePercent = serverInstance.config?.getValuePercent
           ?? (LightLevelControlServer as any).config?.getValuePercent;
 
