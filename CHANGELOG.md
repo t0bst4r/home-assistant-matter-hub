@@ -1,3 +1,13 @@
+## 3.0.0-alpha.86 (2025-06-11)
+
+### 🐛 Fixes
+
+- **light:** Return 0.0 instead  of null for light brightness to prevent apple home to fail ([7ddbfdd](https://github.com/t0bst4r/home-assistant-matter-hub/commit/7ddbfdd))
+
+### ❤️ Thank You
+
+- Teagan Glenn
+
 ## 3.0.0-alpha.85 (2025-06-01)
 
 ### 🚧 Chores
