@@ -1,11 +1,11 @@
 import type { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 import { LightSensorDevice } from "@matter/main/devices";
 import { BasicInformationServer } from "../../../behaviors/basic-information-server.js";
+import { IdentifyServer } from "../../../behaviors/identify-server.js";
 import {
   type IlluminanceMeasurementConfig,
   IlluminanceMeasurementServer,
 } from "../../../behaviors/illuminance-measurement-server.js";
-import { IdentifyServer } from "../../../behaviors/identify-server.js";
 import { HomeAssistantEntityBehavior } from "../../../custom-behaviors/home-assistant-entity-behavior.js";
 
 const illuminanceSensorConfig: IlluminanceMeasurementConfig = {

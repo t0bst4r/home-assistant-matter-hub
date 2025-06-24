@@ -5,8 +5,8 @@ import {
 import type { EndpointType } from "@matter/main";
 import type { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
 import { HumiditySensorType } from "./devices/humidity-sensor.js";
-import { TemperatureSensorType } from "./devices/temperature-sensor.js";
 import { IlluminanceSensorType } from "./devices/illuminance-sensor.js";
+import { TemperatureSensorType } from "./devices/temperature-sensor.js";
 
 export function SensorDevice(
   homeAssistantEntity: HomeAssistantEntityBehavior.State,

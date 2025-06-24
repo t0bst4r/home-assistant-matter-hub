@@ -44,6 +44,8 @@ namespace IlluminanceMeasurementServerBase {
   }
 }
 
-export function IlluminanceMeasurementServer(config: IlluminanceMeasurementConfig) {
+export function IlluminanceMeasurementServer(
+  config: IlluminanceMeasurementConfig,
+) {
   return IlluminanceMeasurementServerBase.set({ config });
 }
