@@ -4,7 +4,7 @@ import {
   type ColorControlClusterState,
   type DoorLockClusterState,
   type FanControlClusterState,
-  type IlluminanceClusterState,
+  type IlluminanceMeasurementClusterState,
   type LevelControlClusterState,
   type MediaInputClusterState,
   type OccupancySensingClusterState,
@@ -70,7 +70,7 @@ export const clusterRenderers: Record<
   ),
   [ClusterId.illuminanceMeasurement]: ({ state }) => (
     <IlluminanceMeasurementState
-      state={state as IlluminanceClusterState}
+      state={state as IlluminanceMeasurementClusterState}
     />
   ),
   [ClusterId.thermostat]: ({ state }) => (
