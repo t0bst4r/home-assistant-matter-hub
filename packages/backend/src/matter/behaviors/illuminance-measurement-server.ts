@@ -34,7 +34,15 @@ class IlluminanceMeasurementServerBase extends Base {
     if (illuminance == null) {
       return null;
     }
-    return illuminance * 100;
+
+    if (illuminance < 1) {
+      return 0;
+    }
+
+    const measuredValue = Math.round(10000 * Math.log10(illuminance) + 1);
+    const clamped = Math.min(0xFFFE, Math.max(1, measuredValue));
+    console.log(clamped, measuredValue, illuminance);
+    return clamped;
   }
 }
 
