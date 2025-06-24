@@ -111,6 +111,9 @@ const testEntities: Record<
     createEntity<SensorDeviceAttributes>("sensor.s2", "on", {
       device_class: SensorDeviceClass.humidity,
     }),
+    createEntity<SensorDeviceAttributes>("sensor.s3", "on", {
+      device_class: SensorDeviceClass.illuminance,
+    }),
   ],
   [HomeAssistantDomain.switch]: [createEntity("switch.sw1", "on")],
   [HomeAssistantDomain.automation]: [
