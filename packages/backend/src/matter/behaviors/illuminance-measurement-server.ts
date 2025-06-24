@@ -41,7 +41,6 @@ class IlluminanceMeasurementServerBase extends Base {
 
     const measuredValue = Math.round(10000 * Math.log10(illuminance) + 1);
     const clamped = Math.min(0xfffe, Math.max(1, measuredValue));
-    console.log(clamped, measuredValue, illuminance);
     return clamped;
   }
 }
