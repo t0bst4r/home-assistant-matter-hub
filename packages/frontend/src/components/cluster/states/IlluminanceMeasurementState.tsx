@@ -9,7 +9,7 @@ function measuredToLux(measured: number): number {
   if (measured <= 1) {
     return 0;
   }
-  return Math.pow(10, (measured - 1) / 10000);
+  return 10 ** ((measured - 1) / 10000);
 }
 
 export const IlluminanceMeasurementState = ({
@@ -19,13 +19,10 @@ export const IlluminanceMeasurementState = ({
   if (mv == null) {
     return <LightModeIcon />;
   }
-
-  const lux = measuredToLux(mv);
-  
   return (
     <>
       <LightModeIcon fontSize="medium" />
-      <span>{lux.toFixed(1)} lx</span>
+      <span>{measuredToLux(mv).toFixed(1)} lx</span>
     </>
   );
 };
