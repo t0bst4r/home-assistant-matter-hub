@@ -4,7 +4,7 @@ import {
   type ColorControlClusterState,
   type DoorLockClusterState,
   type FanControlClusterState,
-  type IlluminanceClusterState
+  type IlluminanceClusterState,
   type LevelControlClusterState,
   type MediaInputClusterState,
   type OccupancySensingClusterState,
