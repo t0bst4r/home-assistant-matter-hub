@@ -70,14 +70,14 @@ importers:
   apps/home-assistant-matter-hub:
     dependencies:
       '@matter/general':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       '@matter/main':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       '@matter/nodejs':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       ajv:
         specifier: 8.17.1
         version: 8.17.1
@@ -137,14 +137,14 @@ importers:
         specifier: workspace:*
         version: link:../common
       '@matter/general':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       '@matter/main':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       '@matter/nodejs':
-        specifier: 0.13.0
-        version: 0.13.0
+        specifier: 0.12.5
+        version: 0.12.5
       ajv:
         specifier: 8.17.1
         version: 8.17.1
@@ -1226,27 +1226,27 @@ packages:
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
 
-  '@matter/general@0.13.0':
-    resolution: {integrity: sha512-PZ+FVJotKWgtoBvorqN+PLCuTBBbTCJTCss2P5C6n9r/ZAIcCgW7LDTFmRXNNNMJEri8JUVR0REvHaa92zVj2Q==}
+  '@matter/general@0.12.5':
+    resolution: {integrity: sha512-bjFZ88Wzlh3zpi55zjjx+XxLySqQ0jEgPTzv/SMn4hq27Ny13MB8G3jIJ9Y/pPRCjT2fu8WVTbVnbZimdVs2nw==}
 
-  '@matter/main@0.13.0':
-    resolution: {integrity: sha512-Qu60G05f821bEtp2yU+rJ7Xpe66GHDn9NdSPGrAn1EJH/iWplmVeLS1nSXzyGE28iPVPYNLcMX0edY/FejAhmQ==}
+  '@matter/main@0.12.5':
+    resolution: {integrity: sha512-CEGLc9AjVTxiXJVkgTF+fvTSxdqEwDjcP3hdLmk25J23+U/NNGgQ+Npu2lHaNyFtGgzf/GSPVhaPjYKOsDNe7A==}
 
-  '@matter/model@0.13.0':
-    resolution: {integrity: sha512-rcXu7OdMctlOGVOkClH6/+11ct6FMDSK2/Yu05+J7BJfohJY5mQbo0jnz8l0FPbwRrk5ADbqfAJ5jh/1OKHR2Q==}
+  '@matter/model@0.12.5':
+    resolution: {integrity: sha512-63aM1CTvtlyUKOArk4sTpmYxT008nhAfzh5wpcrkugC/NPrhN2QVDpCRqK2K+azu9bhz66fPgrKiDUoo0ZsVdQ==}
 
-  '@matter/node@0.13.0':
-    resolution: {integrity: sha512-HQkzpRnhAUfj9u2ijkT4qgyFzEfaNqyAxh+dgMpLKnbbGQoHTskJ/wEgkRRI7B0Q57mr6VJ5KgXYdbXUYA7xFA==}
+  '@matter/node@0.12.5':
+    resolution: {integrity: sha512-2wuQ3qMhsaDh2NUefpWKVY+mt2Jf3yqGi66ycvWzhSR50qLsR8ZdqtuTK5a1hy/V9O+2IPYfY6fYidScl7s0bg==}
 
-  '@matter/nodejs@0.13.0':
-    resolution: {integrity: sha512-ThWrLZJo7UH4Ebanf3gxkhe2p8vq4X3PxyRG+ICDRGPfzSAJZ3znh2hD/zdvcdyzQlSoXeLpFbLpTkJu7aRMHg==}
+  '@matter/nodejs@0.12.5':
+    resolution: {integrity: sha512-XpZccAa/X6TmuHbuWt5VgVSPRWgmvyUeYwXquUvPJyK2SHg1fmnaj/f2hsm1QiNgRWA4swbkK7qI/QFMsQH1pQ==}
     engines: {node: '>=18.0.0'}
 
-  '@matter/protocol@0.13.0':
-    resolution: {integrity: sha512-wFxU6+LG5ygzruOV5JF30hmLkk88hz8PqAMkQ6ow81ZvoDFBevsW0OyqxXMCNwYd/zmGXmvr3mpC0mi9/troHg==}
+  '@matter/protocol@0.12.5':
+    resolution: {integrity: sha512-tDHu8eJUSPFvNOkLxeaAxyJRDOkA4Avd0zDduPn/GVY/h/6M6diRGlBNW1AHLyPMmLOGpp8L3DzJorBZkUiO1g==}
 
-  '@matter/types@0.13.0':
-    resolution: {integrity: sha512-8mH7hRC4MBSy4KUs8zb6uDTr0MfRYGtGBFq9t2uedlsiHA5lMUP3L1fitszoeCbpJh4EeqKHWSvF6RxWzKNueA==}
+  '@matter/types@0.12.5':
+    resolution: {integrity: sha512-S/dwVpPHWE/VKsmG70/72ZSsW1RE1yeRuc13tsRsdRbSr5T9CKyNfdIsZmNKgqTzjjdrjyYGX7ODn/3kkNHTYA==}
 
   '@mui/core-downloads-tracker@6.4.10':
     resolution: {integrity: sha512-cblGjlM6+xsptwyaALw8RbRIUoqmKxOqLxlk2LkTDhxqUuql1YSOKKLH3w+Yd2QLz28b7MR65sx1OjsRZUfOSQ==}
@@ -1351,6 +1351,10 @@ packages:
 
   '@noble/curves@1.9.0':
     resolution: {integrity: sha512-7YDlXiNMdO1YZeH6t/kvopHHbIZzlxrCV9WLqCY6QhcXOoXiNCMDqJIglZ9Yjx5+w7Dz30TITFrlTjnRg7sKEg==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/curves@1.9.2':
+    resolution: {integrity: sha512-HxngEd2XUcg9xi20JkwlLCtYwfoFw4JGkuZpT+WlsPD4gB/cxkvTD8fSsoAnphGZhFdZYKeQIPCuFlWPm1uE0g==}
     engines: {node: ^14.21.3 || >=16}
 
   '@noble/hashes@1.8.0':
@@ -2817,6 +2821,10 @@ packages:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
     engines: {node: '>=6'}
 
+  imurmurhash@0.1.4:
+    resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
+    engines: {node: '>=0.8.19'}
+
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
@@ -3283,6 +3291,10 @@ packages:
   nocache@4.0.0:
     resolution: {integrity: sha512-AntnTbmKZvNYIsTVPPwv7dfZdAfo/6H/2ZlZACK66NAOQtIApxkB/6pf/c+s+ACW8vemGJzUCyVTssrzNUK6yQ==}
     engines: {node: '>=16.0.0'}
+
+  node-localstorage@3.0.5:
+    resolution: {integrity: sha512-GCwtK33iwVXboZWYcqQHu3aRvXEBwmPkAMRBLeaX86ufhqslyUkLGsi4aW3INEfdQYpUB5M9qtYf3eHvAk2VBg==}
+    engines: {node: '>=0.12'}
 
   node-machine-id@1.1.12:
     resolution: {integrity: sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==}
@@ -4122,6 +4134,10 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  write-file-atomic@5.0.1:
+    resolution: {integrity: sha512-+QU2zd6OTD8XWIJCbffaiQeH9U73qIqafo1x6V1snCWYGJf6cVE0cDR4D8xRzcEnfI21IFrUPzPGtcPf8AC+Rw==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
   ws@8.18.2:
     resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
@@ -5213,48 +5229,54 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@matter/general@0.13.0':
+  '@matter/general@0.12.5':
     dependencies:
-      '@noble/curves': 1.9.0
+      '@noble/curves': 1.9.2
 
-  '@matter/main@0.13.0':
+  '@matter/main@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
-      '@matter/model': 0.13.0
-      '@matter/node': 0.13.0
-      '@matter/protocol': 0.13.0
-      '@matter/types': 0.13.0
+      '@matter/general': 0.12.5
+      '@matter/model': 0.12.5
+      '@matter/node': 0.12.5
+      '@matter/protocol': 0.12.5
+      '@matter/types': 0.12.5
+      '@noble/curves': 1.9.2
     optionalDependencies:
-      '@matter/nodejs': 0.13.0
+      '@matter/nodejs': 0.12.5
 
-  '@matter/model@0.13.0':
+  '@matter/model@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
+      '@matter/general': 0.12.5
+      '@noble/curves': 1.9.2
 
-  '@matter/node@0.13.0':
+  '@matter/node@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
-      '@matter/model': 0.13.0
-      '@matter/protocol': 0.13.0
-      '@matter/types': 0.13.0
+      '@matter/general': 0.12.5
+      '@matter/model': 0.12.5
+      '@matter/protocol': 0.12.5
+      '@matter/types': 0.12.5
+      '@noble/curves': 1.9.2
 
-  '@matter/nodejs@0.13.0':
+  '@matter/nodejs@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
-      '@matter/node': 0.13.0
-      '@matter/protocol': 0.13.0
-      '@matter/types': 0.13.0
+      '@matter/general': 0.12.5
+      '@matter/node': 0.12.5
+      '@matter/protocol': 0.12.5
+      '@matter/types': 0.12.5
+      node-localstorage: 3.0.5
 
-  '@matter/protocol@0.13.0':
+  '@matter/protocol@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
-      '@matter/model': 0.13.0
-      '@matter/types': 0.13.0
+      '@matter/general': 0.12.5
+      '@matter/model': 0.12.5
+      '@matter/types': 0.12.5
+      '@noble/curves': 1.9.2
 
-  '@matter/types@0.13.0':
+  '@matter/types@0.12.5':
     dependencies:
-      '@matter/general': 0.13.0
-      '@matter/model': 0.13.0
+      '@matter/general': 0.12.5
+      '@matter/model': 0.12.5
+      '@noble/curves': 1.9.2
 
   '@mui/core-downloads-tracker@6.4.10': {}
 
@@ -5357,6 +5379,10 @@ snapshots:
   '@noble/ciphers@1.2.1': {}
 
   '@noble/curves@1.9.0':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
+  '@noble/curves@1.9.2':
     dependencies:
       '@noble/hashes': 1.8.0
 
@@ -6921,6 +6947,8 @@ snapshots:
       parent-module: 1.0.1
       resolve-from: 4.0.0
 
+  imurmurhash@0.1.4: {}
+
   inherits@2.0.4: {}
 
   inline-style-parser@0.2.4: {}
@@ -7539,6 +7567,10 @@ snapshots:
       tslib: 2.8.1
 
   nocache@4.0.0: {}
+
+  node-localstorage@3.0.5:
+    dependencies:
+      write-file-atomic: 5.0.1
 
   node-machine-id@1.1.12: {}
 
@@ -8497,6 +8529,11 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
+
+  write-file-atomic@5.0.1:
+    dependencies:
+      imurmurhash: 0.1.4
+      signal-exit: 4.1.0
 
   ws@8.18.2: {}
 

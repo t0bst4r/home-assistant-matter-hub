@@ -18,13 +18,13 @@ export class CustomStorage extends StorageBackendDisk {
   }
 
   override async initialize() {
-    await super.initialize();
+    super.initialize();
     if (fs.existsSync(`${this.path}.json`)) {
       await this.migrateLegacyStorage(this.loggerService, this.path);
     }
   }
 
-  override async keys(contexts: string[]): Promise<string[]> {
+  override keys(contexts: string[]): string[] {
     const key = this.getContextBaseKey(contexts);
     const clusters: string[] = Object.values(ClusterId);
     if (
@@ -33,7 +33,7 @@ export class CustomStorage extends StorageBackendDisk {
     ) {
       return [];
     }
-    return await super.keys(contexts);
+    return super.keys(contexts);
   }
 
   private async migrateLegacyStorage(
