@@ -15,6 +15,11 @@ const homeAssistantMatcherSchema: JSONSchema7 = {
       type: "string",
       minLength: 1,
     },
+    invert: {
+      title: "Invert",
+      type: "boolean",
+      default: false,
+    }
   },
   required: ["type", "value"],
   additionalProperties: false,

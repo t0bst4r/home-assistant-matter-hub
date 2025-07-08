@@ -10,7 +10,10 @@ export function matchesEntityFilter(
 ): string[] | undefined {
   const reasons: string[] = [];
   if (filter.include.length > 0) {
-    if (!filter.include.some((matcher) => testMatcher(entity, matcher))) {
+    if (!filter.include.some((matcher) => {
+      var results: boolean = testMatcher(entity, matcher);
+      return matcher.invert ? !results : results;
+    })) {
       reasons.push("not included");
     }
   }
