@@ -1,7 +1,6 @@
 import {
   type BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  type BridgeFeatureFlags,
   type ClimateDeviceAttributes,
   ClimateHvacAction,
   ClimateHvacMode,

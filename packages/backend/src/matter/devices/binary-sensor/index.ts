@@ -1,7 +1,6 @@
 import {
   type BinarySensorDeviceAttributes,
   BinarySensorDeviceClass,
-  type BridgeFeatureFlags,
 } from "@home-assistant-matter-hub/common";
 import type { EndpointType } from "@matter/main";
 import type { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";

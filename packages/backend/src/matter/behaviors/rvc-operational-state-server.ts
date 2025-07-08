@@ -46,31 +46,25 @@ class RvcOperationalStateServerBase extends Base {
     });
   }
 
-  override pause =
-    async (): Promise<RvcOperationalState.OperationalCommandResponse> => {
-      const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-      await homeAssistant.callAction(
-        this.state.config.pause(void 0, this.agent),
-      );
-      return {
-        commandResponseState: {
-          errorStateId: ErrorState.NoError,
-        },
-      };
+  override pause(): RvcOperationalState.OperationalCommandResponse {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    homeAssistant.callAction(this.state.config.pause(void 0, this.agent));
+    return {
+      commandResponseState: {
+        errorStateId: ErrorState.NoError,
+      },
     };
+  }
 
-  override resume =
-    async (): Promise<RvcOperationalState.OperationalCommandResponse> => {
-      const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-      await homeAssistant.callAction(
-        this.state.config.resume(void 0, this.agent),
-      );
-      return {
-        commandResponseState: {
-          errorStateId: ErrorState.NoError,
-        },
-      };
+  override resume(): RvcOperationalState.OperationalCommandResponse {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    homeAssistant.callAction(this.state.config.resume(void 0, this.agent));
+    return {
+      commandResponseState: {
+        errorStateId: ErrorState.NoError,
+      },
     };
+  }
 }
 
 namespace RvcOperationalStateServerBase {

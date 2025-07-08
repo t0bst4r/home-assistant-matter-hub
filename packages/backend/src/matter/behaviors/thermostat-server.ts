@@ -9,10 +9,9 @@ import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 import SystemMode = Thermostat.SystemMode;
 import RunningMode = Thermostat.ThermostatRunningMode;
-import type {
-  Feature,
-  FeatureSelection,
-} from "../../utils/feature-selection.js";
+import type { ActionContext } from "@matter/main";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
+import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
 
@@ -55,21 +54,17 @@ export class ThermostatServerBase extends FeaturedBase {
     await this.env.load(HomeAssistantConfig);
 
     this.update(homeAssistant.entity);
-    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged, {
-      offline: true,
-    });
+    this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     if (this.features.cooling) {
       this.reactTo(
         this.events.occupiedCoolingSetpoint$Changed,
         this.coolingSetpointChanged,
-        { offline: true },
       );
     }
     if (this.features.heating) {
       this.reactTo(
         this.events.occupiedHeatingSetpoint$Changed,
         this.heatingSetpointChanged,
-        { offline: true },
       );
     }
     this.reactTo(homeAssistant.onChange, this.update);
@@ -135,9 +130,7 @@ export class ThermostatServerBase extends FeaturedBase {
     });
   }
 
-  override async setpointRaiseLower(
-    request: Thermostat.SetpointRaiseLowerRequest,
-  ) {
+  override setpointRaiseLower(request: Thermostat.SetpointRaiseLowerRequest) {
     const config = this.state.config;
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const state = homeAssistant.entity.state;
@@ -159,62 +152,48 @@ export class ThermostatServerBase extends FeaturedBase {
       request.mode !== Thermostat.SetpointRaiseLowerMode.Cool
         ? heat.plus(request.amount / 1000, "°C")
         : heat;
-    await this.setTemperature(adjustedHeat, adjustedCool, request.mode);
+    this.setTemperature(adjustedHeat, adjustedCool, request.mode);
   }
 
-  private async heatingSetpointChanged(value: number) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const config = this.state.config;
-    const entity = homeAssistant.entity;
-
+  private heatingSetpointChanged(
+    value: number,
+    _oldValue: number,
+    context: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     const next = Temperature.celsius(value / 100);
     if (!next) {
       return;
     }
-
-    const current = config.getTargetHeatingTemperature(
-      entity.state,
-      this.agent,
-    );
-
-    if (next.equals(current)) {
-      return;
-    }
-
-    await this.setTemperature(
+    this.setTemperature(
       next,
       Temperature.celsius(this.state.occupiedCoolingSetpoint / 100)!,
       Thermostat.SetpointRaiseLowerMode.Heat,
     );
   }
 
-  private async coolingSetpointChanged(value: number) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const config = this.state.config;
-    const entity = homeAssistant.entity;
-
+  private coolingSetpointChanged(
+    value: number,
+    _oldValue: number,
+    context: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     const next = Temperature.celsius(value / 100);
     if (!next) {
       return;
     }
-
-    const current = config.getTargetCoolingTemperature(
-      entity.state,
-      this.agent,
-    );
-
-    if (next.equals(current)) {
-      return;
-    }
-
-    await this.setTemperature(
+    this.setTemperature(
       Temperature.celsius(this.state.occupiedHeatingSetpoint / 100)!,
       next,
       Thermostat.SetpointRaiseLowerMode.Cool,
     );
   }
 
-  private async setTemperature(
+  private setTemperature(
     low: Temperature,
     high: Temperature,
     mode: Thermostat.SetpointRaiseLowerMode,
@@ -234,16 +213,19 @@ export class ThermostatServerBase extends FeaturedBase {
       const both = mode === Thermostat.SetpointRaiseLowerMode.Heat ? low : high;
       action = config.setTargetTemperature(both, this.agent);
     }
-    await homeAssistant.callAction(action);
+    homeAssistant.callAction(action);
   }
 
-  private async systemModeChanged(systemMode: Thermostat.SystemMode) {
-    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    const current = this.getSystemMode(homeAssistant.entity);
-    if (systemMode === current) {
+  private systemModeChanged(
+    systemMode: Thermostat.SystemMode,
+    _oldValue: Thermostat.SystemMode,
+    context: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
       return;
     }
-    await homeAssistant.callAction(
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    homeAssistant.callAction(
       this.state.config.setSystemMode(systemMode, this.agent),
     );
   }

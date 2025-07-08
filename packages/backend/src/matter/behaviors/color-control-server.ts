@@ -6,10 +6,7 @@ import { ColorControlServer as Base } from "@matter/main/behaviors/color-control
 import { ColorControl } from "@matter/main/clusters";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import type {
-  Feature,
-  FeatureSelection,
-} from "../../utils/feature-selection.js";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
@@ -98,7 +95,7 @@ export class ColorControlServerBase extends FeaturedBase {
     });
   }
 
-  override async moveToColorTemperatureLogic(targetMireds: number) {
+  override moveToColorTemperatureLogic(targetMireds: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const current = homeAssistant.entity.state;
     const currentKelvin = this.state.config.getCurrentKelvin(
@@ -112,24 +109,18 @@ export class ColorControlServerBase extends FeaturedBase {
     }
 
     const action = this.state.config.setTemperature(targetKelvin, this.agent);
-    await homeAssistant.callAction(action);
+    homeAssistant.callAction(action);
   }
 
-  override async moveToHueLogic(targetHue: number) {
-    await this.moveToHueAndSaturationLogic(
-      targetHue,
-      this.state.currentSaturation,
-    );
+  override moveToHueLogic(targetHue: number) {
+    this.moveToHueAndSaturationLogic(targetHue, this.state.currentSaturation);
   }
 
-  override async moveToSaturationLogic(targetSaturation: number) {
-    await this.moveToHueAndSaturationLogic(
-      this.state.currentHue,
-      targetSaturation,
-    );
+  override moveToSaturationLogic(targetSaturation: number) {
+    this.moveToHueAndSaturationLogic(this.state.currentHue, targetSaturation);
   }
 
-  override async moveToHueAndSaturationLogic(
+  override moveToHueAndSaturationLogic(
     targetHue: number,
     targetSaturation: number,
   ) {
@@ -146,7 +137,7 @@ export class ColorControlServerBase extends FeaturedBase {
     }
     const color = ColorConverter.fromMatterHS(targetHue, targetSaturation);
     const action = this.state.config.setColor(color, this.agent);
-    await homeAssistant.callAction(action);
+    homeAssistant.callAction(action);
   }
 
   private getColorModeFromFeatures(mode: ColorControlMode | undefined) {
