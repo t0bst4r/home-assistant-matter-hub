@@ -18,8 +18,8 @@ class MediaInputServerBase extends Base {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update);
+    this.update(homeAssistant.entity);
   }
 
   private update(entity: HomeAssistantEntityInformation) {
@@ -43,17 +43,17 @@ class MediaInputServerBase extends Base {
     });
   }
 
-  override async selectInput(request: MediaInput.SelectInputRequest) {
+  override selectInput(request: MediaInput.SelectInputRequest) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const target = this.state.inputList[request.index];
-    await homeAssistant.callAction(
+    homeAssistant.callAction(
       this.state.config.selectSource(target.name, this.agent),
     );
   }
 
-  override async showInputStatus() {}
+  override showInputStatus() {}
 
-  override async hideInputStatus() {}
+  override hideInputStatus() {}
 }
 
 namespace MediaInputServerBase {

@@ -1,5 +1,4 @@
 import type {
-  BridgeFeatureFlags,
   HomeAssistantDomain,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";

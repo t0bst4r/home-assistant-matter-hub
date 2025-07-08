@@ -2,9 +2,7 @@ import {
   type MediaPlayerDeviceAttributes,
   MediaPlayerDeviceFeature,
 } from "@home-assistant-matter-hub/common";
-import { LevelControl } from "@matter/main/clusters";
 import { SpeakerDevice } from "@matter/main/devices";
-import { FeatureSelection } from "../../../utils/feature-selection.js";
 import { testBit } from "../../../utils/test-bit.js";
 import { BasicInformationServer } from "../../behaviors/basic-information-server.js";
 import { IdentifyServer } from "../../behaviors/identify-server.js";

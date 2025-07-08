@@ -1,17 +1,17 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
+import type { ActionContext } from "@matter/main";
 import { FanControlServer as Base } from "@matter/main/behaviors";
 import { FanControl } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { FanMode } from "../../utils/converters/fan-mode.js";
 import { FanSpeed } from "../../utils/converters/fan-speed.js";
-import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
+import type { FeatureSelection } from "../../utils/feature-selection.js";
+import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
 import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 import AirflowDirection = FanControl.AirflowDirection;
-import type {
-  Feature,
-  FeatureSelection,
-} from "../../utils/feature-selection.js";
+
+const defaultStepSize = 10;
 
 const FeaturedBase = Base.with(
   "Step",
@@ -43,23 +43,18 @@ export class FanControlServerBase extends FeaturedBase {
     this.reactTo(
       this.events.percentSetting$Changed,
       this.targetPercentSettingChanged,
-      { offline: true },
     );
-    this.reactTo(this.events.fanMode$Changed, this.targetFanModeChanged, {
-      offline: true,
-    });
+    this.reactTo(this.events.fanMode$Changed, this.targetFanModeChanged);
     if (this.features.multiSpeed) {
       this.reactTo(
         this.events.speedSetting$Changed,
         this.targetSpeedSettingChanged,
-        { offline: true },
       );
     }
     if (this.features.airflowDirection) {
       this.reactTo(
         this.events.airflowDirection$Changed,
         this.targetAirflowDirectionChanged,
-        { offline: true },
       );
     }
   }
@@ -68,9 +63,9 @@ export class FanControlServerBase extends FeaturedBase {
     const config = this.state.config;
     const percentage = config.getPercentage(entity.state, this.agent) ?? 0;
     const speedMax = Math.round(
-      100 / (config.getStepSize(entity.state, this.agent) ?? 100),
+      100 / (config.getStepSize(entity.state, this.agent) ?? defaultStepSize),
     );
-    const speed = Math.ceil(speedMax * (percentage * 0.01));
+    const speed = Math.ceil(speedMax * (percentage / 100));
 
     const fanModeSequence = this.getFanModeSequence();
     const fanMode = config.isInAutoMode(entity.state, this.agent)
@@ -102,48 +97,64 @@ export class FanControlServerBase extends FeaturedBase {
     });
   }
 
-  override async step(request: FanControl.StepRequest) {
+  override step(request: FanControl.StepRequest) {
     const fanSpeed = new FanSpeed(this.state.speedCurrent, this.state.speedMax);
-    await this.targetSpeedSettingChanged(fanSpeed.step(request).currentSpeed);
+    this.targetSpeedSettingChanged(fanSpeed.step(request).currentSpeed);
   }
 
-  private async targetSpeedSettingChanged(speed: number | null) {
+  private targetSpeedSettingChanged(
+    speed: number | null,
+    _oldValue?: number | null,
+    context?: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     if (speed == null) {
       return;
     }
     const percentSetting = Math.floor((speed / this.state.speedMax) * 100);
-    await this.targetPercentSettingChanged(percentSetting);
+    this.targetPercentSettingChanged(
+      percentSetting,
+      this.state.percentSetting,
+      context,
+    );
   }
 
-  private async targetFanModeChanged(fanMode: FanControl.FanMode) {
+  private targetFanModeChanged(
+    fanMode: FanControl.FanMode,
+    _oldValue: FanControl.FanMode,
+    context: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     if (!homeAssistant.isAvailable) {
       return;
     }
-
     const targetFanMode = FanMode.create(fanMode, this.state.fanModeSequence);
-
     const config = this.state.config;
-    const current = config.isInAutoMode(homeAssistant.entity.state, this.agent)
-      ? FanMode.create(FanControl.FanMode.Auto, this.state.fanModeSequence)
-      : FanMode.fromSpeedPercent(
-          this.state.speedCurrent,
-          this.state.fanModeSequence,
-        );
-
-    if (targetFanMode.equals(current)) {
-      return;
-    }
-
     if (targetFanMode.mode === FanControl.FanMode.Auto) {
-      await homeAssistant.callAction(config.setAutoMode(void 0, this.agent));
+      homeAssistant.callAction(config.setAutoMode(void 0, this.agent));
     } else {
       const percentage = targetFanMode.speedPercent();
-      await this.targetPercentSettingChanged(percentage);
+      this.targetPercentSettingChanged(
+        percentage,
+        this.state.percentSetting,
+        context,
+      );
     }
   }
 
-  private async targetPercentSettingChanged(percentage: number | null) {
+  private targetPercentSettingChanged(
+    percentage: number | null,
+    _oldValue?: number | null,
+    context?: ActionContext,
+  ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     if (percentage == null) {
       return;
     }
@@ -151,45 +162,30 @@ export class FanControlServerBase extends FeaturedBase {
     if (!homeAssistant.isAvailable) {
       return;
     }
-
-    const current = this.state.config.getPercentage(
-      homeAssistant.entity.state,
-      this.agent,
-    );
-    if (current === percentage) {
-      return;
-    }
-
     if (percentage === 0) {
-      await homeAssistant.callAction(
-        this.state.config.turnOff(void 0, this.agent),
-      );
+      homeAssistant.callAction(this.state.config.turnOff(void 0, this.agent));
     } else {
-      await homeAssistant.callAction(
+      homeAssistant.callAction(
         this.state.config.turnOn(percentage, this.agent),
       );
     }
   }
 
-  private async targetAirflowDirectionChanged(
+  private targetAirflowDirectionChanged(
     airflowDirection: AirflowDirection,
+    _oldValue: AirflowDirection,
+    context: ActionContext,
   ) {
+    if (transactionIsOffline(context)) {
+      return;
+    }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     if (!homeAssistant.isAvailable) {
       return;
     }
 
     const config = this.state.config;
-    const current = config.getAirflowDirection(
-      homeAssistant.entity.state,
-      this.agent,
-    );
-
-    if (current === airflowDirection) {
-      return;
-    }
-
-    await homeAssistant.callAction(
+    homeAssistant.callAction(
       config.setAirflowDirection(airflowDirection, this.agent),
     );
   }

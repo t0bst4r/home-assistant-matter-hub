@@ -44,10 +44,10 @@ export class HomeAssistantActions {
     target: HassServiceTarget,
     returnResponse?: boolean,
   ): Promise<T> {
+    const client = await this.environment.load(HomeAssistantClient);
     this.log.debug(
       `Calling action '${domain}.${action}' for target ${JSON.stringify(target)} with data ${JSON.stringify(data ?? {})}`,
     );
-    const client = await this.environment.load(HomeAssistantClient);
     const result = await callService(
       client.connection,
       domain,

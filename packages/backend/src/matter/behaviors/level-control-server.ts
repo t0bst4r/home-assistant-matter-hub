@@ -48,7 +48,7 @@ export class LevelControlServerBase extends FeaturedBase {
     });
   }
 
-  override async moveToLevelLogic(level: number) {
+  override moveToLevelLogic(level: number) {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     const config = this.state.config;
 
@@ -62,7 +62,7 @@ export class LevelControlServerBase extends FeaturedBase {
     if (levelPercent === current) {
       return;
     }
-    await homeAssistant.callAction(
+    homeAssistant.callAction(
       config.moveToLevelPercent(levelPercent, this.agent),
     );
   }

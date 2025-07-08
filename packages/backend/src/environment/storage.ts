@@ -2,7 +2,6 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { type Environment, StorageService } from "@matter/main";
-import _ from "lodash";
 import { LoggerService } from "./logger.js";
 import { CustomStorage } from "./storage/custom-storage.js";
 

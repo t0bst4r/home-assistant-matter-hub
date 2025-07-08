@@ -40,32 +40,28 @@ class RvcRunModeServerBase extends Base {
     });
   }
 
-  override changeToMode = async (
+  override changeToMode(
     request: ModeBase.ChangeToModeRequest,
-  ): Promise<ModeBase.ChangeToModeResponse> => {
+  ): ModeBase.ChangeToModeResponse {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     switch (request.newMode) {
       case RvcSupportedRunMode.Cleaning:
-        await homeAssistant.callAction(
-          this.state.config.start(void 0, this.agent),
-        );
+        homeAssistant.callAction(this.state.config.start(void 0, this.agent));
         break;
       case RvcSupportedRunMode.Idle:
-        await homeAssistant.callAction(
+        homeAssistant.callAction(
           this.state.config.returnToBase(void 0, this.agent),
         );
         break;
       default:
-        await homeAssistant.callAction(
-          this.state.config.pause(void 0, this.agent),
-        );
+        homeAssistant.callAction(this.state.config.pause(void 0, this.agent));
         break;
     }
     return {
       status: ModeBase.ModeChangeStatus.Success,
       statusText: "Successfully switched mode",
     };
-  };
+  }
 }
 
 namespace RvcRunModeServerBase {

@@ -5,7 +5,6 @@ import {
   type StorageContext,
   type SupportedStorageTypes,
 } from "@matter/main";
-import _ from "lodash";
 import { type Service, register } from "../environment/register.js";
 import { AppStorage } from "./app-storage.js";
 import { migrateBridgeV1ToV2 } from "./migrations/bridge/v1-to-v2.js";

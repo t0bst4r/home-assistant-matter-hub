@@ -23,6 +23,9 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "correctness": {
+        "noUnusedImports": "error"
+      },
       "complexity": {
         "noBannedTypes": "off",
         "noForEach": "off",

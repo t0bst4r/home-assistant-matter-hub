@@ -38,16 +38,14 @@ class LockServerBase extends Base {
     });
   }
 
-  override async lockDoor() {
+  override lockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(this.state.config.lock(void 0, this.agent));
+    homeAssistant.callAction(this.state.config.lock(void 0, this.agent));
   }
 
-  override async unlockDoor() {
+  override unlockDoor() {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
-      this.state.config.unlock(void 0, this.agent),
-    );
+    homeAssistant.callAction(this.state.config.unlock(void 0, this.agent));
   }
 }
 

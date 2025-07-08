@@ -43,7 +43,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
     return this.entity.state.state !== "unavailable";
   }
 
-  async callAction(action: HomeAssistantAction) {
+  callAction(action: HomeAssistantAction) {
     const actions = this.env.get(HomeAssistantActions);
     const lock = this.env.get(AsyncLock);
     const lockKey = this.state.lockKey;
@@ -52,11 +52,15 @@ export class HomeAssistantEntityBehavior extends Behavior {
     const target: HassServiceTarget = {
       entity_id: this.entityId,
     };
-    setTimeout(async () => {
-      await lock.acquire(lockKey, async () =>
-        actions.call(action, target, false).catch((error) => log.error(error)),
-      );
-    }, 0);
+    setTimeout(
+      async () =>
+        lock.acquire(lockKey, () =>
+          actions
+            .call(action, target, false)
+            .catch((error) => log.error(error)),
+        ),
+      0,
+    );
   }
 }
 

@@ -41,26 +41,26 @@ class OnOffServerBase extends FeaturedBase {
     );
   }
 
-  override async on() {
+  override on() {
     const { turnOn } = this.state.config;
     if (turnOn === null) {
       setTimeout(this.callback(this.autoReset), 1000);
       return;
     }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
+    homeAssistant.callAction(
       turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
     );
   }
 
-  override async off() {
+  override off() {
     const { turnOff } = this.state.config;
     if (turnOff === null) {
       setTimeout(this.callback(this.autoReset), 1000);
       return;
     }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
-    await homeAssistant.callAction(
+    homeAssistant.callAction(
       turnOff?.(void 0, this.agent) ?? { action: "homeassistant.turn_off" },
     );
   }
