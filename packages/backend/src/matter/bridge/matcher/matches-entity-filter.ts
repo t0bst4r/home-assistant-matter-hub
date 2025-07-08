@@ -10,7 +10,8 @@ export function matchesEntityFilter(
 ): string[] | undefined {
   const reasons: string[] = [];
   if (filter.include.length > 0) {
-    if (!filter.include.some((matcher) => {
+    var matchingFunc = filter.exclusive ? filter.include.every : filter.include.some;
+    if (!matchingFunc((matcher) => {
       var results: boolean = testMatcher(entity, matcher);
       return matcher.invert ? !results : results;
     })) {
@@ -19,7 +20,14 @@ export function matchesEntityFilter(
   }
   if (filter.exclude.length > 0) {
     const exclusions = filter.exclude
-      .map((matcher, idx) => (testMatcher(entity, matcher) ? idx : undefined))
+      .map((matcher, idx) => {
+        var results: boolean = testMatcher(entity, matcher);
+        if (matcher.invert) {
+          return results ? undefined : idx;
+        } else {
+          return results ? idx : undefined;
+        }
+      })
       .filter((idx) => idx !== undefined);
     if (exclusions.length) {
       exclusions

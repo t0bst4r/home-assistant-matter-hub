@@ -14,6 +14,7 @@ export interface HomeAssistantMatcher {
 }
 
 export interface HomeAssistantFilter {
+  exclusive: boolean;
   include: HomeAssistantMatcher[];
   exclude: HomeAssistantMatcher[];
 }

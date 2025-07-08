@@ -29,6 +29,11 @@ const homeAssistantFilterSchema: JSONSchema7 = {
   title: "Include or exclude entities",
   type: "object",
   properties: {
+    exclusive: {
+      title: "Exclusive Include",
+      type: "boolean",
+      default: false,
+    },
     include: {
       title: "Include",
       type: "array",
