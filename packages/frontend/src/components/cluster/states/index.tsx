@@ -4,6 +4,7 @@ import {
   type ColorControlClusterState,
   type DoorLockClusterState,
   type FanControlClusterState,
+  type IlluminanceMeasurementClusterState,
   type LevelControlClusterState,
   type MediaInputClusterState,
   type OccupancySensingClusterState,
@@ -20,6 +21,7 @@ import { BooleanState } from "./BooleanState.tsx";
 import { ColorControlState } from "./ColorControlState.tsx";
 import { DoorLockState } from "./DoorLockState.tsx";
 import { FanControlState } from "./FanControlState.tsx";
+import { IlluminanceMeasurementState } from "./IlluminanceMeasurementState.tsx";
 import { LevelControlState } from "./LevelControlState.tsx";
 import { MediaInputState } from "./MediaInputState.tsx";
 import { OccupancySensingState } from "./OccupancySensingState.tsx";
@@ -64,6 +66,11 @@ export const clusterRenderers: Record<
   [ClusterId.relativeHumidityMeasurement]: ({ state }) => (
     <RelativeHumidityMeasurementState
       state={state as RelativeHumidityMeasurementClusterState}
+    />
+  ),
+  [ClusterId.illuminanceMeasurement]: ({ state }) => (
+    <IlluminanceMeasurementState
+      state={state as IlluminanceMeasurementClusterState}
     />
   ),
   [ClusterId.thermostat]: ({ state }) => (

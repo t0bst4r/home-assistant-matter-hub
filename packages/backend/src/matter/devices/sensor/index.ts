@@ -5,6 +5,7 @@ import {
 import type { EndpointType } from "@matter/main";
 import type { HomeAssistantEntityBehavior } from "../../custom-behaviors/home-assistant-entity-behavior.js";
 import { HumiditySensorType } from "./devices/humidity-sensor.js";
+import { IlluminanceSensorType } from "./devices/illuminance-sensor.js";
 import { TemperatureSensorType } from "./devices/temperature-sensor.js";
 
 export function SensorDevice(
@@ -19,6 +20,9 @@ export function SensorDevice(
   }
   if (deviceClass === SensorDeviceClass.humidity) {
     return HumiditySensorType.set({ homeAssistantEntity });
+  }
+  if (deviceClass === SensorDeviceClass.illuminance) {
+    return IlluminanceSensorType.set({ homeAssistantEntity });
   }
   return undefined;
 }
