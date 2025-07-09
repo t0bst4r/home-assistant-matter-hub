@@ -1,7 +1,7 @@
 {
   "name": "@home-assistant-matter-hub/frontend",
   "private": true,
-  "version": "3.0.0-alpha.86",
+  "version": "3.0.0-alpha.87",
   "type": "module",
   "destination": "./dist",
   "scripts": {

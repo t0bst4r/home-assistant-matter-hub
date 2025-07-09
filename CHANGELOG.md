@@ -1,3 +1,22 @@
+## 3.0.0-alpha.87 (2025-07-09)
+
+### 🚀 Features
+
+- **sensor:** Add illuminance sensor type ([#758](https://github.com/t0bst4r/home-assistant-matter-hub/pull/758))
+
+### 🐛 Fixes
+
+- properly handle transactions to prevent cyclic event flows ([#763](https://github.com/t0bst4r/home-assistant-matter-hub/issues/763), [#745](https://github.com/t0bst4r/home-assistant-matter-hub/issues/745))
+
+### 🚧 Chores
+
+- **docker:** add netcat to the standalone docker image ([#737](https://github.com/t0bst4r/home-assistant-matter-hub/issues/737))
+
+### ❤️ Thank You
+
+- Fabian @Fabiann2205
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.86 (2025-06-11)
 
 ### 🐛 Fixes
