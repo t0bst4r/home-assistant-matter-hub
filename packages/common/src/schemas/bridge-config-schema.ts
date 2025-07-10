@@ -15,6 +15,11 @@ const homeAssistantMatcherSchema: JSONSchema7 = {
       type: "string",
       minLength: 1,
     },
+    invert: {
+      title: "Invert",
+      type: "boolean",
+      default: false,
+    }
   },
   required: ["type", "value"],
   additionalProperties: false,
@@ -24,6 +29,11 @@ const homeAssistantFilterSchema: JSONSchema7 = {
   title: "Include or exclude entities",
   type: "object",
   properties: {
+    exclusive: {
+      title: "Exclusive Include",
+      type: "boolean",
+      default: false,
+    },
     include: {
       title: "Include",
       type: "array",

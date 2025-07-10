@@ -17,6 +17,7 @@ const defaultConfig: Omit<BridgeConfig, "port"> = {
   name: "",
   featureFlags: {},
   filter: {
+    exclusive: false,
     include: [],
     exclude: [],
   },
