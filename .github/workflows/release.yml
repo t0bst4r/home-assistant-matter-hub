@@ -15,7 +15,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - run: |
@@ -23,9 +23,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: "pnpm"
           registry-url: https://registry.npmjs.org/
       - name: NX cache
@@ -116,7 +116,7 @@ jobs:
 
       - name: Upload Documentation
         if: steps.version.outputs.release-required == 'yes'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "./packages/docs/_build/html"
       - name: Deploy documentation to GitHub Pages
