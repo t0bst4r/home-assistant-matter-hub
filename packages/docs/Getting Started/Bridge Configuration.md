@@ -52,6 +52,7 @@ The `value` property is a string containing the corresponding value. You can add
 are then combined.
 All entities which match one of the include-rules will be included, but all entities which match one of the exclude
 rules will be excluded.
+Labels have to be applied at an entity level, not under device.
 
 > [!WARNING]
 > When performing changes on entities, like adding or removing a label, you need to refresh the matter-hub application
@@ -106,3 +107,5 @@ Example configuration:
 > - `{{ labels() }}` - returns all labels
 > - `{{ labels("light.my_entity") }}` - returns the labels of a specific entity
 > - `{{ areas() }}` - returns all areas
+
+If you can’t get it working with your labels, you can delete your label and re-create it.
