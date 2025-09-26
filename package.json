@@ -18,7 +18,7 @@
   },
   "workspaces": ["apps/*", "packages/*", "utils/*"],
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.0",
     "@dotenvx/dotenvx": "^1.44.0",
     "@nx/js": "21.0.3",
     "@swc-node/register": "~1.10.10",

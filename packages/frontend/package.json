@@ -28,7 +28,7 @@
     "@uiw/react-codemirror": "^4.23.12",
     "@uiw/codemirror-theme-vscode": "^4.23.12",
     "ajv": "^8.17.1",
-    "clipboardy": "^4.0.0",
+    "clipboardy": "^5.0.0",
     "codemirror-json-schema": "^0.8.1",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
@@ -46,7 +46,7 @@
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@types/json-schema": "^7.0.15",
-    "@vitejs/plugin-react-swc": "^3.9.0",
+    "@vitejs/plugin-react-swc": "^4.0.0",
     "vite-plugin-svgr": "^4.3.0"
   }
 }
