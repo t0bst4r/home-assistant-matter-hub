@@ -4,12 +4,13 @@
 
 ---
 
-## PSA (2025-06-01): Issues with Alexa
-
-In the last weeks, a lot of users reported issues with Alexa.
-It seems to be a bug in the Alexa eco-system, which we cannot fix on our site.
-
-We are currently in contact with Amazon and try to find the reasons for this.
+> [!IMPORTANT]  
+> ⚠️ **Maintainer Wanted**
+>
+> This project (*Home-Assistant-Matter-Hub*) is currently **looking for a new maintainer**.  
+> Due to limited time, I can no longer actively maintain it.
+>
+> 👉 If you are interested in taking over or co-maintaining, please reach out via [GitHub Discussions](https://github.com/t0bst4r/home-assistant-matter-hub/discussions/825) or my profile.
 
 ---
 
@@ -18,8 +19,6 @@ We are currently in contact with Amazon and try to find the reasons for this.
 This project simulates bridges to publish your entities from Home Assistant to any Matter-compatible controller like
 Alexa, Apple Home or Google Home. Using Matter, those can be connected easily using local communication without the need
 of port forwarding etc.
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/t0bst4r)
 
 ---
 
