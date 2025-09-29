@@ -8,7 +8,7 @@ export interface HomeAssistantDeviceRegistry {
   default_name?: string;
   entry_type?: unknown;
   hw_version?: string;
-  id?: string;
+  id: string;
   identifiers?: unknown;
   name?: string;
   name_by_user?: string;

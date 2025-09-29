@@ -53,10 +53,10 @@ export const EditBridgePage = () => {
   };
 
   if (isLoading || !usedPorts) {
-    return <>Loading</>;
+    return "Loading";
   }
   if (!bridge || !bridgeConfig) {
-    return <>Not found</>;
+    return "Not found";
   }
 
   return (

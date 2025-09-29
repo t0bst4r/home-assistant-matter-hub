@@ -62,7 +62,7 @@ export const BridgeDetails = ({ bridge }: BridgeDetailsProps) => {
 
 const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
   if (!props.bridge.commissioning) {
-    return <></>;
+    return "";
   }
   return (
     <Box display="flex" justifyContent="center">
@@ -111,27 +111,25 @@ const Pairing = (props: { bridge: BridgeDataWithMetadata }) => {
 
 const BasicInfo = (props: { bridge: BridgeDataWithMetadata }) => {
   return (
-    <>
-      <Typography variant="subtitle2" component="div">
-        <div>ID: {props.bridge.id}</div>
-        <div>Name: {props.bridge.name}</div>
-        <div>Port: {props.bridge.port}</div>
-        <div>
-          <div>Fabrics:</div>
-          <div style={{ fontSize: "1.5em" }}>
-            {props.bridge.commissioning?.fabrics && (
-              <FabricList fabrics={props.bridge.commissioning.fabrics} />
-            )}
-          </div>
+    <Typography variant="subtitle2" component="div">
+      <div>ID: {props.bridge.id}</div>
+      <div>Name: {props.bridge.name}</div>
+      <div>Port: {props.bridge.port}</div>
+      <div>
+        <div>Fabrics:</div>
+        <div style={{ fontSize: "1.5em" }}>
+          {props.bridge.commissioning?.fabrics && (
+            <FabricList fabrics={props.bridge.commissioning.fabrics} />
+          )}
         </div>
-      </Typography>
-    </>
+      </div>
+    </Typography>
   );
 };
 
 const CommissioningInfo = (props: { bridge: BridgeDataWithMetadata }) => {
   if (!props.bridge.commissioning) {
-    return <></>;
+    return "";
   }
   return (
     <Typography variant="subtitle2" component="div">

@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      all-actions:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directories:
+      - "/"
+      - "apps/*"
+      - "packages/*"
+      - "utils/*"
+    schedule:
+      interval: "weekly"
+    groups:
+      all-deps:
+        patterns: ["*"]

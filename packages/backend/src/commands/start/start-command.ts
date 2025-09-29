@@ -1,8 +1,8 @@
 import "@matter/nodejs";
 import type { CommandModule } from "yargs";
 import { startHandler } from "./start-handler.js";
-import { startOptionsBuilder } from "./start-options-builder.js";
 import type { StartOptions } from "./start-options.js";
+import { startOptionsBuilder } from "./start-options-builder.js";
 
 export default function startCommand(
   webDist?: string,

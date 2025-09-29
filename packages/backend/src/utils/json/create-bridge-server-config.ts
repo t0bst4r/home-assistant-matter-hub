@@ -1,18 +1,17 @@
 import crypto from "node:crypto";
 import type { BridgeData } from "@home-assistant-matter-hub/common";
-import type { Environment } from "@matter/main";
 import { AggregatorEndpoint } from "@matter/main/endpoints";
-import { ServerNode } from "@matter/main/node";
-import type { BridgeServerNodeConfig } from "../../matter/bridge/bridge-server-node.js";
+import { type Node, ServerNode } from "@matter/main/node";
 import { trimToLength } from "../trim-to-length.js";
 
+export type BridgeServerNodeConfig =
+  Node.Configuration<ServerNode.RootEndpoint>;
+
 export function createBridgeServerConfig(
-  environment: Environment,
   data: BridgeData,
 ): BridgeServerNodeConfig {
   return {
     type: ServerNode.RootEndpoint,
-    environment: environment,
     id: data.id,
     network: {
       port: data.port,

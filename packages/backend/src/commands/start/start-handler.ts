@@ -1,64 +1,34 @@
-import type { BridgeBasicInformation } from "@home-assistant-matter-hub/common";
-import { Environment, VendorId } from "@matter/main";
-import AsyncLock from "async-lock";
 import * as ws from "ws";
 import type { ArgumentsCamelCase } from "yargs";
 import { WebApi } from "../../api/web-api.js";
-import { createEnvironment } from "../../environment/environment.js";
-import { HomeAssistantClient } from "../../home-assistant/home-assistant-client.js";
-import { BridgeService } from "../../matter/bridge-service.js";
+import { configureDefaultEnvironment } from "../../core/app/configure-default-environment.js";
+import { Options } from "../../core/app/options.js";
+import { AppEnvironment } from "../../core/ioc/app-environment.js";
+import { BridgeService } from "../../services/bridges/bridge-service.js";
+import { HomeAssistantRegistry } from "../../services/home-assistant/home-assistant-registry.js";
 import type { StartOptions } from "./start-options.js";
 
-const basicInformation: BridgeBasicInformation = {
-  vendorId: VendorId(0xfff1),
-  vendorName: "t0bst4r",
-  productId: 0x8000,
-  productName: "MatterHub",
-  productLabel: "Home Assistant Matter Hub",
-  hardwareVersion: new Date().getFullYear(),
-  softwareVersion: new Date().getFullYear(),
-};
-
 export async function startHandler(
-  options: ArgumentsCamelCase<StartOptions>,
+  startOptions: ArgumentsCamelCase<StartOptions>,
   webUiDist?: string,
 ): Promise<void> {
   Object.assign(globalThis, {
     WebSocket: globalThis.WebSocket ?? ws.WebSocket,
   });
+  const options = new Options({ ...startOptions, webUiDist });
+  const rootEnv = configureDefaultEnvironment(options);
+  const appEnvironment = await AppEnvironment.create(rootEnv, options);
 
-  const environment = createEnvironment(Environment.default, {
-    mdnsNetworkInterface: options.mdnsNetworkInterface,
-    storageLocation: options.storageLocation,
-    logLevel: options.logLevel,
-    disableLogColors: options.disableLogColors,
-  });
-  environment.set(AsyncLock, new AsyncLock());
+  const bridgeService$ = appEnvironment.load(BridgeService);
+  const webApi$ = appEnvironment.load(WebApi);
+  const registry$ = appEnvironment.load(HomeAssistantRegistry);
 
-  const homeAssistantClient = new HomeAssistantClient(environment, {
-    url: options.homeAssistantUrl,
-    accessToken: options.homeAssistantAccessToken,
-  });
+  const initBridges = bridgeService$.then((b) => b.startAll());
+  const initApi = webApi$.then((w) => w.start());
 
-  const bridgeService = new BridgeService(environment, basicInformation);
+  const enableAutoRefresh = initBridges
+    .then(() => Promise.all([registry$, bridgeService$]))
+    .then(([r, b]) => r.enableAutoRefresh(() => b.refreshAll()));
 
-  const webApi = new WebApi(environment, {
-    port: options.httpPort,
-    whitelist: options.httpIpWhitelist?.map((item) => item.toString()),
-    webUiDist,
-    ...(options.httpAuthUsername && options.httpAuthPassword
-      ? {
-          auth: {
-            username: options.httpAuthUsername,
-            password: options.httpAuthPassword,
-          },
-        }
-      : {}),
-  });
-
-  await Promise.all([
-    homeAssistantClient.construction,
-    bridgeService.construction,
-    webApi.construction,
-  ]);
+  await Promise.all([initBridges, initApi, enableAutoRefresh]);
 }

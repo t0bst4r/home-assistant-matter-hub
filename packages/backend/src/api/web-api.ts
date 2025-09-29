@@ -1,11 +1,11 @@
 import type * as http from "node:http";
-import type { Environment } from "@matter/main";
 import express from "express";
 import basicAuth from "express-basic-auth";
 import AccessControl from "express-ip-access-control";
 import nocache from "nocache";
-import { type BetterLogger, LoggerService } from "../environment/logger.js";
-import { type Service, register } from "../environment/register.js";
+import type { BetterLogger, LoggerService } from "../core/app/logger.js";
+import { Service } from "../core/ioc/service.js";
+import type { BridgeService } from "../services/bridges/bridge-service.js";
 import { accessLogger } from "./access-log.js";
 import { matterApi } from "./matter-api.js";
 import { supportIngress, supportProxyLocation } from "./proxy-support.js";
@@ -21,31 +21,29 @@ export interface WebApiProps {
   };
 }
 
-export class WebApi implements Service {
-  readonly construction: Promise<void>;
+export class WebApi extends Service {
   private readonly log: BetterLogger;
   private readonly accessLogger: express.RequestHandler;
 
   private app!: express.Application;
-  private server!: http.Server;
+  private server?: http.Server;
 
   constructor(
-    private readonly environment: Environment,
+    logger: LoggerService,
+    private readonly bridgeService: BridgeService,
     private readonly props: WebApiProps,
   ) {
-    register(environment, WebApi, this);
-    const loggerService = environment.get(LoggerService);
-    this.log = loggerService.get("WebApi");
-    this.accessLogger = accessLogger(loggerService.get("WebApi / Access Log"));
-    this.construction = this.initialize();
+    super("WebApi");
+    this.log = logger.get(this);
+    this.accessLogger = accessLogger(this.log.createChild("Access Log"));
   }
 
-  private async initialize() {
+  protected override async initialize() {
     const api = express.Router();
     api
       .use(express.json())
       .use(nocache())
-      .use("/matter", matterApi(this.environment));
+      .use("/matter", matterApi(this.bridgeService));
 
     const middlewares: express.Handler[] = [
       this.accessLogger,
@@ -81,18 +79,9 @@ export class WebApi implements Service {
       .use(...middlewares)
       .use("/api", api)
       .use(webUi(this.props.webUiDist));
-
-    this.server = await new Promise((resolve) => {
-      const server = this.app.listen(this.props.port, () => {
-        this.log.info(
-          `HTTP server (API ${this.props.webUiDist ? "& Web App" : "only"}) listening on port ${this.props.port}`,
-        );
-        resolve(server);
-      });
-    });
   }
 
-  async [Symbol.asyncDispose]() {
+  override async dispose() {
     await new Promise<void>((resolve, reject) => {
       this.server?.close((error) => {
         if (error) {
@@ -100,6 +89,20 @@ export class WebApi implements Service {
         } else {
           resolve();
         }
+      });
+    });
+  }
+
+  async start() {
+    if (this.server) {
+      return;
+    }
+    this.server = await new Promise((resolve) => {
+      const server = this.app.listen(this.props.port, () => {
+        this.log.info(
+          `HTTP server (API ${this.props.webUiDist ? "& Web App" : "only"}) listening on port ${this.props.port}`,
+        );
+        resolve(server);
       });
     });
   }

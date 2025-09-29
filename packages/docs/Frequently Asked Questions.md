@@ -15,9 +15,8 @@ Please follow the [reverse proxy guide](./Guides/Reverse%20Proxy.md).
 ## Changes on names and labels in Home Assistant have no effect in HAMH
 
 When performing changes on entities, like adding or removing a label or renaming your entity, you need to reload the
-affected bridge for the changes to take effect.
-
-This happens when either editing the bridge (even without making changes), or when restarting the whole addon.
+affected bridge for the changes to take effect. This happens automatically every 30 seconds, but you can enforce it by
+editing the bridge (even without making changes), or when restarting the whole addon.
 
 ## I added a label to my entities, but HAMH won't find any device
 

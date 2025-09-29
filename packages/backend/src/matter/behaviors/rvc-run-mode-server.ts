@@ -3,7 +3,7 @@ import { RvcRunModeServer as Base } from "@matter/main/behaviors";
 import { ModeBase } from "@matter/main/clusters/mode-base";
 import type { RvcRunMode } from "@matter/main/clusters/rvc-run-mode";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export enum RvcSupportedRunMode {
@@ -20,6 +20,7 @@ export interface RvcRunModeServerConfig {
   pause: ValueSetter<void>;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class RvcRunModeServerBase extends Base {
   declare state: RvcRunModeServerBase.State;
 

@@ -5,13 +5,14 @@ import type {
 import { TemperatureMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { Temperature } from "../../utils/converters/temperature.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter } from "./utils/cluster-config.js";
 
 export interface TemperatureMeasurementConfig {
   getValue: ValueGetter<Temperature | undefined>;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class TemperatureMeasurementServerBase extends Base {
   declare state: TemperatureMeasurementServerBase.State;
 
@@ -33,7 +34,7 @@ class TemperatureMeasurementServerBase extends Base {
     if (!value) {
       return undefined;
     }
-    return Math.round(value.celsius() * 100);
+    return value.celsius(true);
   }
 }
 

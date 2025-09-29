@@ -2,7 +2,7 @@ import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/
 import { MediaInputServer as Base } from "@matter/main/behaviors";
 import { MediaInput } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export interface MediaInputServerConfig {
@@ -12,6 +12,7 @@ export interface MediaInputServerConfig {
   selectSource: ValueSetter<string>;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class MediaInputServerBase extends Base {
   declare state: MediaInputServerBase.State;
 

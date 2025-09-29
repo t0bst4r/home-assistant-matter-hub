@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { size } from "lodash-es";
 
 export function applyPatchState<T extends {}>(
   state: T,
@@ -12,7 +12,7 @@ export function applyPatchState<T extends {}>(
       actualPatch[key] = patchValue!;
     }
   }
-  if (_.size(actualPatch) > 0) {
+  if (size(actualPatch) > 0) {
     try {
       Object.assign(state, actualPatch);
     } catch (e) {

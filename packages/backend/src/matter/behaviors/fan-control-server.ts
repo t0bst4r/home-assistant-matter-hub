@@ -7,8 +7,9 @@ import { FanMode } from "../../utils/converters/fan-mode.js";
 import { FanSpeed } from "../../utils/converters/fan-speed.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+
 import AirflowDirection = FanControl.AirflowDirection;
 
 const defaultStepSize = 10;
