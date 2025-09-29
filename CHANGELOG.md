@@ -1,3 +1,22 @@
+## 3.0.0-alpha.88 (2025-09-29)
+
+### 🐛 Fixes
+
+- cleanup boot sequence and state handling, update all dependencies ([4afb864](https://github.com/t0bst4r/home-assistant-matter-hub/commit/4afb864))
+- ⚠️  remove funding ([#825](https://github.com/t0bst4r/home-assistant-matter-hub/issues/825))
+
+### 🚧 Chores
+
+- merge review fixes ([14c20e4](https://github.com/t0bst4r/home-assistant-matter-hub/commit/14c20e4))
+
+### ⚠️  Breaking Changes
+
+- MAINTAINER WANTED! This project is currently **looking for a new maintainer**. Due to limited time, I can no longer actively maintain it. If you are interested in taking over or co-maintaining, please reach out via GitHub Discussions (#825).
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.87 (2025-07-09)
 
 ### 🚀 Features

@@ -1,7 +1,7 @@
 {
   "name": "home-assistant-matter-hub",
   "description": "",
-  "version": "3.0.0-alpha.87",
+  "version": "3.0.0-alpha.88",
   "private": false,
   "destination": "./pack",
   "type": "module",
