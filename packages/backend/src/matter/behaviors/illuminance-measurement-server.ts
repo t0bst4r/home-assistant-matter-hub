@@ -4,13 +4,14 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import { IlluminanceMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter } from "./utils/cluster-config.js";
 
 export interface IlluminanceMeasurementConfig {
   getValue: ValueGetter<number | null>;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class IlluminanceMeasurementServerBase extends Base {
   declare state: IlluminanceMeasurementServerBase.State;
 
@@ -40,8 +41,7 @@ class IlluminanceMeasurementServerBase extends Base {
     }
 
     const measuredValue = Math.round(10000 * Math.log10(illuminance) + 1);
-    const clamped = Math.min(0xfffe, Math.max(1, measuredValue));
-    return clamped;
+    return Math.min(0xfffe, Math.max(1, measuredValue));
   }
 }
 

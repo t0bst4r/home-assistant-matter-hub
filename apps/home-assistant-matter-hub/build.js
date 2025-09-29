@@ -17,11 +17,12 @@ await rimraf(dist);
 
 await copyDist(distDir(frontendPackageJsonPath), path.join(dist, "frontend"));
 
+// we are just making sure, that node_modules are not bundled
 await copyDist(
   distDir(backendPackageJsonPath),
   path.join(dist, "backend"),
   250_000,
-  500_000,
+  600_000,
 );
 
 await copyFile(
