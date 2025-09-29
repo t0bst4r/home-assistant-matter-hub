@@ -16,6 +16,12 @@ project:
         - file: "Guides/Reverse Proxy.md"
     - file: Supported Device Types.md
     - file: Frequently Asked Questions.md
+    - title: Developer Documentation
+      children:
+        - file: "Developer Documentation/README.md"
+        - file: "Developer Documentation/services.md"
+        - file: "Developer Documentation/endpoints.md"
+        - file: "Developer Documentation/behaviors.md"
 site:
   template: book-theme
   title: Home-Assistant-Matter-Hub
