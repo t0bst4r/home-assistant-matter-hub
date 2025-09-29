@@ -8,8 +8,6 @@ This project simulates bridges to publish your entities from Home Assistant to a
 Alexa, Apple Home or Google Home. Using Matter, those can be connected easily using local communication without the need
 of port forwarding etc.
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/t0bst4r)
-
 ---
 
 ## Known issues and limitations
