@@ -1,53 +1,40 @@
 import {
   type CreateBridgeRequest,
-  type UpdateBridgeRequest,
   createBridgeRequestSchema,
+  type UpdateBridgeRequest,
   updateBridgeRequestSchema,
 } from "@home-assistant-matter-hub/common";
-import type { Environment } from "@matter/main";
 import { Ajv } from "ajv";
 import express from "express";
-import { PortAlreadyInUseError } from "../errors/port-already-in-use-error.js";
-import { BridgeService } from "../matter/bridge-service.js";
-import { deviceToJson } from "../utils/json/device-to-json.js";
+import type { BridgeService } from "../services/bridges/bridge-service.js";
+import { endpointToJson } from "../utils/json/endpoint-to-json.js";
 
 const ajv = new Ajv();
 
-export function matterApi(environment: Environment): express.Router {
-  const bridgeService$ = environment.load(BridgeService);
+export function matterApi(bridgeService: BridgeService): express.Router {
   const router = express.Router();
   router.get("/", (_, res) => {
     res.status(200).json({});
   });
 
   router.get("/bridges", async (_, res) => {
-    const bridgeService = await bridgeService$;
     res.status(200).json(bridgeService.bridges.map((b) => b.data));
   });
 
   router.post("/bridges", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const body = req.body as CreateBridgeRequest;
     const isValid = ajv.validate(createBridgeRequestSchema, body);
     if (!isValid) {
       res.status(400).json(ajv.errors);
     } else {
-      try {
-        const bridge = await bridgeService.create(body);
-        res.status(200).json(bridge.data);
-      } catch (error: unknown) {
-        if (error instanceof PortAlreadyInUseError) {
-          res.status(400).json({ error: error.message });
-        }
-        throw error;
-      }
+      const bridge = await bridgeService.create(body);
+      res.status(200).json(bridge.data);
     }
   });
 
   router.get("/bridges/:bridgeId", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
-    const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
+    const bridge = bridgeService.get(bridgeId);
     if (bridge) {
       res.status(200).json(bridge.data);
     } else {
@@ -56,7 +43,6 @@ export function matterApi(environment: Environment): express.Router {
   });
 
   router.put("/bridges/:bridgeId", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const body = req.body as UpdateBridgeRequest;
     const isValid = ajv.validate(updateBridgeRequestSchema, body);
@@ -65,31 +51,22 @@ export function matterApi(environment: Environment): express.Router {
     } else if (bridgeId !== body.id) {
       res.status(400).send("Path variable `bridgeId` does not match `body.id`");
     } else {
-      try {
-        const bridge = await bridgeService.update(body);
-        if (!bridge) {
-          res.status(404).send("Not Found");
-        } else {
-          res.status(200).json(bridge.data);
-        }
-      } catch (error: unknown) {
-        if (error instanceof PortAlreadyInUseError) {
-          res.status(400).json({ error: error.message });
-        }
-        throw error;
+      const bridge = await bridgeService.update(body);
+      if (!bridge) {
+        res.status(404).send("Not Found");
+      } else {
+        res.status(200).json(bridge.data);
       }
     }
   });
 
   router.delete("/bridges/:bridgeId", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     await bridgeService.delete(bridgeId);
     res.status(204).send();
   });
 
   router.get("/bridges/:bridgeId/actions/factory-reset", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
@@ -102,13 +79,10 @@ export function matterApi(environment: Environment): express.Router {
   });
 
   router.get("/bridges/:bridgeId/devices", async (req, res) => {
-    const bridgeService = await bridgeService$;
     const bridgeId = req.params.bridgeId;
     const bridge = bridgeService.bridges.find((b) => b.id === bridgeId);
     if (bridge) {
-      res
-        .status(200)
-        .json(Array.from(bridge.aggregatedParts).map(deviceToJson));
+      res.status(200).json(endpointToJson(bridge.server));
     } else {
       res.status(404).send("Not Found");
     }

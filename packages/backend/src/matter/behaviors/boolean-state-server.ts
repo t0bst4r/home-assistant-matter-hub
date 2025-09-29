@@ -4,12 +4,13 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import { BooleanStateServer as Base } from "@matter/main/behaviors/boolean-state";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 
 export interface BooleanStateConfig {
   inverted: boolean;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class BooleanStateServerBase extends Base {
   declare state: BooleanStateServerBase.State;
 

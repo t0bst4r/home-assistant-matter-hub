@@ -10,8 +10,9 @@ import {
 import { WindowCovering } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+
 import MovementStatus = WindowCovering.MovementStatus;
 
 const FeaturedBase = Base.with(

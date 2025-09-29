@@ -6,7 +6,7 @@ import { OnOffServer as Base } from "@matter/main/behaviors";
 import type { OnOff } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export interface OnOffConfig {
@@ -17,6 +17,7 @@ export interface OnOffConfig {
 
 const FeaturedBase = Base.with("Lighting");
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class OnOffServerBase extends FeaturedBase {
   declare state: OnOffServerBase.State;
 

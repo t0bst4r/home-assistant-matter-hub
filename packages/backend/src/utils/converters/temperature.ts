@@ -43,23 +43,17 @@ function convertTemperature(
   sourceUnit: TemperatureUnit,
   targetUnit: TemperatureUnit,
 ): number {
+  let result: number;
   if (sourceUnit.replace("°", "") === targetUnit.replace("°", "")) {
-    return value;
+    result = value;
+  } else {
+    const celsius = convertTemperatureToCelsius(value, sourceUnit);
+    result = convertTemperatureFromCelsius(celsius, targetUnit);
   }
-  const celsius = convertTemperatureToCelsius(value, sourceUnit);
-  return convertTemperatureFromCelsius(celsius, targetUnit);
+  return result;
 }
 
 export class Temperature {
-  public static kelvin(value: number) {
-    return Temperature.withUnit(value, "K");
-  }
-  public static celsius(value: number) {
-    return Temperature.withUnit(value, "°C");
-  }
-  public static fahrenheit(value: number) {
-    return Temperature.withUnit(value, "°F");
-  }
   public static withUnit(value: number, unit: TemperatureUnit) {
     if (Number.isNaN(value)) {
       return undefined;
@@ -72,6 +66,9 @@ export class Temperature {
     readonly unit: TemperatureUnit,
   ) {}
 
+  public static celsius(value: number) {
+    return Temperature.withUnit(value, "°C");
+  }
   celsius(matter?: boolean) {
     const celsius = convertTemperature(this.value, this.unit, "°C");
     if (matter) {
@@ -80,10 +77,16 @@ export class Temperature {
     return celsius;
   }
 
+  public static kelvin(value: number) {
+    return Temperature.withUnit(value, "K");
+  }
   kelvin() {
     return convertTemperature(this.value, this.unit, "K");
   }
 
+  public static fahrenheit(value: number) {
+    return Temperature.withUnit(value, "°F");
+  }
   fahrenheit() {
     return convertTemperature(this.value, this.unit, "°F");
   }

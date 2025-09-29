@@ -1,4 +1,4 @@
-import type { DeviceData } from "@home-assistant-matter-hub/common";
+import type { EndpointData } from "@home-assistant-matter-hub/common";
 import { createReducer } from "@reduxjs/toolkit";
 import type { AsyncState } from "../utils/async.ts";
 import { loadDevices } from "./device-actions.ts";
@@ -30,7 +30,7 @@ export const deviceReducer = createReducer(initialState, (builder) => {
     });
 });
 
-const deviceListInitialState: AsyncState<DeviceData[]> = {
+const deviceListInitialState: AsyncState<EndpointData> = {
   isInitialized: false,
   isLoading: false,
   content: undefined,

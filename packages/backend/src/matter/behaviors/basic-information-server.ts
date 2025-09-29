@@ -2,10 +2,10 @@ import crypto from "node:crypto";
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { VendorId } from "@matter/main";
 import { BridgedDeviceBasicInformationServer as Base } from "@matter/main/behaviors";
+import { BridgeDataProvider } from "../../services/bridges/bridge-data-provider.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { trimToLength } from "../../utils/trim-to-length.js";
-import { BridgeDataProvider } from "../bridge/bridge-data-provider.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 
 export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {

@@ -7,7 +7,7 @@ import { ColorControl } from "@matter/main/clusters";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
 export type ColorControlMode =
@@ -67,7 +67,7 @@ export class ColorControlServerBase extends FeaturedBase {
     const startUpMireds = ColorConverter.temperatureKelvinToMireds(
       currentKelvin ?? maxKelvin,
     );
-    let currentMireds: number | undefined = undefined;
+    let currentMireds: number | undefined;
     if (currentKelvin != null) {
       currentMireds = ColorConverter.temperatureKelvinToMireds(currentKelvin);
       currentMireds = Math.max(Math.min(currentMireds, maxMireds), minMireds);

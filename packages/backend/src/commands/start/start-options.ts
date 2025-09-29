@@ -7,6 +7,7 @@ export interface StartOptions {
   "mdns-network-interface": string | undefined;
   "home-assistant-url": string;
   "home-assistant-access-token": string;
+  "home-assistant-refresh-interval": number;
   "http-auth-username": string | undefined;
   "http-auth-password": string | undefined;
 }

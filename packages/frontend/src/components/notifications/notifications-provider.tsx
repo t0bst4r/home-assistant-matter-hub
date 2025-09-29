@@ -29,26 +29,24 @@ export const NotificationsProvider = (props: PropsWithChildren) => {
   };
 
   return (
-    <>
-      <NotificationsContext.Provider value={{ show }}>
-        {props.children}
-        {notifications.map((notification) => (
-          <Snackbar
-            key={notification.notificationId}
-            open={true}
-            autoHideDuration={notification.autoHideDuration}
-            onClose={() => deleteNotification(notification.notificationId)}
+    <NotificationsContext.Provider value={{ show }}>
+      {props.children}
+      {notifications.map((notification) => (
+        <Snackbar
+          key={notification.notificationId}
+          open={true}
+          autoHideDuration={notification.autoHideDuration}
+          onClose={() => deleteNotification(notification.notificationId)}
+        >
+          <Alert
+            severity={notification.severity}
+            variant="filled"
+            sx={{ minWidth: "300px" }}
           >
-            <Alert
-              severity={notification.severity}
-              variant="filled"
-              sx={{ minWidth: "300px" }}
-            >
-              {notification.message}
-            </Alert>
-          </Snackbar>
-        ))}
-      </NotificationsContext.Provider>
-    </>
+            {notification.message}
+          </Alert>
+        </Snackbar>
+      ))}
+    </NotificationsContext.Provider>
   );
 };

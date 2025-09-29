@@ -61,7 +61,7 @@ export const CreateBridgePage = () => {
   };
 
   if (!bridgeConfig || !usedPorts) {
-    return <>Loading</>;
+    return "Loading";
   }
 
   return (

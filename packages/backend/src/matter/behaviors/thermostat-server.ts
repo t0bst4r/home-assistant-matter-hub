@@ -1,14 +1,15 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { ThermostatServer as Base } from "@matter/main/behaviors";
 import { Thermostat } from "@matter/main/clusters";
-import type { HomeAssistantAction } from "../../home-assistant/home-assistant-actions.js";
-import { HomeAssistantConfig } from "../../home-assistant/home-assistant-config.js";
+import type { HomeAssistantAction } from "../../services/home-assistant/home-assistant-actions.js";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { Temperature } from "../../utils/converters/temperature.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
+
 import SystemMode = Thermostat.SystemMode;
 import RunningMode = Thermostat.ThermostatRunningMode;
+
 import type { ActionContext } from "@matter/main";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
@@ -51,7 +52,6 @@ export class ThermostatServerBase extends FeaturedBase {
     await super.initialize();
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.env.load(HomeAssistantConfig);
 
     this.update(homeAssistant.entity);
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);

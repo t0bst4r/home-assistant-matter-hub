@@ -4,13 +4,14 @@ import type {
 } from "@home-assistant-matter-hub/common";
 import { RelativeHumidityMeasurementServer as Base } from "@matter/main/behaviors";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import { HomeAssistantEntityBehavior } from "../custom-behaviors/home-assistant-entity-behavior.js";
+import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter } from "./utils/cluster-config.js";
 
 export interface HumidityMeasurementConfig {
   getValue: ValueGetter<number | null>;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: Biome thinks this is unused, but it's used by the function below
 class HumidityMeasurementServerBase extends Base {
   declare state: HumidityMeasurementServerBase.State;
 

@@ -56,6 +56,12 @@ export function startOptionsBuilder(yargs: Argv): Argv<StartOptions> {
       type: "string",
       description: "A long-lived access token for your Home Assistant Instance",
     })
+    .option("home-assistant-refresh-interval", {
+      type: "number",
+      description:
+        "The refresh rate (in seconds) to detect new devices & entities or their configurations",
+      default: 30,
+    })
     .option("http-auth-username", {
       type: "string",
       description: "Username for HTTP basic authentication (optional)",

@@ -1,6 +1,7 @@
 import { FanControl } from "@matter/main/clusters";
 import { describe, expect, it } from "vitest";
 import { FanMode } from "./fan-mode.js";
+
 import MFanMode = FanControl.FanMode;
 import FanModeSequence = FanControl.FanModeSequence;
 

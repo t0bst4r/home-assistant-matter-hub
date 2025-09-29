@@ -1,15 +1,15 @@
 export interface HomeAssistantEntityRegistry {
   area_id?: string;
-  categories: Record<string, unknown>;
+  categories?: Record<string, unknown>;
   config_entry_id?: unknown;
-  device_id?: string;
+  device_id: string;
   disabled_by?: unknown;
   entity_category?: unknown;
   entity_id: string;
-  has_entity_name: boolean;
+  has_entity_name?: boolean;
   hidden_by?: unknown;
   icon?: unknown;
-  id: string;
+  id?: string;
   labels?: string[];
   name?: string;
   options?: {
@@ -17,8 +17,8 @@ export interface HomeAssistantEntityRegistry {
       should_expose?: boolean;
     };
   };
-  original_name: string;
-  platform: string;
+  original_name?: string;
+  platform?: string;
   translation_key?: unknown;
-  unique_id: string;
+  unique_id?: string;
 }

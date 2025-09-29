@@ -1,11 +1,10 @@
+import fs from "node:fs";
 import path from "node:path";
+import { doNotBundleFile } from "@home-assistant-matter-hub/build-utils";
 import esbuild from "esbuild";
 import externalizeAllPackagesExcept from "esbuild-plugin-noexternal";
-import tsc from "typescript";
-
-import fs from "node:fs";
-import { doNotBundleFile } from "@home-assistant-matter-hub/build-utils";
 import { rimraf } from "rimraf";
+import tsc from "typescript";
 
 const src = path.resolve(import.meta.dirname, "src");
 const dist = path.resolve(import.meta.dirname, "dist");
