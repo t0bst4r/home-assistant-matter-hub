@@ -3,6 +3,7 @@
   "version": "3.0.0-alpha.88",
   "private": true,
   "scripts": {
+    "serve": "myst start",
     "build": "BASE_URL=/home-assistant-matter-hub myst build --html",
     "cleanup": "npx rimraf _build"
   },
