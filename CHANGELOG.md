@@ -1,3 +1,13 @@
+## 3.0.0-alpha.91 (2025-09-30)
+
+### 🐛 Fixes
+
+- trying to figure out why serialization works locally but not in docker ([a2c880b](https://github.com/t0bst4r/home-assistant-matter-hub/commit/a2c880b))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.90 (2025-09-30)
 
 ### 🐛 Fixes
