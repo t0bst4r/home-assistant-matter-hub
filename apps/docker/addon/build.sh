@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+NODE_VERSION=$(node -v)
+NODE_VERSION=${NODE_VERSION:1}
+
 PACKAGE_VERSION=$(tar xfO package.tgz package/package.json | jq -r ".version")
 IMAGE_NAME="ghcr.io/t0bst4r/home-assistant-matter-hub-addon"
 
@@ -27,7 +30,8 @@ fi
 
 DOCKER_BUILD_ARGS=()
 
-DOCKER_BUILD_ARGS+=("--build-arg" "package_version=$PACKAGE_VERSION")
+DOCKER_BUILD_ARGS+=("--build-arg" "NODE_VERSION=$NODE_VERSION")
+DOCKER_BUILD_ARGS+=("--build-arg" "PACKAGE_VERSION=$PACKAGE_VERSION")
 
 for TAG in "${TAGS[@]}"; do
   DOCKER_BUILD_ARGS+=("-t" "$TAG")

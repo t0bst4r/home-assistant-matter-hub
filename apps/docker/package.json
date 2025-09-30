@@ -6,8 +6,8 @@
   "scripts": {
     "cleanup": "npx rimraf addon/package.tgz standalone/package.tgz",
     "build": "echo 'Performing build'",
-    "build:addon": "(cd ./addon && ./build.sh)",
-    "build:standalone": "(cd ./standalone && ./build.sh)",
+    "build:addon": "(cd ./addon && ./build.sh --all-platforms)",
+    "build:standalone": "(cd ./standalone && ./build.sh --all-platforms)",
     "retrieve-package": "node retrieve-package.js",
     "nx-release-publish": "echo 'Performing nx-release-publish'",
     "publish:addon": "(cd addon && ./build.sh --latest --push --all-platforms)",
