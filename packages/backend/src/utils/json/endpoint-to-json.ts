@@ -1,12 +1,13 @@
 import type { EndpointData } from "@home-assistant-matter-hub/common";
 import type { Endpoint } from "@matter/main";
+import { MatterJsonObject } from "./matter-json-object.js";
 
 export function endpointToJson(
   endpoint: Endpoint,
   parentId?: string,
 ): EndpointData {
   const globalId = [parentId, endpoint.id].filter((i) => !!i).join(".");
-  return {
+  return MatterJsonObject({
     id: {
       global: globalId,
       local: endpoint.id,
@@ -18,5 +19,5 @@ export function endpointToJson(
     endpoint: endpoint.number,
     state: endpoint.state,
     parts: endpoint.parts.map((p) => endpointToJson(p, globalId)),
-  };
+  });
 }
