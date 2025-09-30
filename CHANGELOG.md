@@ -1,3 +1,18 @@
+## 3.0.0-alpha.90 (2025-09-30)
+
+### 🐛 Fixes
+
+- use matter internal serialization to be able to serialize additional types (bigint, etc.) ([#836](https://github.com/t0bst4r/home-assistant-matter-hub/issues/836))
+
+### 🚧 Chores
+
+- **deps:** bump the all-actions group with 3 updates ([30c41fb](https://github.com/t0bst4r/home-assistant-matter-hub/commit/30c41fb))
+- **deps-dev:** bump the all-deps group across 1 directory with 3 updates ([f8e2c33](https://github.com/t0bst4r/home-assistant-matter-hub/commit/f8e2c33))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.89 (2025-09-30)
 
 ### 🐛 Fixes
