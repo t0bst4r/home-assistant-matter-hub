@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.20",
-    "@types/react": "^19.1.15",
+    "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@types/json-schema": "^7.0.15",
     "@vitejs/plugin-react-swc": "^4.1.0",

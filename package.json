@@ -23,7 +23,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
     "@dotenvx/dotenvx": "^1.51.0",
-    "@nx/js": "21.5.3",
+    "@nx/js": "21.6.2",
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.13.5",
     "@swc/helpers": "~0.5.17",
@@ -31,7 +31,7 @@
     "esbuild-plugin-noexternal": "^0.1.6",
     "globals": "^16.4.0",
     "nodemon": "^3.1.10",
-    "nx": "21.5.3",
+    "nx": "21.6.2",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
