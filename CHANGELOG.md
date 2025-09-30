@@ -1,3 +1,18 @@
+## 3.0.0-alpha.89 (2025-09-30)
+
+### 🐛 Fixes
+
+- resolve dependabot vulnerability checks ([f2aa5ca](https://github.com/t0bst4r/home-assistant-matter-hub/commit/f2aa5ca))
+- **docker:** migrate all docker images to node22 ([0af1d92](https://github.com/t0bst4r/home-assistant-matter-hub/commit/0af1d92))
+
+### 🚧 Chores
+
+- **docs:** add developer documentation ([0501e29](https://github.com/t0bst4r/home-assistant-matter-hub/commit/0501e29))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.88 (2025-09-29)
 
 ### 🐛 Fixes
