@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import "./bootstrap.js";
+import "./polyfills.js";
 import * as path from "node:path";
 import * as url from "node:url";
 import yargs from "yargs";
