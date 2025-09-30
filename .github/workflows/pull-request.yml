@@ -16,13 +16,18 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: package.json
           cache: "pnpm"
       - name: NX cache
         uses: actions/cache@v4
         with:
           path: .nx
           key: ${{ runner.os }}-nx
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile

@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "cleanup": "nx run-many -t cleanup --parallel 100 && nx reset && npx rimraf node_modules",
     "lint": "biome check",

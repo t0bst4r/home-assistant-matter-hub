@@ -1,7 +1,7 @@
-FROM node:20-slim
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/*
+ARG NODE_VERSION="22"
+
+FROM node:${NODE_VERSION}-alpine
+RUN apk add --no-cache netcat-openbsd
 
 ENV HAMH_STORAGE_LOCATION="/data"
 VOLUME /data
