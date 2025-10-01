@@ -28,6 +28,6 @@ export class OccupancySensingServer extends Base {
   }
 
   private isOccupied(state: HomeAssistantEntityState): boolean {
-    return state.state !== "off";
+    return this.agent.get(HomeAssistantEntityBehavior).isAvailable && state.state !== "off";
   }
 }
