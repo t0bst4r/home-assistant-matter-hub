@@ -1,3 +1,14 @@
+## 3.0.0-alpha.92 (2025-10-01)
+
+### 🐛 Fixes
+
+- finally fix bigint serialization to be compatible with matter.js ([51f84e1](https://github.com/t0bst4r/home-assistant-matter-hub/commit/51f84e1))
+- introduce an initial start-up delay to make sure home assistant is ready ([0fdb09a](https://github.com/t0bst4r/home-assistant-matter-hub/commit/0fdb09a))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.91 (2025-09-30)
 
 ### 🐛 Fixes
