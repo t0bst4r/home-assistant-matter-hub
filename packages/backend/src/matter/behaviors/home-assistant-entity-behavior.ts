@@ -38,7 +38,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
   }
 
   get isAvailable(): boolean {
-    return this.entity.state.state !== "unavailable";
+    return this.entity.state.state !== "unavailable" && this.entity.state.state !== "unknown";
   }
 
   callAction(action: HomeAssistantAction) {
