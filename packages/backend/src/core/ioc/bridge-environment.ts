@@ -1,5 +1,5 @@
 import type { BridgeData } from "@home-assistant-matter-hub/common";
-import type { Environment } from "@matter/general";
+import type { Environment, Logger } from "@matter/general";
 import { Bridge } from "../../services/bridges/bridge.js";
 import { BridgeDataProvider } from "../../services/bridges/bridge-data-provider.js";
 import { BridgeEndpointManager } from "../../services/bridges/bridge-endpoint-manager.js";
@@ -19,13 +19,14 @@ export class BridgeEnvironment extends EnvironmentBase {
   }
 
   private readonly construction: Promise<void>;
+  private readonly endpointManagerLogger: Logger;
 
   private constructor(parent: Environment, initialData: BridgeData) {
-    const log = parent
-      .get(LoggerService)
-      .get(`BridgeEnvironment / ${initialData.id}`);
+    const loggerService = parent.get(LoggerService);
+    const log = loggerService.get(`BridgeEnvironment / ${initialData.id}`);
 
     super({ id: initialData.id, parent, log });
+    this.endpointManagerLogger = loggerService.get("BridgeEndpointManager");
     this.construction = this.init();
 
     this.set(BridgeDataProvider, new BridgeDataProvider(initialData));
@@ -44,6 +45,7 @@ export class BridgeEnvironment extends EnvironmentBase {
       new BridgeEndpointManager(
         await this.load(HomeAssistantClient),
         this.get(BridgeRegistry),
+        this.endpointManagerLogger,
       ),
     );
   }
