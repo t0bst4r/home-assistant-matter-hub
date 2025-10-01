@@ -81,7 +81,9 @@ export class HomeAssistantClient extends Service {
   private async waitForHomeAssistantToBeUpAndRunning(
     connection: Connection,
   ): Promise<void> {
-    this.log.info("Waiting for Home Assistant to be up and running");
+    this.log.info(
+      "Waiting for Home Assistant to be up and running - the application will be available once a connection to Home Assistant could be established.",
+    );
 
     const getState = async () => {
       const s = await getConfig(connection).then((config) => config.state);
@@ -90,12 +92,11 @@ export class HomeAssistantClient extends Service {
       );
       return s;
     };
-    let state = "__init__";
+    let state: string | undefined;
     while (state !== "RUNNING") {
-      if (state !== "__init__") {
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       state = await getState();
     }
+    this.log.info("Home assistant reported to be up and running");
   }
 }
