@@ -12,6 +12,7 @@ import {
   HomeAssistantActions,
 } from "../../services/home-assistant/home-assistant-actions.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
+import { time } from "node:console";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;
@@ -44,7 +45,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
     );
   }
 
-  callAction(action: HomeAssistantAction) {
+  callAction(action: HomeAssistantAction, timeout: number = 0) {
     const actions = this.env.get(HomeAssistantActions);
     const lock = this.env.get(AsyncLock);
     const lockKey = this.state.lockKey;
@@ -59,7 +60,7 @@ export class HomeAssistantEntityBehavior extends Behavior {
             .call(action, target, false)
             .catch((error) => log.error(error)),
         ),
-      0,
+      timeout,
     );
   }
 }
