@@ -23,6 +23,11 @@ flow freely between all network segments, and IPv6 must be fully operational acr
   - **Firewall**: Ensure your firewall allows the necessary ports. Temporarily disable the firewall to determine if it
     is causing connectivity issues.
 
+### IGMP Snooping
+
+If not configured properly, IGMP Snooping may cause the suppression of mDNS messages. 
+For this reason, it is recommended to disable it on networking devices such as switches and, if applicable, Hypervisors & Access Points.
+
 ## 2. Ecosystem and Device Compatibility / Requirements
 
 ### Alexa
