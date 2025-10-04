@@ -12,7 +12,6 @@ import {
   HomeAssistantActions,
 } from "../../services/home-assistant/home-assistant-actions.js";
 import { AsyncObservable } from "../../utils/async-observable.js";
-import { time } from "node:console";
 
 export class HomeAssistantEntityBehavior extends Behavior {
   static override readonly id = ClusterId.homeAssistantEntity;
