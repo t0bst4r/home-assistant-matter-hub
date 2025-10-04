@@ -58,6 +58,14 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
+
+    alexaLightOptimizations: {
+      title: "Optimize light commands for Alexa",
+      description:
+        "Delay plain 'light on' commands for some milliseconds to avoid flickering lights when turning on a light with a certain brightness or color using Alexa.",
+      type: "boolean",
+      default: false,
+    },
   },
   additionalProperties: false,
 };

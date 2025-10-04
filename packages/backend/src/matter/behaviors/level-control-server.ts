@@ -9,6 +9,7 @@ import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 export interface LevelControlConfig {
   getValuePercent: ValueGetter<number | null>;
   moveToLevelPercent: ValueSetter<number>;
+  executeIfOff?: ValueGetter<boolean>;
 }
 
 const FeaturedBase = Base.with("OnOff", "Lighting");
@@ -40,11 +41,16 @@ export class LevelControlServerBase extends FeaturedBase {
       currentLevel = Math.min(Math.max(minLevel, currentLevel), maxLevel);
     }
 
+    const executeIfOff = config.executeIfOff?.(state, this.agent);
+
     applyPatchState(this.state, {
       minLevel: minLevel,
       maxLevel: maxLevel,
       currentLevel: currentLevel,
       onLevel: currentLevel ?? this.state.onLevel,
+      options: {
+        executeIfOff: executeIfOff ?? false,
+      },
     });
   }
 

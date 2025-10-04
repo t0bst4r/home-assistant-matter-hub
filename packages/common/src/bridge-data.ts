@@ -3,6 +3,7 @@ import type { HomeAssistantFilter } from "./home-assistant-filter.js";
 interface AllBridgeFeatureFlags {
   readonly coverDoNotInvertPercentage: boolean;
   readonly includeHiddenEntities: boolean;
+  readonly alexaLightOptimizations: boolean;
 }
 
 export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;
