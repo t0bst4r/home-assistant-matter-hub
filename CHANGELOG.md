@@ -1,3 +1,29 @@
+## 3.0.0-alpha.93 (2025-10-05)
+
+### 🐛 Fixes
+
+- log but avoid crash for invalid device errors ([df983ed](https://github.com/t0bst4r/home-assistant-matter-hub/commit/df983ed))
+- ⚠️  Do not interpret "unknown" boolean states as "true" matter state ([#856](https://github.com/t0bst4r/home-assistant-matter-hub/pull/856))
+
+### 📚 Documentation Changes
+
+- Add hints for IGMP Snooping issues ([#849](https://github.com/t0bst4r/home-assistant-matter-hub/pull/849))
+
+### 🚧 Chores
+
+- **ci:** switch to arm builds to prevent qemu bug ([1df51a1](https://github.com/t0bst4r/home-assistant-matter-hub/commit/1df51a1))
+
+### ⚠️  Breaking Changes
+
+- This could affect some sensors like water leak or occupancy. Make sure to verify your automations in Alexa, Apple Home, Google Home and others."
+
+### ❤️ Thank You
+
+- chah90 @chah90
+- depahk @depahk
+- Jeffrey Larson @jeffothy
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.92 (2025-10-01)
 
 ### 🐛 Fixes
