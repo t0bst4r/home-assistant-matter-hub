@@ -49,9 +49,10 @@ export class BridgeRegistry {
   refresh() {
     this._entities = pickBy(this.registry.entities, (entity) => {
       const device = this.registry.devices[entity.entity_id];
-      const isHidden =
-        this.isHiddenOrDisabled(this.dataProvider.featureFlags ?? {}, entity) ??
-        [];
+      const isHidden = this.isHiddenOrDisabled(
+        this.dataProvider.featureFlags ?? {},
+        entity,
+      );
       const matchesFilter = this.matchesFilter(
         this.dataProvider.filter,
         entity,
