@@ -23,6 +23,8 @@ export interface ColorControlConfig {
 
   setTemperature: ValueSetter<number>;
   setColor: ValueSetter<ColorInstance>;
+
+  executeIfOff?: ValueGetter<boolean>;
 }
 
 const FeaturedBase = Base.with("ColorTemperature", "HueSaturation");
@@ -73,6 +75,8 @@ export class ColorControlServerBase extends FeaturedBase {
       currentMireds = Math.max(Math.min(currentMireds, maxMireds), minMireds);
     }
 
+    const executeIfOff = config.executeIfOff?.(entity.state, this.agent);
+
     applyPatchState(this.state, {
       colorMode: this.getColorModeFromFeatures(
         config.getCurrentMode(entity.state, this.agent),
@@ -92,6 +96,9 @@ export class ColorControlServerBase extends FeaturedBase {
             colorTemperatureMireds: currentMireds,
           }
         : {}),
+      options: {
+        executeIfOff: executeIfOff ?? false,
+      },
     });
   }
 
