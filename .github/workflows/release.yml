@@ -125,7 +125,7 @@ jobs:
 
       - name: Dispatch Addon Repository
         if: steps.version.outputs.release-required == 'yes'
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.ADDON_REPOSITORY_PAT }}
           repository: "t0bst4r/home-assistant-addons"
