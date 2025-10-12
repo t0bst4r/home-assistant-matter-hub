@@ -1,7 +1,7 @@
-import { OnOffServer } from "../../../../behaviors/on-off-server.js";
+import type { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
 import type { Agent } from "@matter/main";
 import { BridgeDataProvider } from "../../../../../services/bridges/bridge-data-provider.js";
-import type { HomeAssistantEntityState } from "@home-assistant-matter-hub/common";
+import { OnOffServer } from "../../../../behaviors/on-off-server.js";
 
 export const LightOnOffServer = OnOffServer({
   turnOn: () => ({
