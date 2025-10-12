@@ -51,10 +51,10 @@ class OnOffServerBase extends FeaturedBase {
     }
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     homeAssistant.callAction(
-          turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
-          // optionally delay the command to avoid "flickering" when using Alexa
-          turnOnDelayInMs?.(homeAssistant.entity.state, this.agent),
-        );
+      turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
+      // optionally delay the command to avoid "flickering" when using Alexa
+      turnOnDelayInMs?.(homeAssistant.entity.state, this.agent),
+    );
   }
 
   override off() {
