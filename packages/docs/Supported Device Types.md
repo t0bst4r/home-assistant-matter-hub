@@ -2,7 +2,7 @@
 
 The following device types are currently supported. If you need other device types, feel free to create a feature
 request. Please make sure, that such devices are already supported by the
-[Matter Device Specification](https://handbook.buildwithmatter.com/howitworks/devicetypes/) and the controller
+[Matter Device Specification](https://handbook.buildwithmatter.com/how-it-works/device-types/) and the controller
 you are using.
 
 You can check matter support for Alexa
