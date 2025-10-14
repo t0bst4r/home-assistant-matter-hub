@@ -20,6 +20,12 @@ export class LevelControlServerBase extends FeaturedBase {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
+    // allow level change for a device that is currently off
+    applyPatchState(this.state, {
+      options: {
+        executeIfOff: true,
+      },
+    });
     this.reactTo(homeAssistant.onChange, this.update);
   }
 

@@ -13,6 +13,7 @@ export interface OnOffConfig {
   isOn?: ValueGetter<boolean>;
   turnOn?: ValueSetter<void> | null;
   turnOff?: ValueSetter<void> | null;
+  turnOnDelayInMs?: ValueGetter<number>;
 }
 
 const FeaturedBase = Base.with("Lighting");
@@ -43,7 +44,7 @@ class OnOffServerBase extends FeaturedBase {
   }
 
   override on() {
-    const { turnOn } = this.state.config;
+    const { turnOn, turnOnDelayInMs } = this.state.config;
     if (turnOn === null) {
       setTimeout(this.callback(this.autoReset), 1000);
       return;
@@ -51,6 +52,8 @@ class OnOffServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     homeAssistant.callAction(
       turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
+      // optionally delay the command to avoid "flickering" when using Alexa
+      turnOnDelayInMs?.(homeAssistant.entity.state, this.agent),
     );
   }
 
