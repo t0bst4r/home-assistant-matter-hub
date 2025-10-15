@@ -23,6 +23,13 @@ export class LevelControlServerBase extends FeaturedBase {
     this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 
+  // Override Matter.js's handleOnOffChange to prevent synchronous transaction conflicts
+  // The base implementation tries to update currentLevel synchronously when onOff changes
+  override handleOnOffChange(_onOff: boolean) {
+    // Do nothing - we handle level updates via our own update() method
+    // This prevents the base class from causing synchronous lock conflicts
+  }
+
   private async update({ state }: HomeAssistantEntityInformation) {
     const config = this.state.config;
 
