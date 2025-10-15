@@ -17,13 +17,13 @@ export class LevelControlServerBase extends FeaturedBase {
   declare state: LevelControlServerBase.State;
 
   override async initialize() {
-    super.initialize();
+    await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update);
+    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 
-  private update({ state }: HomeAssistantEntityInformation) {
+  private async update({ state }: HomeAssistantEntityInformation) {
     const config = this.state.config;
 
     const minLevel = 1;
@@ -40,7 +40,7 @@ export class LevelControlServerBase extends FeaturedBase {
       currentLevel = Math.min(Math.max(minLevel, currentLevel), maxLevel);
     }
 
-    applyPatchState(this.state, {
+    await applyPatchState(this.state, {
       minLevel: minLevel,
       maxLevel: maxLevel,
       currentLevel: currentLevel,

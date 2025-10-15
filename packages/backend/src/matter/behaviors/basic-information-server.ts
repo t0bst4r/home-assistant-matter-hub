@@ -12,13 +12,13 @@ export class BasicInformationServer extends Base {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update);
+    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 
-  private update(entity: HomeAssistantEntityInformation) {
+  private async update(entity: HomeAssistantEntityInformation) {
     const { basicInformation } = this.env.get(BridgeDataProvider);
     const device = entity.deviceRegistry;
-    applyPatchState(this.state, {
+    await applyPatchState(this.state, {
       vendorId: VendorId(basicInformation.vendorId),
       vendorName:
         ellipse(32, device?.manufacturer) ??

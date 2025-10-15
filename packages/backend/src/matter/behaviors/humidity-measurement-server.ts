@@ -16,15 +16,15 @@ class HumidityMeasurementServerBase extends Base {
   declare state: HumidityMeasurementServerBase.State;
 
   override async initialize() {
-    await super.initialize();
+    super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update);
+    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 
-  private update(entity: HomeAssistantEntityInformation) {
+  private async update(entity: HomeAssistantEntityInformation) {
     const humidity = this.getHumidity(this.state.config, entity.state);
-    applyPatchState(this.state, { measuredValue: humidity });
+    await applyPatchState(this.state, { measuredValue: humidity });
   }
 
   private getHumidity(

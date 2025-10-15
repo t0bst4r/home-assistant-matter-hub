@@ -27,8 +27,8 @@ describe("applyPatchState", () => {
     };
   });
 
-  it("should only not patch unchanged properties", () => {
-    const actualPatch = applyPatchState(state, {
+  it("should only not patch unchanged properties", async () => {
+    const actualPatch = await applyPatchState(state, {
       health: 95,
       name: "awesome knight",
       weapons: ["axe", "sword"],
@@ -51,8 +51,8 @@ describe("applyPatchState", () => {
     });
   });
 
-  it("should patch changed properties", () => {
-    const actualPatch = applyPatchState(state, {
+  it("should patch changed properties", async () => {
+    const actualPatch = await applyPatchState(state, {
       health: 90,
       name: "ultra knight",
       weapons: ["bow", "axe"],
@@ -84,8 +84,8 @@ describe("applyPatchState", () => {
     });
   });
 
-  it("should patch a state partially", () => {
-    const actualPatch = applyPatchState(state, {
+  it("should patch a state partially", async () => {
+    const actualPatch = await applyPatchState(state, {
       name: "awesome knight",
       weapons: ["bow", "axe"],
       additionalAttributes: {
@@ -114,7 +114,7 @@ describe("applyPatchState", () => {
     });
   });
 
-  it("should ignore undefined and not mess with zero and null", () => {
+  it("should ignore undefined and not mess with zero and null", async () => {
     const state: Record<
       "a" | "b" | "c" | "d",
       string | number | undefined | null
@@ -124,17 +124,22 @@ describe("applyPatchState", () => {
       c: 0,
       d: "",
     };
-    const patch = applyPatchState(state, { a: 0, b: 0, c: undefined, d: 0 });
+    const patch = await applyPatchState(state, {
+      a: 0,
+      b: 0,
+      c: undefined,
+      d: 0,
+    });
     expect(patch).toEqual({ a: 0, b: 0, d: 0 });
     expect(state).toEqual({ a: 0, b: 0, c: 0, d: 0 });
   });
 
-  it("should handle rapid sequential updates without errors", () => {
+  it("should handle rapid sequential updates without errors", async () => {
     let updateCount = 0;
 
     // Simulate many rapid state changes
     for (let i = 0; i < 1000; i++) {
-      const patch = applyPatchState(state, {
+      const patch = await applyPatchState(state, {
         health: i % 2 === 0 ? 90 : 95,
         name: i % 2 === 0 ? "knight" : "awesome knight",
         weapons: i % 3 === 0 ? ["bow"] : ["axe", "sword"],
@@ -150,7 +155,7 @@ describe("applyPatchState", () => {
     expect(updateCount).toBeGreaterThan(0);
   });
 
-  it("should work correctly with objects that have property setters", () => {
+  it("should work correctly with objects that have property setters", async () => {
     let setterCallCount = 0;
     const stateWithSetters = {
       _value: 0,
@@ -164,7 +169,7 @@ describe("applyPatchState", () => {
       normalProp: "test",
     };
 
-    const patch = applyPatchState(stateWithSetters, {
+    const patch = await applyPatchState(stateWithSetters, {
       value: 42,
       normalProp: "updated",
     });

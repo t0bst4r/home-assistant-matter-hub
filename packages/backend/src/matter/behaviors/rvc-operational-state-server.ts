@@ -21,11 +21,11 @@ class RvcOperationalStateServerBase extends Base {
   override async initialize() {
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update);
+    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
     await super.initialize();
   }
 
-  private update(entity: HomeAssistantEntityInformation) {
+  private async update(entity: HomeAssistantEntityInformation) {
     const operationalState = this.state.config.getOperationalState(
       entity.state,
       this.agent,
@@ -36,7 +36,7 @@ class RvcOperationalStateServerBase extends Base {
         operationalStateId: id,
       }));
 
-    applyPatchState(this.state, {
+    await applyPatchState(this.state, {
       operationalState,
       operationalStateList,
       operationalError: {

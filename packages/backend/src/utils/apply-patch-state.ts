@@ -1,7 +1,23 @@
-export function applyPatchState<T extends object>(
+import { Transaction } from "@matter/general";
+
+/**
+ * Safely applies a patch to state, handling transaction contexts properly.
+ *
+ * Wraps the state update in Transaction.act() to properly acquire locks
+ * asynchronously, avoiding "synchronous-transaction-conflict" errors when
+ * called from within reactors or other transaction contexts.
+ */
+export async function applyPatchState<T extends object>(
   state: T,
   patch: Partial<T>,
-): Partial<T> {
+): Promise<Partial<T>> {
+  // Use Transaction.act to properly handle lock acquisition
+  return await Transaction.act("applyPatchState", async () => {
+    return applyPatch(state, patch);
+  });
+}
+
+function applyPatch<T extends object>(state: T, patch: Partial<T>): Partial<T> {
   // Only include values that need to be changed
   const actualPatch: Partial<T> = {};
 
