@@ -4,6 +4,7 @@ import {
   TransactionDestroyedError,
 } from "@matter/general";
 import type { EndpointType } from "@matter/main";
+import debounce from "debounce";
 import type { BridgeRegistry } from "../../../services/bridges/bridge-registry.js";
 import type { HomeAssistantStates } from "../../../services/home-assistant/home-assistant-registry.js";
 import { HomeAssistantEntityBehavior } from "../../behaviors/home-assistant-entity-behavior.js";
@@ -36,26 +37,21 @@ export class LegacyEndpoint extends EntityEndpoint {
 
   private constructor(type: EndpointType, entityId: string) {
     super(type, entityId);
+    // Debounce state updates to batch rapid changes into a single transaction.
+    // Home Assistant often sends multiple attribute updates in quick succession
+    // (e.g., media player: volume + source + play state). Without debouncing,
+    // each update triggers separate Matter.js transactions, causing overhead
+    // and verbose transaction queueing logs. A 50ms window batches these updates
+    // while remaining imperceptible to users.
+    this.flushUpdate = debounce(this.flushPendingUpdate.bind(this), 50);
   }
 
   private lastState?: HomeAssistantEntityState;
-  private pendingState?: HomeAssistantEntityState;
-  private debounceTimer?: NodeJS.Timeout;
-  // Debounce state updates to batch rapid changes into a single transaction.
-  // Home Assistant often sends multiple attribute updates in quick succession
-  // (e.g., media player: volume + source + play state). Without debouncing,
-  // each update triggers separate Matter.js transactions, causing overhead
-  // and verbose transaction queueing logs. A 50ms window batches these updates
-  // while remaining imperceptible to users.
-  private readonly DEBOUNCE_MS = 50;
+  private readonly flushUpdate: ReturnType<typeof debounce>;
 
   override async delete() {
     // Clear any pending debounce timers to prevent callbacks firing after deletion
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-      this.debounceTimer = undefined;
-      this.pendingState = undefined;
-    }
+    this.flushUpdate.clear();
     await super.delete();
   }
 
@@ -65,27 +61,11 @@ export class LegacyEndpoint extends EntityEndpoint {
       return;
     }
 
-    this.pendingState = state;
-
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-    }
-
-    this.debounceTimer = setTimeout(() => {
-      this.flushPendingUpdate();
-    }, this.DEBOUNCE_MS);
+    this.lastState = state;
+    this.flushUpdate(state);
   }
 
-  private async flushPendingUpdate() {
-    if (!this.pendingState) {
-      return;
-    }
-
-    const state = this.pendingState;
-    this.pendingState = undefined;
-    this.debounceTimer = undefined;
-    this.lastState = state;
-
+  private async flushPendingUpdate(state: HomeAssistantEntityState) {
     // Wait for endpoint to finish initializing before attempting state updates.
     // During startup, factory reset, or device re-pairing, HA may send state
     // updates while endpoints are still being constructed. Attempting setStateOf
