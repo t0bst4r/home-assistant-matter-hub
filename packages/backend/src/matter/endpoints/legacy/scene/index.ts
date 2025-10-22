@@ -11,7 +11,7 @@ const SceneOnOffServer = OnOffServer({
     action: "scene.turn_on",
   }),
   turnOff: null,
-}).with(["Lighting"]);
+}).with("Lighting");
 
 const SceneDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

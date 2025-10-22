@@ -39,7 +39,7 @@ export function FanDevice(
     BasicInformationServer,
     HomeAssistantEntityBehavior,
     FanOnOffServer,
-    FanFanControlServer.with(features),
+    FanFanControlServer.with(...features),
   );
   return device.set({ homeAssistantEntity });
 }

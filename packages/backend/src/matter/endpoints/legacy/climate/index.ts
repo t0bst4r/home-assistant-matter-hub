@@ -61,7 +61,7 @@ const ClimateDeviceType = (
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    ClimateThermostatServer.with(features),
+    ClimateThermostatServer.with(...features),
     ...additionalClusters,
   );
 };

@@ -9,7 +9,6 @@ import {
 } from "@matter/main/behaviors";
 import { WindowCovering } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
@@ -240,9 +239,5 @@ export namespace WindowCoveringServerBase {
 }
 
 export function WindowCoveringServer(config: WindowCoveringConfig) {
-  const server = WindowCoveringServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<WindowCovering.Complete>) =>
-      server.with(...features),
-  };
+  return WindowCoveringServerBase.set({ config });
 }

@@ -5,7 +5,6 @@ import { FanControl } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { FanMode } from "../../utils/converters/fan-mode.js";
 import { FanSpeed } from "../../utils/converters/fan-speed.js";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
@@ -210,9 +209,5 @@ export namespace FanControlServerBase {
 }
 
 export function FanControlServer(config: FanControlServerConfig) {
-  const server = FanControlServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<FanControl.Cluster>) =>
-      server.with(...features),
-  };
+  return FanControlServerBase.set({ config });
 }

@@ -30,6 +30,5 @@ const config: LevelControlConfig = {
   },
 };
 
-export const HumidifierLevelControlServer = LevelControlServer(config).with([
-  "OnOff",
-]);
+export const HumidifierLevelControlServer =
+  LevelControlServer(config).with("OnOff");

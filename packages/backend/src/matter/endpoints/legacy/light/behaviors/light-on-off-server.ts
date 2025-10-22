@@ -8,4 +8,4 @@ export const LightOnOffServer = OnOffServer({
     action: "light.turn_off",
   }),
   isOn: (e) => e.state === "on",
-}).with(["Lighting"]);
+}).with("Lighting");

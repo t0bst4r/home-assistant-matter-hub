@@ -6,7 +6,6 @@ import { ColorControlServer as Base } from "@matter/main/behaviors/color-control
 import { ColorControl } from "@matter/main/clusters";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
@@ -165,9 +164,8 @@ export namespace ColorControlServerBase {
 }
 
 export function ColorControlServer(config: ColorControlConfig) {
-  const server = ColorControlServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<ColorControl.Cluster>) =>
-      server.with(...features),
-  };
+  return ColorControlServerBase.set({
+    options: { executeIfOff: true },
+    config,
+  });
 }

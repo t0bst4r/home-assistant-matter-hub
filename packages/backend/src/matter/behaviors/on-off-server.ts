@@ -3,9 +3,7 @@ import type {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { OnOffServer as Base } from "@matter/main/behaviors";
-import type { OnOff } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
@@ -79,9 +77,5 @@ namespace OnOffServerBase {
 }
 
 export function OnOffServer(config: OnOffConfig = {}) {
-  const server = OnOffServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<OnOff.Cluster> = []) =>
-      server.with(...features),
-  };
+  return OnOffServerBase.set({ config });
 }

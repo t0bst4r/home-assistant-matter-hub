@@ -41,9 +41,6 @@ export class EnvironmentBase extends Environment {
   }
 
   private isService(instance: object): instance is Service {
-    if ("serviceName" in instance) {
-      return true;
-    }
-    return false;
+    return "serviceName" in instance;
   }
 }

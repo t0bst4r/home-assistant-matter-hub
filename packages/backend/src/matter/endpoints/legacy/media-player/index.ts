@@ -7,6 +7,7 @@ import { testBit } from "../../../../utils/test-bit.js";
 import { BasicInformationServer } from "../../../behaviors/basic-information-server.js";
 import { HomeAssistantEntityBehavior } from "../../../behaviors/home-assistant-entity-behavior.js";
 import { IdentifyServer } from "../../../behaviors/identify-server.js";
+import type { LevelControlFeatures } from "../../../behaviors/level-control-server.js";
 import { MediaPlayerLevelControlServer } from "./behaviors/media-player-level-control-server.js";
 import { MediaPlayerMediaInputServer } from "./behaviors/media-player-media-input-server.js";
 import { MediaPlayerOnOffServer } from "./behaviors/media-player-on-off-server.js";
@@ -38,14 +39,17 @@ export function MediaPlayerDevice(
   );
 
   if (supportsMute) {
-    device = device.with(MediaPlayerOnOffServer.with());
+    device = device.with(MediaPlayerOnOffServer);
   }
 
   if (supportsVolume) {
-    device = device.with(
-      MediaPlayerLevelControlServer.with(supportsMute ? ["OnOff"] : []),
-    );
+    const volumeFeatures: LevelControlFeatures = [];
+    if (supportsMute) {
+      volumeFeatures.push("OnOff");
+    }
+    device = device.with(MediaPlayerLevelControlServer.with(...volumeFeatures));
   }
+
   if (testBit(supportedFeatures, MediaPlayerDeviceFeature.SELECT_SOURCE)) {
     device = device.with(MediaPlayerMediaInputServer);
   }

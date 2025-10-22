@@ -1,6 +1,6 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { LevelControlServer as Base } from "@matter/main/behaviors";
-import type { LevelControl } from "@matter/main/clusters";
+import type { LevelControl } from "@matter/main/clusters/level-control";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
@@ -74,10 +74,11 @@ export namespace LevelControlServerBase {
   }
 }
 
+export type LevelControlFeatures = FeatureSelection<LevelControl.Cluster>;
+
 export function LevelControlServer(config: LevelControlConfig) {
-  const server = LevelControlServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<LevelControl.Cluster> = []) =>
-      server.with(...features),
-  };
+  return LevelControlServerBase.set({
+    options: { executeIfOff: true },
+    config,
+  });
 }
