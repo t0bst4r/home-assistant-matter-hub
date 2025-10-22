@@ -12,8 +12,11 @@ export async function applyPatchState<T extends object>(
   patch: Partial<T>,
 ): Promise<Partial<T>> {
   // Use Transaction.act to properly handle lock acquisition
-  return await Transaction.act("applyPatchState", async () => {
-    return applyPatch(state, patch);
+  return Transaction.act("applyPatchState", async (tx) => {
+    await tx.begin();
+    const result = applyPatch(state, patch);
+    await tx.commit();
+    return result;
   });
 }
 
