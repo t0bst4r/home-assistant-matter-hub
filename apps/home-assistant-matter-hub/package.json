@@ -44,9 +44,9 @@
     "pack": "mkdir -p pack && pnpm pack --pack-destination pack --json | jq -r .filename > pack/package-name.txt"
   },
   "dependencies": {
-    "@matter/main": "0.15.5",
-    "@matter/nodejs": "0.15.5",
-    "@matter/general": "0.15.5",
+    "@matter/main": "0.15.6",
+    "@matter/nodejs": "0.15.6",
+    "@matter/general": "0.15.6",
     "ajv": "8.17.1",
     "color": "5.0.2",
     "debounce": "2.2.0",
