@@ -1,3 +1,30 @@
+## 3.0.0-alpha.94 (2025-10-22)
+
+### 🐛 Fixes
+
+- avoid transaction locks in applyPatchState by assigning each key ([#869](https://github.com/t0bst4r/home-assistant-matter-hub/pull/869))
+- Use Transaction.act to handle lock acquisition in applyPatchState ([#872](https://github.com/t0bst4r/home-assistant-matter-hub/pull/872))
+- debounce HA entity updates to 1 transaction for its attributes ([#870](https://github.com/t0bst4r/home-assistant-matter-hub/pull/870))
+- **lights:** debounce home assistant actions to prevent race conditions ([#855](https://github.com/t0bst4r/home-assistant-matter-hub/pull/855))
+
+### 📚 Documentation Changes
+
+- Fix link to Matter Device Specification ([#864](https://github.com/t0bst4r/home-assistant-matter-hub/pull/864))
+
+### 🚧 Chores
+
+- **deps:** bump peter-evans/repository-dispatch from 3 to 4 in the all-actions group ([#861](https://github.com/t0bst4r/home-assistant-matter-hub/pull/861))
+- **deps:** bump the all deps ([#867](https://github.com/t0bst4r/home-assistant-matter-hub/pull/867))
+- **deps:** bump actions/setup-node from 5 to 6 in the all-actions group ([#874](https://github.com/t0bst4r/home-assistant-matter-hub/pull/874))
+- **deps:** update matter.js to 0.15.6 ([#875](https://github.com/t0bst4r/home-assistant-matter-hub/pull/875))
+
+### ❤️ Thank You
+
+- chah90 @chah90
+- Denis Fetinin @fetinin
+- Jeffrey Larson @jeffothy
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.93 (2025-10-05)
 
 ### 🐛 Fixes
