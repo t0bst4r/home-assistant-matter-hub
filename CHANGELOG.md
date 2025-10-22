@@ -1,3 +1,13 @@
+## 3.0.0-alpha.95 (2025-10-22)
+
+### 🐛 Fixes
+
+- properly wait for transactions to begin and to commit ([#877](https://github.com/t0bst4r/home-assistant-matter-hub/pull/877), [#876](https://github.com/t0bst4r/home-assistant-matter-hub/issues/876))
+
+### ❤️ Thank You
+
+- t0bst4r @t0bst4r
+
 ## 3.0.0-alpha.94 (2025-10-22)
 
 ### 🐛 Fixes
