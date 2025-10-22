@@ -18,7 +18,7 @@ class IlluminanceMeasurementServerBase extends Base {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    this.update(homeAssistant.entity);
+    await this.update(homeAssistant.entity);
     this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 

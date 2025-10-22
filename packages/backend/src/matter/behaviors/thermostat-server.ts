@@ -52,7 +52,7 @@ export class ThermostatServerBase extends FeaturedBase {
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
 
-    this.update(homeAssistant.entity);
+    await this.update(homeAssistant.entity);
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     if (this.features.cooling) {
       this.reactTo(
