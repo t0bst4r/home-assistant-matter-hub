@@ -23,7 +23,7 @@ const config: LevelControlConfig = {
   }),
 };
 
-export const LightLevelControlServer = LevelControlServer(config).with([
+export const LightLevelControlServer = LevelControlServer(config).with(
   "OnOff",
   "Lighting",
-]);
+);

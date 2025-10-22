@@ -16,4 +16,4 @@ export const MediaPlayerOnOffServer = OnOffServer({
     action: "media_player.volume_mute",
     data: { is_volume_muted: true },
   }),
-});
+}).with();

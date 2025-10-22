@@ -48,7 +48,6 @@
     "@matter/nodejs": "0.15.5",
     "@matter/general": "0.15.5",
     "ajv": "8.17.1",
-    "async-lock": "1.4.1",
     "color": "5.0.2",
     "debounce": "2.2.0",
     "express": "5.1.0",

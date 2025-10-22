@@ -11,7 +11,7 @@ const AutomationOnOffServer = OnOffServer({
     action: "automation.trigger",
   }),
   turnOff: null,
-}).with(["Lighting"]);
+}).with("Lighting");
 
 const AutomationDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

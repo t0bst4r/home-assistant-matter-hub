@@ -3,6 +3,7 @@ import { callService } from "home-assistant-js-websocket";
 import type { HassServiceTarget } from "home-assistant-js-websocket/dist/types.js";
 import type { LoggerService } from "../../core/app/logger.js";
 import { Service } from "../../core/ioc/service.js";
+import { DebounceContext } from "../../utils/debounce-context.js";
 import type { HomeAssistantClient } from "./home-assistant-client.js";
 
 export interface HomeAssistantAction {
@@ -10,8 +11,15 @@ export interface HomeAssistantAction {
   data?: object | undefined;
 }
 
+interface HomeAssistantActionCall extends HomeAssistantAction {
+  entityId: string;
+}
+
 export class HomeAssistantActions extends Service {
   private readonly log: Logger;
+  private readonly debounceContext = new DebounceContext(
+    this.processAction.bind(this),
+  );
 
   constructor(
     logger: LoggerService,
@@ -21,19 +29,17 @@ export class HomeAssistantActions extends Service {
     this.log = logger.get(this);
   }
 
-  call<T = void>(
-    action: HomeAssistantAction,
-    target: HassServiceTarget,
-    returnResponse?: boolean,
-  ): Promise<T> {
-    const [domain, actionName] = action.action.split(".");
-    return this.callAction(
-      domain,
-      actionName,
-      action.data,
-      target,
-      returnResponse,
-    );
+  private processAction(_key: string, calls: HomeAssistantActionCall[]) {
+    const entity_id = calls[0].entityId;
+    const action = calls[0].action;
+    const data = Object.assign({}, ...calls.map((c) => c.data));
+    const [domain, actionName] = action.split(".");
+    void this.callAction(domain, actionName, data, { entity_id }, false);
+  }
+
+  call(action: HomeAssistantAction, entityId: string) {
+    const key = `${entityId}-${action.action}`;
+    this.debounceContext.get(key, 100)({ ...action, entityId });
   }
 
   async callAction<T = void>(
@@ -55,5 +61,9 @@ export class HomeAssistantActions extends Service {
       returnResponse,
     );
     return result as T;
+  }
+
+  override async dispose(): Promise<void> {
+    this.debounceContext.unregisterAll();
   }
 }

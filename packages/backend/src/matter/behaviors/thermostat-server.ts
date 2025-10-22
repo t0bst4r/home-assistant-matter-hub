@@ -11,7 +11,6 @@ import SystemMode = Thermostat.SystemMode;
 import RunningMode = Thermostat.ThermostatRunningMode;
 
 import type { ActionContext } from "@matter/main";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { transactionIsOffline } from "../../utils/transaction-is-offline.js";
 
 const FeaturedBase = Base.with("Heating", "Cooling", "AutoMode");
@@ -295,9 +294,5 @@ export namespace ThermostatServerBase {
 }
 
 export function ThermostatServer(config: ThermostatServerConfig) {
-  const server = ThermostatServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<Thermostat.Complete>) =>
-      server.with(...features),
-  };
+  return ThermostatServerBase.set({ config });
 }

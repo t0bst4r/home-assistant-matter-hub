@@ -3,9 +3,7 @@ import type {
   HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
 import { OnOffServer as Base } from "@matter/main/behaviors";
-import type { OnOff } from "@matter/main/clusters";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
-import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
 import type { ValueGetter, ValueSetter } from "./utils/cluster-config.js";
 
@@ -13,7 +11,6 @@ export interface OnOffConfig {
   isOn?: ValueGetter<boolean>;
   turnOn?: ValueSetter<void> | null;
   turnOff?: ValueSetter<void> | null;
-  turnOnDelayInMs?: ValueGetter<number>;
 }
 
 const FeaturedBase = Base.with("Lighting");
@@ -44,7 +41,7 @@ class OnOffServerBase extends FeaturedBase {
   }
 
   override on() {
-    const { turnOn, turnOnDelayInMs } = this.state.config;
+    const { turnOn } = this.state.config;
     if (turnOn === null) {
       setTimeout(this.callback(this.autoReset), 1000);
       return;
@@ -52,8 +49,6 @@ class OnOffServerBase extends FeaturedBase {
     const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
     homeAssistant.callAction(
       turnOn?.(void 0, this.agent) ?? { action: "homeassistant.turn_on" },
-      // optionally delay the command to avoid "flickering" when using Alexa
-      turnOnDelayInMs?.(homeAssistant.entity.state, this.agent),
     );
   }
 
@@ -82,9 +77,5 @@ namespace OnOffServerBase {
 }
 
 export function OnOffServer(config: OnOffConfig = {}) {
-  const server = OnOffServerBase.set({ config });
-  return {
-    with: (features: FeatureSelection<OnOff.Cluster> = []) =>
-      server.with(...features),
-  };
+  return OnOffServerBase.set({ config });
 }

@@ -10,7 +10,7 @@ const ButtonOnOffServer = OnOffServer({
     action: "button.press",
   }),
   turnOff: null,
-}).with(["Lighting"]);
+}).with("Lighting");
 
 const ButtonEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

@@ -41,7 +41,7 @@ const CoverDeviceType = (supportedFeatures: number) => {
     BasicInformationServer,
     IdentifyServer,
     HomeAssistantEntityBehavior,
-    CoverWindowCoveringServer.with(features),
+    CoverWindowCoveringServer.with(...features),
   );
 };
 

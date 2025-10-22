@@ -32,8 +32,7 @@ export function createLegacyEndpointType(
   if (!factory) {
     return undefined;
   }
-  const lockKey = entity.entity_id;
-  return factory({ entity, lockKey });
+  return factory({ entity });
 }
 
 const deviceCtrs: Record<

@@ -11,7 +11,7 @@ const InputButtonOnOffServer = OnOffServer({
     action: "input_button.press",
   }),
   turnOff: null,
-}).with(["Lighting"]);
+}).with("Lighting");
 
 const InputButtonEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

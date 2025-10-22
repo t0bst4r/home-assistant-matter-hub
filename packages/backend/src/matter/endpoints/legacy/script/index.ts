@@ -12,7 +12,7 @@ const ScriptOnOffServer = OnOffServer({
   turnOff: () => ({
     action: "script.turn_off",
   }),
-}).with(["Lighting"]);
+}).with("Lighting");
 
 const ScriptDeviceType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

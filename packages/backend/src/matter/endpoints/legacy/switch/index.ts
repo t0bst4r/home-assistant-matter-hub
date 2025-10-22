@@ -5,7 +5,7 @@ import { HomeAssistantEntityBehavior } from "../../../behaviors/home-assistant-e
 import { IdentifyServer } from "../../../behaviors/identify-server.js";
 import { OnOffServer } from "../../../behaviors/on-off-server.js";
 
-const SwitchOnOffServer = OnOffServer().with(["Lighting"]);
+const SwitchOnOffServer = OnOffServer().with("Lighting");
 
 const SwitchEndpointType = OnOffPlugInUnitDevice.with(
   BasicInformationServer,

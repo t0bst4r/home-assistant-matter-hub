@@ -21,6 +21,6 @@ export const ExtendedColorLightType = (supportsTemperature: boolean) => {
     HomeAssistantEntityBehavior,
     LightOnOffServer,
     LightLevelControlServer,
-    LightColorControlServer.with(features),
+    LightColorControlServer.with(...features),
   );
 };
