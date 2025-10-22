@@ -1,27 +1,54 @@
-import { size } from "lodash-es";
+import { Transaction } from "@matter/general";
 
-export function applyPatchState<T extends {}>(
+/**
+ * Safely applies a patch to state, handling transaction contexts properly.
+ *
+ * Wraps the state update in Transaction.act() to properly acquire locks
+ * asynchronously, avoiding "synchronous-transaction-conflict" errors when
+ * called from within reactors or other transaction contexts.
+ */
+export async function applyPatchState<T extends object>(
   state: T,
   patch: Partial<T>,
-): Partial<T> {
+): Promise<Partial<T>> {
+  // Use Transaction.act to properly handle lock acquisition
+  return await Transaction.act("applyPatchState", async () => {
+    return applyPatch(state, patch);
+  });
+}
+
+function applyPatch<T extends object>(state: T, patch: Partial<T>): Partial<T> {
+  // Only include values that need to be changed
   const actualPatch: Partial<T> = {};
-  const keys = Object.keys(patch) as Array<keyof T>;
-  for (const key of keys) {
-    const patchValue = patch[key];
-    if (patchValue !== undefined && !deepEqual(state[key], patchValue)) {
-      actualPatch[key] = patchValue!;
+
+  for (const key in patch) {
+    if (Object.hasOwn(patch, key)) {
+      const patchValue = patch[key];
+
+      if (patchValue !== undefined) {
+        const stateValue = state[key];
+
+        if (!deepEqual(stateValue, patchValue)) {
+          actualPatch[key] = patchValue;
+        }
+      }
     }
   }
-  if (size(actualPatch) > 0) {
-    try {
-      Object.assign(state, actualPatch);
-    } catch (e) {
-      throw new Error(
-        `Failed to patch the following properties: ${JSON.stringify(actualPatch, null, 2)}`,
-        { cause: e },
-      );
+
+  // Set properties individually to avoid transaction conflicts
+  try {
+    for (const key in actualPatch) {
+      if (Object.hasOwn(actualPatch, key)) {
+        state[key] = actualPatch[key] as T[Extract<keyof T, string>];
+      }
     }
+  } catch (e) {
+    throw new Error(
+      `Failed to patch the following properties: ${JSON.stringify(actualPatch, null, 2)}`,
+      { cause: e },
+    );
   }
+
   return actualPatch;
 }
 
