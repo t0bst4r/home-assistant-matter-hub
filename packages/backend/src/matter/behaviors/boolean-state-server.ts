@@ -15,15 +15,15 @@ class BooleanStateServerBase extends Base {
   declare state: BooleanStateServerBase.State;
 
   override async initialize() {
-    super.initialize();
+    await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
     this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update);
+    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
   }
 
-  private update(entity: HomeAssistantEntityInformation) {
+  private async update(entity: HomeAssistantEntityInformation) {
     const newState = this.getStateValue(entity.state);
-    applyPatchState(this.state, { stateValue: newState });
+    await applyPatchState(this.state, { stateValue: newState });
   }
 
   private getStateValue(entity: HomeAssistantEntityState): boolean {
