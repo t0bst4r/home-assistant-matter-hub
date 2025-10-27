@@ -13,15 +13,15 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
-    "@codemirror/lint": "^6.9.0",
+    "@codemirror/lint": "^6.9.1",
     "@home-assistant-matter-hub/common": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
     "@mui/material": "latest-v6",
     "@mui/icons-material": "latest-v6",
-    "@mui/x-tree-view": "^8.14.0",
-    "@reduxjs/toolkit": "^2.9.0",
+    "@mui/x-tree-view": "^8.15.0",
+    "@reduxjs/toolkit": "^2.9.2",
     "@rjsf/core": "^5.24.13",
     "@rjsf/mui": "^5.24.13",
     "@rjsf/utils": "^5.24.13",
@@ -47,7 +47,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/json-schema": "^7.0.15",
-    "@vitejs/plugin-react-swc": "^4.1.0",
+    "@vitejs/plugin-react-swc": "^4.2.0",
     "vite-plugin-svgr": "^4.5.0"
   }
 }
