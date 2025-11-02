@@ -1,4 +1,4 @@
-import type { AlertColor } from "@mui/material/Alert/Alert";
+import type { AlertColor } from "@mui/material/Alert";
 
 export interface NotificationOptions {
   message: string;

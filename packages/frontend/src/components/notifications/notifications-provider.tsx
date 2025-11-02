@@ -1,4 +1,5 @@
-import { Alert, Snackbar } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import { type PropsWithChildren, useCallback, useState } from "react";
 import type { NotificationOptions } from "./notification-options.ts";
 import { NotificationsContext } from "./notifications-context.ts";

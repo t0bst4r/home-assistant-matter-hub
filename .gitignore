@@ -12,11 +12,16 @@
 # Dependencies
 node_modules/
 
+# Release assets
+CHANGELOG.md
+CHANGELOG_FULL.md
+RELEASE_VERSION
+RELEASE_CHANNEL
+
 # Build Results and Caching
 dist/
-.nx/
-packages/docs/_build/
-apps/home-assistant-matter-hub/pack
+docs/_build/
+apps/home-assistant-matter-hub/package.tgz
 apps/home-assistant-matter-hub/README.md
 apps/home-assistant-matter-hub/LICENSE
 

@@ -17,7 +17,7 @@ RUN corepack enable
 ENV SUPERVISOR_TOKEN=""
 VOLUME /config
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY addon.docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 ARG PACKAGE_VERSION="unknown"
@@ -27,8 +27,8 @@ LABEL \
   io.hass.arch="armhf|aarch64|i386|amd64"
 
 RUN mkdir /install
-COPY package.tgz /install/app.tgz
-RUN npm install -g /install/app.tgz
+COPY package.tgz /install/package.tgz
+RUN npm install -g /install/package.tgz
 RUN rm -rf /install
 
 CMD /docker-entrypoint.sh

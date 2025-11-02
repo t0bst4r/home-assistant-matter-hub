@@ -34,7 +34,17 @@
         "noStaticOnlyClass": "off"
       },
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "@mui/material": {
+                "message": "Use path imports like `import Alert from '@mui/material/Alert'` instead of named imports from '@mui/material' for better tree-shaking."
+              }
+            }
+          }
+        }
       }
     }
   },

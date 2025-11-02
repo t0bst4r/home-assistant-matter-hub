@@ -1,0 +1,38 @@
+{
+  "branches": ["main", { "name": "beta", "prerelease": true }],
+  "plugins": [
+    ["@semantic-release/commit-analyzer", { "preset": "conventionalcommits" }],
+    ["@semantic-release/release-notes-generator"],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "gh release download \"${lastRelease.version}\" -p \"CHANGELOG_FULL.md\" || echo \"No previous changelog found\""
+      }
+    ],
+    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
+    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG_FULL.md" }],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "CHANGELOG.md", "label": "Release Changelog" },
+          { "path": "CHANGELOG_FULL.md", "label": "Full Changelog" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "pnpm run release:version ${nextRelease.version} && pnpm run release:pack",
+        "publishCmd": "pnpm run release:publish --tag ${nextRelease.channel}"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "rm -f RELEASE_VERSION RELEASE_CHANNEL",
+        "successCmd": "echo -n \"${nextRelease.version}\" > RELEASE_VERSION && echo -n \"${nextRelease.channel}\" > RELEASE_CHANNEL"
+      }
+    ]
+  ]
+}
