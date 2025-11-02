@@ -16,7 +16,7 @@ import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import WaterDamageIcon from "@mui/icons-material/WaterDamage";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import WindPowerIcon from "@mui/icons-material/WindPower";
-import { Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { useMemo } from "react";
 
 export interface EndpointIconProps {

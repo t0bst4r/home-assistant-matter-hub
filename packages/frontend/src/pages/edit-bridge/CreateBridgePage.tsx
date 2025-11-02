@@ -1,6 +1,8 @@
 import type { BridgeConfig } from "@home-assistant-matter-hub/common";
-import { Alert, Stack, Typography } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { Breadcrumbs } from "../../components/breadcrumbs/Breadcrumbs.tsx";

@@ -9,7 +9,9 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import GlobalStyles from "@mui/material/GlobalStyles";
+import { ThemeProvider } from "@mui/material/styles";
 import { NotificationsProvider } from "./components/notifications/notifications-provider.tsx";
 import { routes } from "./routes.tsx";
 import { store } from "./state/store.ts";
@@ -41,6 +43,16 @@ createRoot(document.getElementById("root")!).render(
     <StateProvider store={store}>
       <ThemeProvider theme={appTheme}>
         <CssBaseline />
+        <GlobalStyles
+          styles={{
+            // @rsjf/mui has a bug which breaks nested item rendering (see https://github.com/rjsf-team/react-jsonschema-form/issues/4838)
+            ".rjsf-field-array > .MuiFormControl-root > .MuiPaper-root > .MuiBox-root > .MuiGrid-root > .MuiGrid-root:has(> .MuiBox-root > .MuiPaper-root > .MuiBox-root > .rjsf-field)":
+              {
+                overflow: "initial !important",
+                flexGrow: 1,
+              },
+          }}
+        />
         <NotificationsProvider>
           <RouterProvider router={router} />
         </NotificationsProvider>

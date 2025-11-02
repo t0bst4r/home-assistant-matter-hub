@@ -1,9 +1,8 @@
 {
   "name": "home-assistant-matter-hub",
   "description": "",
-  "version": "3.0.0-alpha.95",
+  "version": "0.0.0",
   "private": false,
-  "destination": "./pack",
   "type": "module",
   "bin": {
     "home-assistant-matter-hub": "./dist/backend/cli.js"
@@ -39,9 +38,10 @@
   "scripts": {
     "cleanup": "npx rimraf node_modules dist pack LICENSE README.md",
     "build": "node build.js",
+    "postbuild": "pnpm pack --out package.tgz",
     "test": "vitest run",
-    "start": "dotenvx run -f ../../.env -- ./dist/backend/cli.js start",
-    "pack": "mkdir -p pack && pnpm pack --pack-destination pack --json | jq -r .filename > pack/package-name.txt"
+    "prestart": "pnpm run build",
+    "start": "dotenvx run -f ../../.env -- ./dist/backend/cli.js start"
   },
   "dependencies": {
     "@matter/main": "0.15.6",

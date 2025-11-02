@@ -7,32 +7,70 @@ permissions:
   contents: read
 
 jobs:
-  main:
-    runs-on: ubuntu-24.04-arm
+  verify:
+    name: "Verify Code"
+    runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.setup.outputs.node-version }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: package.json
-          cache: "pnpm"
-      - name: NX cache
-        uses: actions/cache@v4
-        with:
-          path: .nx
-          key: ${{ runner.os }}-nx
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        id: setup
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build & Test
-        run: npx nx run-many -t test build
       - name: Lint
         run: pnpm run lint
+      - name: Test
+        run: pnpm run test
+      - name: Build
+        run: pnpm run build
+
+      - name: Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/package.tgz
+
+  prepare-docker:
+    name: "Prepare Docker"
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.dockerfiles.outputs.dockerfiles }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Find Dockerfiles
+        id: dockerfiles
+        uses: ./.github/actions/find-dockerfiles
+
+  docker:
+    name: "Build Docker"
+    runs-on: ubuntu-24.04-arm
+    needs: [prepare-docker, verify]
+    strategy:
+      matrix:
+        dockerfile: ${{ fromJSON(needs.prepare-docker.outputs.dockerfiles) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+
+      - name: Package Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/
+          merge-multiple: true
+
+      - name: Build Docker
+        uses: ./.github/actions/docker
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          node-version: ${{ needs.verify.outputs.node-version }}
+          package-version: run-${{ github.run_number }}

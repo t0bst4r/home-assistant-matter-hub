@@ -1,9 +1,13 @@
 import type { BridgeDataWithMetadata } from "@home-assistant-matter-hub/common";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Alert, Chip, Paper, Stack, Typography } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
+import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { QRCodeSVG } from "qrcode.react";
 import { navigation } from "../../routes.tsx";
 import { FabricList } from "../fabric/FabricList.tsx";

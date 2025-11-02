@@ -1,7 +1,7 @@
 import type { BridgeFabric } from "@home-assistant-matter-hub/common";
 import QuestionMark from "@mui/icons-material/QuestionMark";
-import { Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
 import { type FC, type SVGProps, useMemo } from "react";
 import AmazonIcon from "../../assets/brands/Amazon.svg?react";
 import AppleIcon from "../../assets/brands/Apple.svg?react";

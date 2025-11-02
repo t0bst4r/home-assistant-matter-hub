@@ -1,0 +1,16 @@
+name: Find Dockerfiles
+
+outputs:
+  dockerfiles:
+    description: "A JSON array of found dockerfiles"
+    value: ${{ steps.dockerfiles.outputs.dockerfiles }}
+
+runs:
+  using: composite
+  steps:
+    - name: Find dockerfiles
+      id: dockerfiles
+      shell: bash
+      run: |
+        DOCKERFILES=$(ls -d apps/home-assistant-matter-hub/*.Dockerfile | jq -R . | jq -sc .)
+        echo "dockerfiles=${DOCKERFILES}" >> "$GITHUB_OUTPUT"

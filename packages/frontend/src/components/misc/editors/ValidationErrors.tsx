@@ -1,4 +1,6 @@
-import { List, ListItem, Stack } from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import type { ValidationError } from "./validation-error";
 

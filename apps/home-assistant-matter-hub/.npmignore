@@ -1,11 +1,11 @@
-node_modules/
+# Exclude everything
 test/
-.env*
+*.docker-entrypoint.sh
+*.Dockerfile
 build.js
 tsconfig.json
 
-pack/
-
+# EXPLICITLY INCLUDE
 !dist/
 !package.json
 !README.md

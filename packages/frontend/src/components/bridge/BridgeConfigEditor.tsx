@@ -3,9 +3,12 @@ import {
   bridgeConfigSchema,
 } from "@home-assistant-matter-hub/common";
 import { LibraryBooks, TextFields } from "@mui/icons-material";
-import { Alert, Box, Button, Stack } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
 import { useCallback, useState } from "react";
 import { navigation } from "../../routes.tsx";
 import { FormEditor } from "../misc/editors/FormEditor";

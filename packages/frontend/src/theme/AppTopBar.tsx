@@ -1,4 +1,7 @@
-import { AppBar, Container, Toolbar, useMediaQuery } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { AppLogo } from "./AppLogo.tsx";
 
 export const AppTopBar = () => {
