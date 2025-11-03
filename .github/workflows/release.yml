@@ -127,6 +127,7 @@ jobs:
     needs: [release]
     if: needs.release.outputs.release-version != ''
     permissions:
+      id-token: write
       pages: write
     steps:
       - name: Deploy documentation to GitHub Pages
