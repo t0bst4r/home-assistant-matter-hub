@@ -11,12 +11,12 @@ export class OccupancySensingServer extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update({ state }: HomeAssistantEntityInformation) {
-    await applyPatchState(this.state, {
+  private update({ state }: HomeAssistantEntityInformation) {
+    applyPatchState(this.state, {
       occupancy: { occupied: this.isOccupied(state) },
       occupancySensorType: OccupancySensing.OccupancySensorType.PhysicalContact,
       occupancySensorTypeBitmap: {

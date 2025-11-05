@@ -32,11 +32,11 @@ export class ColorControlServerBase extends FeaturedBase {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
+  private update(entity: HomeAssistantEntityInformation) {
     const config = this.state.config;
     const currentKelvin = config.getCurrentKelvin(entity.state, this.agent);
     let minKelvin =
@@ -72,7 +72,7 @@ export class ColorControlServerBase extends FeaturedBase {
       currentMireds = Math.max(Math.min(currentMireds, maxMireds), minMireds);
     }
 
-    await applyPatchState(this.state, {
+    applyPatchState(this.state, {
       colorMode: this.getColorModeFromFeatures(
         config.getCurrentMode(entity.state, this.agent),
       ),

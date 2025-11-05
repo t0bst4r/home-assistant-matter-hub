@@ -5,16 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      all-actions:
+      github-actions:
         patterns: ["*"]
   - package-ecosystem: npm
-    directories:
-      - "/"
-      - "apps/*"
-      - "packages/*"
-      - "utils/*"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
-      all-deps:
+      npm:
         patterns: ["*"]

@@ -2,42 +2,103 @@ name: Release
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - beta
 #  schedule:
 #    - cron: "0 2 * * *"
 
 permissions:
-  contents: write
-  packages: write
-  id-token: write
-  pages: write
+  contents: read
 
 jobs:
-  main:
-    runs-on: ubuntu-24.04-arm
+  release:
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      issues: write
+    name: Perform NPM Release
+    runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.setup.outputs.node-version }}
+      release-version: ${{ steps.release.outputs.release-version }}
+      release-channel: ${{ steps.release.outputs.release-channel }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: package.json
-          cache: "pnpm"
-          registry-url: https://registry.npmjs.org/
-      - name: NX cache
-        uses: actions/cache@v4
-        with:
-          path: .nx
-          key: ${{ runner.os }}-nx
+      - name: Setup Environment
+        id: setup
+        uses: ./.github/actions/setup-node
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm run test
+      - name: Build
+        run: pnpm run build
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm run release
+
+      - name: Analyze Release
+        id: release
+        run: |
+          RELEASE_VERSION=$([ -f RELEASE_VERSION ] && cat RELEASE_VERSION || echo '')
+          RELEASE_CHANNEL=$([ -f RELEASE_CHANNEL ] && cat RELEASE_CHANNEL || echo '')
+          if [ -z "$RELEASE_CHANNEL" ]; then
+            RELEASE_CHANNEL=latest
+          fi
+          echo "release-version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "release-channel=$RELEASE_CHANNEL" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
+      - name: Package Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/package.tgz
+      - name: Upload Documentation
+        if: steps.release.outputs.release-version != ''
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "./docs/_build/html"
+
+  prepare-docker:
+    name: "Prepare Docker"
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.dockerfiles.outputs.dockerfiles }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Find Dockerfiles
+        id: dockerfiles
+        uses: ./.github/actions/find-dockerfiles
+
+  docker:
+    name: "Build Docker"
+    runs-on: ubuntu-24.04-arm
+    needs: [prepare-docker, release]
+    if: needs.release.outputs.release-version != ''
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        dockerfile: ${{ fromJSON(needs.prepare-docker.outputs.dockerfiles) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -45,89 +106,50 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Bumb version
-        id: version
-        run: |
-          PREV_PACKAGE_VERSION=$(node -p "require('./apps/home-assistant-matter-hub/package.json').version")
-
-          npx nx release version
-
-          NEXT_PACKAGE_VERSION=$(node -p "require('./apps/home-assistant-matter-hub/package.json').version")
-          echo "package-version=$NEXT_PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
-          if [ "$PREV_PACKAGE_VERSION" == "$NEXT_PACKAGE_VERSION" ]; then
-            RELEASE_REQUIRED="no"
-          else
-            RELEASE_REQUIRED="yes"
-          fi
-          echo "Previous version: $PREV_PACKAGE_VERSION, New Version: $NEXT_PACKAGE_VERSION, Release required: $RELEASE_REQUIRED"
-          echo "release-required=$RELEASE_REQUIRED" >> "$GITHUB_OUTPUT"
-
-      - name: Create Changelog
-        id: changelog
-        if: steps.version.outputs.release-required == 'yes'
-        env:
-          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
-        run: |
-          npx nx release changelog --version $PACKAGE_VERSION
-          CHANGELOG=$(git diff HEAD CHANGELOG.md | sed -n '/^\+/s///p' | sed '1d')
-          echo "changelog<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$CHANGELOG" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
-      - name: Build
-        if: steps.version.outputs.release-required == 'yes'
-        run: npx nx run-many -t test build
-
-      - name: Lint
-        if: steps.version.outputs.release-required == 'yes'
-        run: pnpm run lint
-
-      - name: Commit, tag and push
-        if: steps.version.outputs.release-required == 'yes'
-        env:
-          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
-        run: |
-          git commit -m "chore: release v$PACKAGE_VERSION"
-          git tag -a v$PACKAGE_VERSION -m "Release v$PACKAGE_VERSION" -m "[skip ci]"
-          git push --follow-tags
-
-      - name: Publish
-        if: steps.version.outputs.release-required == 'yes'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: false
-        run: npx nx release publish
-
-      - name: Create GitHub Release
-        if: steps.version.outputs.release-required == 'yes'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PACKAGE_VERSION: ${{steps.version.outputs.package-version}}
-          CHANGELOG: ${{steps.changelog.outputs.changelog}}
-        run: |
-          gh release create v$PACKAGE_VERSION \
-            --latest \
-            --notes "$CHANGELOG" \
-            --title "v$PACKAGE_VERSION" \
-            --verify-tag
-
-      - name: Upload Documentation
-        if: steps.version.outputs.release-required == 'yes'
-        uses: actions/upload-pages-artifact@v4
+      - name: Package Artifact
+        uses: actions/download-artifact@v6
         with:
-          path: "./packages/docs/_build/html"
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/
+          merge-multiple: true
+
+      - name: Build Docker
+        uses: ./.github/actions/docker
+        with:
+          push: true
+          channel: ${{ needs.release.outputs.release-channel }}
+          dockerfile: ${{ matrix.dockerfile }}
+          node-version: ${{ needs.release.outputs.node-version }}
+          package-version: ${{ needs.release.outputs.release-version }}
+
+  publish-pages:
+    name: "Publish Documentation"
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: needs.release.outputs.release-version != '' && needs.release.outputs.release-channel == 'latest'
+    permissions:
+      id-token: write
+      pages: write
+    steps:
       - name: Deploy documentation to GitHub Pages
-        if: steps.version.outputs.release-required == 'yes'
         uses: actions/deploy-pages@v4
 
+  dispatch-repositories:
+    name: "Dispatch Repositories"
+    runs-on: ubuntu-latest
+    needs: [release, docker]
+    if: needs.release.outputs.release-version != ''
+    steps:
       - name: Dispatch Addon Repository
-        if: steps.version.outputs.release-required == 'yes'
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.ADDON_REPOSITORY_PAT }}
           repository: "t0bst4r/home-assistant-addons"
-          event-type: release-hamh
-          client-payload: '{ "version": "${{steps.version.outputs.package-version}}" }'
+          event-type: release
+          client-payload: |
+            {
+              "project": "hamh",
+              "channel": "${{needs.release.outputs.release-channel}}",
+              "version": "${{needs.release.outputs.release-version}}" ,
+              "changelogUrl": "https://github.com/${{github.repository}}/releases/download/v${{needs.release.outputs.release-version}}/CHANGELOG_FULL.md"
+            }

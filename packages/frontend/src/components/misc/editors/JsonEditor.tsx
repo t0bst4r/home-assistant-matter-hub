@@ -1,7 +1,10 @@
 import { json, jsonLanguage, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from "@codemirror/lint";
-import { Alert, Button, Stack, useTheme } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
 import ReactCodeMirror, { hoverTooltip } from "@uiw/react-codemirror";
 import Ajv from "ajv";

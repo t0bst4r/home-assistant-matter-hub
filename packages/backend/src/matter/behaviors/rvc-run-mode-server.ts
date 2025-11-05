@@ -26,13 +26,13 @@ class RvcRunModeServerBase extends Base {
 
   override async initialize() {
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
     await super.initialize();
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
-    await applyPatchState(this.state, {
+  private update(entity: HomeAssistantEntityInformation) {
+    applyPatchState(this.state, {
       currentMode: this.state.config.getCurrentMode(entity.state, this.agent),
       supportedModes: this.state.config.getSupportedModes(
         entity.state,

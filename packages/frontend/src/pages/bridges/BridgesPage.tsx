@@ -1,6 +1,9 @@
 import { Add } from "@mui/icons-material";
-import { Backdrop, Button, CircularProgress, Stack } from "@mui/material";
+import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { BridgeList } from "../../components/bridge/BridgeList";

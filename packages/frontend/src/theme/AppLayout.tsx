@@ -1,5 +1,6 @@
-import { Container, Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
 import type { FC } from "react";
 import { Outlet } from "react-router";
 import { AppFooter } from "./AppFooter.tsx";

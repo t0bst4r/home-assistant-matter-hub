@@ -1,0 +1,54 @@
+name: Build and push docker
+
+inputs:
+  dockerfile:
+    description: "Location of the Dockerfile to use. Parent directory will be used as context."
+    required: true
+  node-version:
+    description: "The node version to include in the dockerfile"
+    required: true
+  package-version:
+    description: "The package version to install"
+    required: true
+  push:
+    description: "Whether to push the docker image or not"
+    default: "false"
+    required: false
+  channel:
+    description: "The channel tag to add"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Build metadata
+      id: meta
+      shell: bash
+      env:
+        DOCKER_IMAGE_BASENAME: ghcr.io/t0bst4r/home-assistant-matter-hub
+      run: |
+        CONTEXT=$(dirname "${{inputs.dockerfile}}")
+        DOCKER_TYPE=$(basename "${{inputs.dockerfile}}" .Dockerfile)
+
+        if [ "$DOCKER_TYPE" = "standalone" ]; then
+          DOCKER_IMAGE="${DOCKER_IMAGE_BASENAME}"
+        else
+          DOCKER_IMAGE="${DOCKER_IMAGE_BASENAME}-$DOCKER_TYPE"
+        fi
+        
+        echo "dockertag=$DOCKER_IMAGE" >> "$GITHUB_OUTPUT" 
+        echo "context=$CONTEXT" >> "$GITHUB_OUTPUT"
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v6
+      with:
+        push: ${{inputs.push}}
+        platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
+        context: ${{ steps.meta.outputs.context }}
+        file: ${{inputs.dockerfile}}
+        build-args: |
+          NODE_VERSION=${{ inputs.node-version }}
+          PACKAGE_VERSION=${{ inputs.package-version }}
+        tags: |
+          ${{ steps.meta.outputs.dockertag }}:${{ inputs.package-version }}
+          ${{ steps.meta.outputs.dockertag }}:${{ inputs.channel }}

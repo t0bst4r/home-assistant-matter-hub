@@ -11,14 +11,14 @@ export class BasicInformationServer extends Base {
   override async initialize(): Promise<void> {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
+  private update(entity: HomeAssistantEntityInformation) {
     const { basicInformation } = this.env.get(BridgeDataProvider);
     const device = entity.deviceRegistry;
-    await applyPatchState(this.state, {
+    applyPatchState(this.state, {
       vendorId: VendorId(basicInformation.vendorId),
       vendorName:
         ellipse(32, device?.manufacturer) ??

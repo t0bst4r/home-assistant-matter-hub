@@ -28,7 +28,7 @@ describe("applyPatchState", () => {
   });
 
   it("should only not patch unchanged properties", async () => {
-    const actualPatch = await applyPatchState(state, {
+    const actualPatch = applyPatchState(state, {
       health: 95,
       name: "awesome knight",
       weapons: ["axe", "sword"],
@@ -52,7 +52,7 @@ describe("applyPatchState", () => {
   });
 
   it("should patch changed properties", async () => {
-    const actualPatch = await applyPatchState(state, {
+    const actualPatch = applyPatchState(state, {
       health: 90,
       name: "ultra knight",
       weapons: ["bow", "axe"],
@@ -85,7 +85,7 @@ describe("applyPatchState", () => {
   });
 
   it("should patch a state partially", async () => {
-    const actualPatch = await applyPatchState(state, {
+    const actualPatch = applyPatchState(state, {
       name: "awesome knight",
       weapons: ["bow", "axe"],
       additionalAttributes: {
@@ -124,7 +124,7 @@ describe("applyPatchState", () => {
       c: 0,
       d: "",
     };
-    const patch = await applyPatchState(state, {
+    const patch = applyPatchState(state, {
       a: 0,
       b: 0,
       c: undefined,
@@ -139,7 +139,7 @@ describe("applyPatchState", () => {
 
     // Simulate many rapid state changes
     for (let i = 0; i < 1000; i++) {
-      const patch = await applyPatchState(state, {
+      const patch = applyPatchState(state, {
         health: i % 2 === 0 ? 90 : 95,
         name: i % 2 === 0 ? "knight" : "awesome knight",
         weapons: i % 3 === 0 ? ["bow"] : ["axe", "sword"],
@@ -169,7 +169,7 @@ describe("applyPatchState", () => {
       normalProp: "test",
     };
 
-    const patch = await applyPatchState(stateWithSetters, {
+    const patch = applyPatchState(stateWithSetters, {
       value: 42,
       normalProp: "updated",
     });

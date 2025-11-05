@@ -1,5 +1,7 @@
-import { Button, Container, Divider } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { navigation } from "../routes.tsx";
 

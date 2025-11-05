@@ -1,0 +1,31 @@
+name: Setup Environment
+
+outputs:
+  node-version:
+    description: "The installed node version"
+    value: ${{ steps.cleanup.outputs.node-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup node
+      uses: actions/setup-node@v6
+      id: setup-node
+      with:
+        node-version-file: package.json
+        cache: "pnpm"
+        registry-url: 'https://registry.npmjs.org'
+    - name: Update NPM
+      shell: bash
+      run: npm install -g npm@latest
+
+    - name: Cleanup Node Version String
+      id: cleanup
+      shell: bash
+      run: |
+        NODE_VERSION="${{ steps.setup-node.outputs.node-version }}"
+        NODE_VERSION="${NODE_VERSION:1}"
+        echo "node-version=$NODE_VERSION" >> "$GITHUB_OUTPUT"

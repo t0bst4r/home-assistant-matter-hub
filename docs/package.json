@@ -1,6 +1,6 @@
 {
   "name": "@home-assistant-matter-hub/documentation",
-  "version": "3.0.0-alpha.95",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "myst start",
@@ -8,6 +8,6 @@
     "cleanup": "npx rimraf _build"
   },
   "dependencies": {
-    "mystmd": "^1.6.3"
+    "mystmd": "^1.6.4"
   }
 }
