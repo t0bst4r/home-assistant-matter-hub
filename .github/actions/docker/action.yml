@@ -16,8 +16,7 @@ inputs:
     required: false
   channel:
     description: "The channel tag to add"
-    required: false
-    default: ""
+    required: true
 
 runs:
   using: composite
@@ -37,15 +36,7 @@ runs:
           DOCKER_IMAGE="${DOCKER_IMAGE_BASENAME}-$DOCKER_TYPE"
         fi
         
-        DOCKERTAG="${DOCKER_IMAGE}:${{ inputs.package-version }}"
-        if [ -n "${{inputs.channel}}" ]; then
-          DOCKERTAG="${DOCKERTAG}\n${DOCKER_IMAGE}:${{ inputs.channel }}"
-        fi
-        
-        echo "dockertag<<EOF" >> "$GITHUB_OUTPUT"
-        echo "$DOCKERTAG" >> "$GITHUB_OUTPUT" 
-        echo "EOF" >> "$GITHUB_OUTPUT"
-
+        echo "dockertag=$DOCKER_IMAGE" >> "$GITHUB_OUTPUT" 
         echo "context=$CONTEXT" >> "$GITHUB_OUTPUT"
 
     - name: Build Docker image
@@ -58,4 +49,6 @@ runs:
         build-args: |
           NODE_VERSION=${{ inputs.node-version }}
           PACKAGE_VERSION=${{ inputs.package-version }}
-        tags: ${{ steps.meta.outputs.dockertag }}
+        tags: |
+          ${{ steps.meta.outputs.dockertag }}:${{ inputs.package-version }}
+          ${{ steps.meta.outputs.dockertag }}:${{ inputs.channel }}

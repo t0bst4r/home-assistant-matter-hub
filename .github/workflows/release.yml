@@ -125,7 +125,7 @@ jobs:
     name: "Publish Documentation"
     runs-on: ubuntu-latest
     needs: [release]
-    if: needs.release.outputs.release-version != ''
+    if: needs.release.outputs.release-version != '' && needs.release.outputs.release-channel == 'latest'
     permissions:
       id-token: write
       pages: write
