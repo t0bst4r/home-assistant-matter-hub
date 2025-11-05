@@ -62,7 +62,7 @@ jobs:
           cat "$GITHUB_OUTPUT"
 
       - name: Package Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: package.tgz
           path: apps/home-assistant-matter-hub/package.tgz
@@ -107,7 +107,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: package.tgz
           path: apps/home-assistant-matter-hub/
