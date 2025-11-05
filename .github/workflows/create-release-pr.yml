@@ -1,0 +1,19 @@
+name: Auto PR from Beta to Main
+
+on:
+  push:
+    branches:
+      - beta
+
+permissions:
+  pull-requests: write
+
+jobs:
+  pull-request:
+    name: "Create Release PR"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Create Pull Request
+        run: |
+          gh pr create --head beta --base main --title "Release Beta -> Main" --body "Automatically created to release beta into main" || true
