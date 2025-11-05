@@ -26,7 +26,7 @@
     "release": "semantic-release",
     "release:version": "pnpm version --workspaces --no-workspaces-update --no-git-tag-version --allow-same-version",
     "release:pack": "pnpm --filter home-assistant-matter-hub run bundle",
-    "release:publish": "cp apps/home-assistant-matter-hub/package.tgz package.tgz && pnpm publish package.tgz --provenance --no-git-checks --access public --loglevel verbose"
+    "release:publish": "pnpm publish apps/home-assistant-matter-hub/package.tgz --provenance --no-git-checks --access public --loglevel verbose"
   },
   "workspaces": [
     "apps/*",
