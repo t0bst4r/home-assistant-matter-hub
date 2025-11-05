@@ -8,12 +8,7 @@ updates:
       github-actions:
         patterns: ["*"]
   - package-ecosystem: npm
-    directories:
-      - "/"
-      - "apps/*"
-      - "packages/*"
-      - "utils/*"
-      - "docs/"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
