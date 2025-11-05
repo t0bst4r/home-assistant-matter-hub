@@ -137,14 +137,14 @@ jobs:
     name: "Dispatch Repositories"
     runs-on: ubuntu-latest
     needs: [release, docker]
-    if: needs.release.outputs.release-version != '' && false
+    if: needs.release.outputs.release-version != ''
     steps:
       - name: Dispatch Addon Repository
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.ADDON_REPOSITORY_PAT }}
           repository: "t0bst4r/home-assistant-addons"
-          event-type: release-hamh
+          event-type: release
           client-payload: |
             {
               "project": "hamh",
