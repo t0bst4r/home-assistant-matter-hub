@@ -38,8 +38,8 @@ export class FanControlServerBase extends FeaturedBase {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
     this.reactTo(
       this.events.percentSetting$Changed,
       this.targetPercentSettingChanged,
@@ -59,7 +59,7 @@ export class FanControlServerBase extends FeaturedBase {
     }
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
+  private update(entity: HomeAssistantEntityInformation) {
     const config = this.state.config;
     const percentage = config.getPercentage(entity.state, this.agent) ?? 0;
     const speedMax = Math.round(
@@ -72,7 +72,7 @@ export class FanControlServerBase extends FeaturedBase {
       ? FanMode.create(FanControl.FanMode.Auto, fanModeSequence)
       : FanMode.fromSpeedPercent(percentage, fanModeSequence);
 
-    await applyPatchState(this.state, {
+    applyPatchState(this.state, {
       percentSetting: percentage,
       percentCurrent: percentage,
       fanMode: fanMode.mode,

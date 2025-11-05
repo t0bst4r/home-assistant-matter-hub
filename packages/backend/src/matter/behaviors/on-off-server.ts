@@ -22,12 +22,12 @@ class OnOffServerBase extends FeaturedBase {
   override async initialize() {
     super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  protected async update({ state }: HomeAssistantEntityInformation) {
-    await applyPatchState(this.state, {
+  protected update({ state }: HomeAssistantEntityInformation) {
+    applyPatchState(this.state, {
       onOff: this.isOn(state),
     });
   }

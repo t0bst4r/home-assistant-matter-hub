@@ -52,7 +52,7 @@ export class ThermostatServerBase extends FeaturedBase {
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
 
-    await this.update(homeAssistant.entity);
+    this.update(homeAssistant.entity);
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     if (this.features.cooling) {
       this.reactTo(
@@ -66,10 +66,10 @@ export class ThermostatServerBase extends FeaturedBase {
         this.heatingSetpointChanged,
       );
     }
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
+  private update(entity: HomeAssistantEntityInformation) {
     const config = this.state.config;
     const minSetpointLimit = config
       .getMinTemperature(entity.state, this.agent)
@@ -92,7 +92,7 @@ export class ThermostatServerBase extends FeaturedBase {
     const systemMode = this.getSystemMode(entity);
     const runningMode = config.getRunningMode(entity.state, this.agent);
 
-    await applyPatchState(this.state, {
+    applyPatchState(this.state, {
       localTemperature: localTemperature,
       systemMode: systemMode,
       thermostatRunningState: this.getRunningState(systemMode, runningMode),

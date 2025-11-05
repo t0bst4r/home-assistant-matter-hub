@@ -57,11 +57,11 @@ export class WindowCoveringServerBase extends FeaturedBase {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
+  private update(entity: HomeAssistantEntityInformation) {
     const config = this.state.config;
     const state = entity.state as HomeAssistantEntityState;
     const movementStatus = config.getMovementStatus(state, this.agent);
@@ -82,7 +82,7 @@ export class WindowCoveringServerBase extends FeaturedBase {
     );
     const currentTilt100ths = currentTilt ? currentTilt * 100 : null;
 
-    await applyPatchState<WindowCoveringServerBase.State>(this.state, {
+    applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type:
         this.features.lift && this.features.tilt
           ? WindowCovering.WindowCoveringType.TiltBlindLift

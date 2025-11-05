@@ -20,12 +20,12 @@ class LockServerBase extends Base {
   override async initialize() {
     await super.initialize();
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-    await this.update(homeAssistant.entity);
-    this.reactTo(homeAssistant.onChange, this.update, { offline: true });
+    this.update(homeAssistant.entity);
+    this.reactTo(homeAssistant.onChange, this.update);
   }
 
-  private async update(entity: HomeAssistantEntityInformation) {
-    await applyPatchState(this.state, {
+  private update(entity: HomeAssistantEntityInformation) {
+    applyPatchState(this.state, {
       lockState: this.state.config.getLockState(entity.state, this.agent),
       lockType: DoorLock.LockType.DeadBolt,
       operatingMode: DoorLock.OperatingMode.Normal,

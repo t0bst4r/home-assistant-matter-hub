@@ -1,5 +1,3 @@
-import { Transaction } from "@matter/general";
-
 /**
  * Safely applies a patch to state, handling transaction contexts properly.
  *
@@ -7,17 +5,11 @@ import { Transaction } from "@matter/general";
  * asynchronously, avoiding "synchronous-transaction-conflict" errors when
  * called from within reactors or other transaction contexts.
  */
-export async function applyPatchState<T extends object>(
+export function applyPatchState<T extends object>(
   state: T,
   patch: Partial<T>,
-): Promise<Partial<T>> {
-  // Use Transaction.act to properly handle lock acquisition
-  return Transaction.act("applyPatchState", async (tx) => {
-    await tx.begin();
-    const result = applyPatch(state, patch);
-    await tx.commit();
-    return result;
-  });
+): Partial<T> {
+  return applyPatch(state, patch);
 }
 
 function applyPatch<T extends object>(state: T, patch: Partial<T>): Partial<T> {
