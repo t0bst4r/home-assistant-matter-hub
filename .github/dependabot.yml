@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      all-actions:
+      github-actions:
         patterns: ["*"]
   - package-ecosystem: npm
     directories:
@@ -13,8 +13,9 @@ updates:
       - "apps/*"
       - "packages/*"
       - "utils/*"
+      - "docs/"
     schedule:
       interval: "weekly"
     groups:
-      all-deps:
+      npm:
         patterns: ["*"]
