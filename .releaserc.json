@@ -6,7 +6,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "gh release download \"${lastRelease.version}\" -p \"CHANGELOG_FULL.md\" || echo \"No previous changelog found\""
+        "prepareCmd": "gh release download \"v${lastRelease.version}\" -p \"CHANGELOG_FULL.md\" || echo \"No previous changelog found\""
       }
     ],
     ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],

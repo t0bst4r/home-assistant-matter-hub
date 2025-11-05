@@ -18,6 +18,7 @@ jobs:
       contents: write
       packages: write
       id-token: write
+      issues: write
     name: Perform NPM Release
     runs-on: ubuntu-latest
     outputs:
@@ -119,7 +120,7 @@ jobs:
           channel: ${{ needs.release.outputs.release-channel }}
           dockerfile: ${{ matrix.dockerfile }}
           node-version: ${{ needs.release.outputs.node-version }}
-          package-version: run-${{ github.run_number }}
+          package-version: ${{ needs.release.outputs.release-version }}
 
   publish-pages:
     name: "Publish Documentation"
@@ -150,5 +151,5 @@ jobs:
               "project": "hamh",
               "channel": "${{needs.release.outputs.release-channel}}",
               "version": "${{needs.release.outputs.release-version}}" ,
-              "changelogUrl": "https://github.com/${{github.repository}}/releases/download/${{needs.release.outputs.release-version}}/CHANGELOG_FULL.md"
+              "changelogUrl": "https://github.com/${{github.repository}}/releases/download/v${{needs.release.outputs.release-version}}/CHANGELOG_FULL.md"
             }

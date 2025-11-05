@@ -74,3 +74,4 @@ jobs:
           dockerfile: ${{ matrix.dockerfile }}
           node-version: ${{ needs.verify.outputs.node-version }}
           package-version: run-${{ github.run_number }}
+          channel: "channel-run-${{ github.run_number }}"
