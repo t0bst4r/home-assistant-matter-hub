@@ -1,26 +1,31 @@
 import {
   type CoverDeviceAttributes,
   CoverDeviceState,
+  type CoverMappingOptions,
   type HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import type { Agent } from "@matter/main";
 import { WindowCovering } from "@matter/main/clusters";
+import type { Agent } from "@matter/main";
 import { BridgeDataProvider } from "../../../../../services/bridges/bridge-data-provider.js";
 import {
   type WindowCoveringConfig,
   WindowCoveringServer,
 } from "../../../../behaviors/window-covering-server.js";
+import { HomeAssistantEntityBehavior } from "../../../../behaviors/home-assistant-entity-behavior.js";
+import { getCoverMappingOptions } from "../index.js";
 
 const attributes = (entity: HomeAssistantEntityState) =>
   <CoverDeviceAttributes>entity.attributes;
 
-const adjustPosition = (position: number, agent: Agent) => {
-  const { featureFlags } = agent.env.get(BridgeDataProvider);
+const adjustPosition = (
+  position: number | undefined,
+  mapping: CoverMappingOptions,
+): number | null => {
   if (position == null) {
     return null;
   }
   let percentValue = position;
-  if (featureFlags?.coverDoNotInvertPercentage !== true) {
+  if (mapping.invertPercentage) {
     percentValue = 100 - percentValue;
   }
   return percentValue;
@@ -38,7 +43,14 @@ const config: WindowCoveringConfig = {
             ? 0
             : undefined;
     }
-    return position == null ? null : adjustPosition(position, agent);
+
+    const bridgeDataProvider = agent.env.get(BridgeDataProvider);
+    const mapping = getCoverMappingOptions(
+      { entity_id: entity.entity_id, state: entity },
+      bridgeDataProvider,
+    );
+
+    return adjustPosition(position, mapping);
   },
   getCurrentTiltPosition: (entity, agent) => {
     let position = attributes(entity).current_tilt_position;
@@ -51,7 +63,14 @@ const config: WindowCoveringConfig = {
             ? 0
             : undefined;
     }
-    return position == null ? null : adjustPosition(position, agent);
+
+    const bridgeDataProvider = agent.env.get(BridgeDataProvider);
+    const mapping = getCoverMappingOptions(
+      { entity_id: entity.entity_id, state: entity },
+      bridgeDataProvider,
+    );
+
+    return adjustPosition(position, mapping);
   },
   getMovementStatus: (entity) => {
     const coverState = entity.state as CoverDeviceState;
@@ -66,17 +85,37 @@ const config: WindowCoveringConfig = {
 
   openCoverLift: () => ({ action: "cover.open_cover" }),
   closeCoverLift: () => ({ action: "cover.close_cover" }),
-  setLiftPosition: (position, agent) => ({
-    action: "cover.set_cover_position",
-    data: { position: adjustPosition(position, agent) },
-  }),
+  setLiftPosition: (position: number, agent: Agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const entity = homeAssistant.entity.state;
+    const bridgeDataProvider = agent.env.get(BridgeDataProvider);
+    const mapping = getCoverMappingOptions(
+      { entity_id: entity.entity_id, state: entity },
+      bridgeDataProvider,
+    );
+
+    return {
+      action: "cover.set_cover_position",
+      data: { position: adjustPosition(position, mapping) },
+    };
+  },
 
   openCoverTilt: () => ({ action: "cover.open_cover_tilt" }),
   closeCoverTilt: () => ({ action: "cover.close_cover_tilt" }),
-  setTiltPosition: (position, agent) => ({
-    action: "cover.set_cover_tilt_position",
-    data: { tilt_position: adjustPosition(position, agent) },
-  }),
+  setTiltPosition: (position: number, agent: Agent) => {
+    const homeAssistant = agent.get(HomeAssistantEntityBehavior);
+    const entity = homeAssistant.entity.state;
+    const bridgeDataProvider = agent.env.get(BridgeDataProvider);
+    const mapping = getCoverMappingOptions(
+      { entity_id: entity.entity_id, state: entity },
+      bridgeDataProvider,
+    );
+
+    return {
+      action: "cover.set_cover_tilt_position",
+      data: { tilt_position: adjustPosition(position, mapping) },
+    };
+  },
 };
 
 export const CoverWindowCoveringServer = WindowCoveringServer(config);

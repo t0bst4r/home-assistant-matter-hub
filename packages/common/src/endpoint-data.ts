@@ -5,3 +5,11 @@ export interface EndpointData {
   state: object;
   parts: EndpointData[];
 }
+
+export interface CoverMappingOptions {
+  entityId: string;
+  deviceClass?: string;
+  inferredType?: "standard" | "garage" | "other";
+  invertPercentage?: boolean;
+  swapOpenClose?: boolean;
+}
