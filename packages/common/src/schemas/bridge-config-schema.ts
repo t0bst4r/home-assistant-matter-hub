@@ -58,6 +58,14 @@ const featureFlagSchema: JSONSchema7 = {
       type: "boolean",
       default: false,
     },
+
+    fixAlexaLightsOffBrightness: {
+      title: "Fix Alexa lights off brightness",
+      description:
+        "Enable the reporting of the last known brightness when lights are off (fixes turn on brightness)",
+      type: "boolean",
+      default: false,
+    },
   },
   additionalProperties: false,
 };

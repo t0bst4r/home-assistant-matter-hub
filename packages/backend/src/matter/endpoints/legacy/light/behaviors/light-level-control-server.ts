@@ -6,12 +6,20 @@ import {
   type LevelControlConfig,
   LevelControlServer,
 } from "../../../../behaviors/level-control-server.js";
+import { Agent } from "@matter/main";
+import { BridgeDataProvider } from "../../../../../services/bridges/bridge-data-provider.js";
 
 const config: LevelControlConfig = {
-  getValuePercent: (state: HomeAssistantEntityState<LightDeviceAttributes>) => {
+  getValuePercent: (state: HomeAssistantEntityState<LightDeviceAttributes>, agent: Agent) => {
+    const { featureFlags } = agent.env.get(BridgeDataProvider);
+
     const brightness = state.attributes.brightness;
     if (brightness) {
       return brightness / 255;
+    }
+
+    if (featureFlags && featureFlags.fixAlexaLightsOffBrightness === true) {
+      return null;
     }
     return 0.0;
   },
