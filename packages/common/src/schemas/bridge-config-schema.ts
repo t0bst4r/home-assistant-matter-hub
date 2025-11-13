@@ -62,7 +62,6 @@ const featureFlagSchema: JSONSchema7 = {
   additionalProperties: false,
 };
 
-
 export const bridgeConfigSchema: JSONSchema7 = {
   type: "object",
   title: "Bridge Config",

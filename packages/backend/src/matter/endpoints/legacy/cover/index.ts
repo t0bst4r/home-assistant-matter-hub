@@ -1,20 +1,20 @@
-import {
-  type CoverDeviceAttributes,
-  CoverSupportedFeatures,
-} from "@home-assistant-matter-hub/common";
 import type {
   CoverMappingOptions,
   HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
+import {
+  type CoverDeviceAttributes,
+  CoverSupportedFeatures,
+} from "@home-assistant-matter-hub/common";
 import type { EndpointType } from "@matter/main";
 import type { WindowCovering } from "@matter/main/clusters";
 import { WindowCoveringDevice } from "@matter/main/devices";
+import type { BridgeDataProvider } from "../../../../services/bridges/bridge-data-provider.js";
 import type { FeatureSelection } from "../../../../utils/feature-selection.js";
 import { testBit } from "../../../../utils/test-bit.js";
 import { BasicInformationServer } from "../../../behaviors/basic-information-server.js";
 import { HomeAssistantEntityBehavior } from "../../../behaviors/home-assistant-entity-behavior.js";
 import { IdentifyServer } from "../../../behaviors/identify-server.js";
-import { BridgeDataProvider } from "../../../../services/bridges/bridge-data-provider.js";
 import { CoverWindowCoveringServer } from "./behaviors/cover-window-covering-server.js";
 
 const CoverDeviceType = (supportedFeatures: number) => {
@@ -72,8 +72,7 @@ export function getCoverMappingOptions(
   const inferredType: CoverMappingOptions["inferredType"] =
     deviceClass === "garage" ? "garage" : "standard";
 
-  const globalInvert =
-    featureFlags?.coverDoNotInvertPercentage === true ? false : true;
+  const globalInvert = !featureFlags?.coverDoNotInvertPercentage;
 
   let invertPercentage: boolean;
 

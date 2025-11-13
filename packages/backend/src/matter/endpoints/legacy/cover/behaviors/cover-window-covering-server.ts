@@ -4,14 +4,14 @@ import {
   type CoverMappingOptions,
   type HomeAssistantEntityState,
 } from "@home-assistant-matter-hub/common";
-import { WindowCovering } from "@matter/main/clusters";
 import type { Agent } from "@matter/main";
+import { WindowCovering } from "@matter/main/clusters";
 import { BridgeDataProvider } from "../../../../../services/bridges/bridge-data-provider.js";
+import { HomeAssistantEntityBehavior } from "../../../../behaviors/home-assistant-entity-behavior.js";
 import {
   type WindowCoveringConfig,
   WindowCoveringServer,
 } from "../../../../behaviors/window-covering-server.js";
-import { HomeAssistantEntityBehavior } from "../../../../behaviors/home-assistant-entity-behavior.js";
 import { getCoverMappingOptions } from "../index.js";
 
 const attributes = (entity: HomeAssistantEntityState) =>
