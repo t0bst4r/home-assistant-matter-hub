@@ -7,12 +7,21 @@ interface AllBridgeFeatureFlags {
 
 export type BridgeFeatureFlags = Partial<AllBridgeFeatureFlags>;
 
+export interface CoverEntityOptions {
+  readonly invertDirection?: boolean;
+}
+
+export interface BridgeCoverEntityOptions {
+  readonly [entityId: string]: CoverEntityOptions;
+}
+
 export interface BridgeConfig {
   readonly name: string;
   readonly port: number;
   readonly filter: HomeAssistantFilter;
   readonly featureFlags?: BridgeFeatureFlags;
   readonly countryCode?: string;
+  readonly coverEntityOptions?: BridgeCoverEntityOptions;
 }
 
 export interface CreateBridgeRequest extends BridgeConfig {}

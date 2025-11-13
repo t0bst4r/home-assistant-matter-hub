@@ -1,5 +1,6 @@
 import type {
   BridgeBasicInformation,
+  BridgeCoverEntityOptions,
   BridgeData,
   BridgeFeatureFlags,
   BridgeStatus,
@@ -47,10 +48,21 @@ export class BridgeDataProvider extends Service implements BridgeData {
   get countryCode(): string | undefined {
     return this.data.countryCode;
   }
+  get coverEntityOptions(): BridgeCoverEntityOptions | undefined {
+    return this.data.coverEntityOptions;
+  }
 
   /************************************************
    * Functions
    ************************************************/
+  getCoverOverride(
+    entityId: string,
+  ): { invertDirection?: boolean } | undefined {
+    const options = this.data.coverEntityOptions;
+    if (!options) return undefined;
+    return options[entityId];
+  }
+
   update(data: UpdateBridgeRequest) {
     if (this.id !== data.id) {
       throw new Error("ID of update request does not match bridge data id.");
