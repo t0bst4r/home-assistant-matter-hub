@@ -1,6 +1,7 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
 import { LevelControlServer as Base } from "@matter/main/behaviors";
-import type { LevelControl } from "@matter/main/clusters/level-control";
+import { LevelControl } from "@matter/main/clusters/level-control";
+import { cropValueRange } from "@matter/general";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
@@ -64,6 +65,36 @@ export class LevelControlServerBase extends FeaturedBase {
     }
     homeAssistant.callAction(
       config.moveToLevelPercent(levelPercent, this.agent),
+    );
+  }
+
+  override stepLogic(stepMode: LevelControl.StepMode, stepSize: number) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const config = this.state.config;
+
+    const levelRange = this.maxLevel - this.minLevel;
+
+    const currentPercent = config.getValuePercent(
+      homeAssistant.entity.state,
+      this.agent,
+    );
+    if (!currentPercent) {
+      return;
+    }
+    const currentLevel = currentPercent * levelRange;
+
+    const direction = stepMode === LevelControl.StepMode.Up ? 1 : -1;
+    const targetLevel = cropValueRange(
+      this.currentLevel + stepSize * direction,
+      this.minLevel,
+      this.maxLevel,
+    );
+    if (currentLevel === targetLevel) {
+      return;
+    }
+    const targetPercent = (targetLevel - this.minLevel) / levelRange;
+    homeAssistant.callAction(
+      config.moveToLevelPercent(targetPercent, this.agent),
     );
   }
 }
