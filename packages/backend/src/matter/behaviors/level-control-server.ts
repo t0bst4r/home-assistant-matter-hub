@@ -1,7 +1,7 @@
 import type { HomeAssistantEntityInformation } from "@home-assistant-matter-hub/common";
+import { cropValueRange } from "@matter/general";
 import { LevelControlServer as Base } from "@matter/main/behaviors";
 import { LevelControl } from "@matter/main/clusters/level-control";
-import { cropValueRange } from "@matter/general";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import type { FeatureSelection } from "../../utils/feature-selection.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";

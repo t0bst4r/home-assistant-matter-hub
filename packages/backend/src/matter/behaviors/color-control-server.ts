@@ -2,9 +2,9 @@ import {
   ColorConverter,
   type HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
+import { cropValueRange } from "@matter/general";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
-import { cropValueRange } from "@matter/general";
 import type { ColorInstance } from "color";
 import { applyPatchState } from "../../utils/apply-patch-state.js";
 import { HomeAssistantEntityBehavior } from "./home-assistant-entity-behavior.js";
