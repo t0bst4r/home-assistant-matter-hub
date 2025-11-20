@@ -132,7 +132,11 @@ export class ColorControlServerBase extends FeaturedBase {
       current,
       this.agent,
     );
-    if (!currentKelvin || !minimumKelvin || !maximumKelvin) {
+    if (
+      currentKelvin == null ||
+      minimumKelvin == null ||
+      maximumKelvin == null
+    ) {
       return;
     }
 

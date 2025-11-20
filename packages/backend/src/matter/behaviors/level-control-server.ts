@@ -78,7 +78,7 @@ export class LevelControlServerBase extends FeaturedBase {
       homeAssistant.entity.state,
       this.agent,
     );
-    if (!currentPercent) {
+    if (currentPercent == null) {
       return;
     }
     const currentLevel = currentPercent * levelRange;
