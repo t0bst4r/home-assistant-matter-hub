@@ -1,7 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "utils/*"
   - "docs"
 
 # see: https://github.com/t0bst4r/home-assistant-matter-hub/security/dependabot

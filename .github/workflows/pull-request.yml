@@ -13,7 +13,7 @@ jobs:
     outputs:
       node-version: ${{ steps.setup.outputs.node-version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -43,7 +43,7 @@ jobs:
     outputs:
       dockerfiles: ${{ steps.dockerfiles.outputs.dockerfiles }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Find Dockerfiles
         id: dockerfiles
         uses: ./.github/actions/find-dockerfiles
@@ -56,7 +56,7 @@ jobs:
       matrix:
         dockerfile: ${{ fromJSON(needs.prepare-docker.outputs.dockerfiles) }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Docker
         uses: ./.github/actions/setup-docker
