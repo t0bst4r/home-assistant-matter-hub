@@ -2,6 +2,7 @@ import {
   ColorConverter,
   type HomeAssistantEntityInformation,
 } from "@home-assistant-matter-hub/common";
+import { cropValueRange } from "@matter/general";
 import { ColorControlServer as Base } from "@matter/main/behaviors/color-control";
 import { ColorControl } from "@matter/main/clusters";
 import type { ColorInstance } from "color";
@@ -102,6 +103,53 @@ export class ColorControlServerBase extends FeaturedBase {
       this.agent,
     );
     const targetKelvin = ColorConverter.temperatureMiredsToKelvin(targetMireds);
+
+    if (currentKelvin === targetKelvin) {
+      return;
+    }
+
+    const action = this.state.config.setTemperature(targetKelvin, this.agent);
+    homeAssistant.callAction(action);
+  }
+
+  override stepColorTemperatureLogic(
+    stepMode: ColorControl.StepMode,
+    stepSize: number,
+  ) {
+    const homeAssistant = this.agent.get(HomeAssistantEntityBehavior);
+    const current = homeAssistant.entity.state;
+    const currentKelvin = this.state.config.getCurrentKelvin(
+      current,
+      this.agent,
+    );
+
+    //Get range from the entity because the actual parameter value is 0
+    const minimumKelvin = this.state.config.getMinColorTempKelvin(
+      current,
+      this.agent,
+    );
+    const maximumKelvin = this.state.config.getMaxColorTempKelvin(
+      current,
+      this.agent,
+    );
+    if (
+      currentKelvin == null ||
+      minimumKelvin == null ||
+      maximumKelvin == null
+    ) {
+      return;
+    }
+
+    const currentMireds =
+      ColorConverter.temperatureKelvinToMireds(currentKelvin);
+
+    const direction = stepMode === ColorControl.StepMode.Up ? 1 : -1;
+    const targetMireds = currentMireds + stepSize * direction;
+    const targetKelvin = cropValueRange(
+      ColorConverter.temperatureMiredsToKelvin(targetMireds),
+      minimumKelvin,
+      maximumKelvin,
+    );
 
     if (currentKelvin === targetKelvin) {
       return;
