@@ -76,11 +76,11 @@ export class WindowCoveringServerBase extends FeaturedBase {
     const currentLift = normalize(
       config.getCurrentLiftPosition(state, this.agent),
     );
-    const currentLift100ths = currentLift ? currentLift * 100 : null;
+    const currentLift100ths = currentLift != null ? currentLift * 100 : null;
     const currentTilt = normalize(
       config.getCurrentTiltPosition(state, this.agent),
     );
-    const currentTilt100ths = currentTilt ? currentTilt * 100 : null;
+    const currentTilt100ths = currentTilt != null ? currentTilt * 100 : null;
 
     applyPatchState<WindowCoveringServerBase.State>(this.state, {
       type:
