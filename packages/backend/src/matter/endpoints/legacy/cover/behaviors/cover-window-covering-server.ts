@@ -31,12 +31,23 @@ const config: WindowCoveringConfig = {
     let position = attributes(entity).current_position;
     if (position == null) {
       const coverState = entity.state as CoverDeviceState;
-      position =
-        coverState === CoverDeviceState.closed
-          ? 100
-          : coverState === CoverDeviceState.open
+
+      const isGarage = (attributes(entity) as any).device_class === "garage";
+      if (isGarage) {
+        position =
+          coverState === CoverDeviceState.closed
             ? 0
-            : undefined;
+            : coverState === CoverDeviceState.open
+              ? 100
+              : undefined;
+      } else {
+        position =
+          coverState === CoverDeviceState.closed
+            ? 100
+            : coverState === CoverDeviceState.open
+              ? 0
+              : undefined;
+      }
     }
     return position == null ? null : adjustPosition(position, agent);
   },
