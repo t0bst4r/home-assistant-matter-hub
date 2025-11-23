@@ -2,7 +2,7 @@ ARG NODE_VERSION="22"
 
 FROM node:${NODE_VERSION}-alpine AS nodebuild
 
-FROM ghcr.io/hassio-addons/base:stable
+FROM ghcr.io/hassio-addons/base:18.2.1
 
 # Install Node.js
 RUN apk add --no-cache libstdc++ bash
