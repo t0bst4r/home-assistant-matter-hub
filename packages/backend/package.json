@@ -21,7 +21,7 @@
     "express": "5.1.0",
     "express-basic-auth": "1.2.1",
     "express-ip-access-control": "1.1.3",
-    "home-assistant-js-websocket": "9.5.0",
+    "home-assistant-js-websocket": "9.6.0",
     "lodash-es": "4.17.21",
     "nocache": "4.0.0",
     "rxjs": "7.8.2",
