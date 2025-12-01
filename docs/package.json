@@ -8,6 +8,6 @@
     "cleanup": "npx rimraf _build"
   },
   "dependencies": {
-    "mystmd": "^1.6.6"
+    "mystmd": "^1.6.7"
   }
 }
