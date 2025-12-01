@@ -20,7 +20,7 @@
     "@mui/material": "^7.3.5",
     "@mui/icons-material": "^7.3.5",
     "@mui/x-tree-view": "^8.19.0",
-    "@reduxjs/toolkit": "^2.10.1",
+    "@reduxjs/toolkit": "^2.11.0",
     "@rjsf/core": "^6.1.2",
     "@rjsf/mui": "^6.1.2",
     "@rjsf/utils": "^6.1.2",
@@ -39,11 +39,11 @@
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
     "react-router": "^7.9.6",
-    "rehype-github-alerts": "^4.1.1"
+    "rehype-github-alerts": "^4.2.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.21",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/json-schema": "^7.0.15",
     "@vitejs/plugin-react-swc": "^4.2.2",
