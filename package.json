@@ -34,7 +34,7 @@
     "docs"
   ],
   "devDependencies": {
-    "@biomejs/biome": "^2.3.7",
+    "@biomejs/biome": "^2.3.8",
     "@dotenvx/dotenvx": "^1.51.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
@@ -45,16 +45,16 @@
     "@swc/core": "~1.15.3",
     "@swc/helpers": "~0.5.17",
     "conventional-changelog-conventionalcommits": "^9.1.0",
-    "esbuild": "^0.27.0",
+    "esbuild": "^0.27.1",
     "esbuild-plugin-noexternal": "^0.1.6",
     "globals": "^16.5.0",
     "nodemon": "^3.1.11",
     "npm-check-updates": "^19.1.2",
     "rimraf": "^6.1.2",
     "semantic-release": "^25.0.2",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.4",
-    "vitest": "^4.0.13"
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15"
   }
 }
