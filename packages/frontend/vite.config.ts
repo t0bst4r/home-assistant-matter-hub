@@ -11,6 +11,9 @@ export default defineConfig({
       "/api": "http://localhost:8482",
     },
   },
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.APP_VERSION || "0.0.0-dev"),
+  },
   plugins: [react(), svgr(), markdown()],
 });
 

@@ -23,7 +23,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm run release:version ${nextRelease.version} && pnpm run release:pack",
+        "prepareCmd": "APP_VERSION=${nextRelease.version} pnpm run release:version ${nextRelease.version} && APP_VERSION=${nextRelease.version} pnpm run release:pack",
         "publishCmd": "CHANNEL='${nextRelease.channel}' pnpm run release:publish"
       }
     ],
