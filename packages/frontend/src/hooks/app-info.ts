@@ -8,7 +8,7 @@ export interface AppInfo {
 
 export function useAppInfo(): AppInfo {
   return useMemo(
-    () => ({ name: packageJson.name, version: packageJson.version }),
+    () => ({ name: packageJson.name, version: __APP_VERSION__ }),
     [],
   );
 }
