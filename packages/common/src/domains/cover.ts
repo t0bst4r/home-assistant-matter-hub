@@ -8,6 +8,7 @@ export interface CoverDeviceAttributes {
   current_position?: number;
   current_tilt_position?: number;
   supported_features?: number;
+  device_class?: string;
 }
 
 export const CoverSupportedFeatures = {
