@@ -95,15 +95,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package.tgz
-          path: .  # Downloads package.tgz directly into the root workspace
+          # PLACE IT INSIDE THE APP FOLDER
+          path: apps/home-assistant-matter-hub/
 
       - name: Build and Push to GHCR
         uses: docker/build-push-action@v5
         with:
-          context: .
+          # RUN THE BUILD FROM THE APP FOLDER
+          context: apps/home-assistant-matter-hub
           file: ${{ matrix.dockerfile }}
           push: true
-          # Dynamically tags the image with your username and input version
           tags: |
             ghcr.io/${{ github.repository_owner }}/home-assistant-matter-hub-addon:${{ github.event.inputs.version }}
             ghcr.io/${{ github.repository_owner }}/home-assistant-matter-hub-addon:latest
