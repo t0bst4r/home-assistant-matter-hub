@@ -1,0 +1,100 @@
+name: Manual Build and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., 3.0.4-alpha)'
+        required: true
+        default: '3.0.4-alpha'
+      channel:
+        description: 'Channel (alpha, beta, latest)'
+        required: true
+        default: 'alpha'
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  verify:
+    name: "Verify Code"
+    runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.setup.outputs.node-version }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        id: setup
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm run test
+      - name: Build
+        run: pnpm run build
+
+      - name: Package Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/package.tgz
+
+  prepare-docker:
+    name: "Prepare Docker"
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.dockerfiles.outputs.dockerfiles }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Find Dockerfiles
+        id: dockerfiles
+        uses: ./.github/actions/find-dockerfiles
+
+  docker:
+    name: "Build Docker"
+    runs-on: ubuntu-24.04-arm
+    needs: [prepare-docker, verify]
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        dockerfile: ${{ fromJSON(needs.prepare-docker.outputs.dockerfiles) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+
+      - name: Package Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: package.tgz
+          path: apps/home-assistant-matter-hub/
+          merge-multiple: true
+
+      - name: Build Docker
+        uses: ./.github/actions/docker
+        with:
+          push: true
+          dockerfile: ${{ matrix.dockerfile }}
+          node-version: ${{ needs.verify.outputs.node-version }}
+          # Uses the version from the manual input, or a generic name if run via PR
+          package-version: ${{ github.event.inputs.version || format('run-{0}', github.run_number) }}
+          channel: ${{ github.event.inputs.channel || 'alpha' }}
