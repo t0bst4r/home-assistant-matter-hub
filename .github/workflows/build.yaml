@@ -10,7 +10,7 @@ on:
       channel:
         description: 'Channel (alpha, beta, latest)'
         required: true
-        default: 'alpha'
+        default: 'latest'
 
 permissions:
   contents: read
