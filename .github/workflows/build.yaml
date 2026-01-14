@@ -18,20 +18,36 @@ permissions:
 
 jobs:
   verify:
-    name: "Verify Code"
+    name: "Verify and Build App"
     runs-on: ubuntu-latest
     outputs:
       node-version: ${{ steps.setup.outputs.node-version }}
     steps:
-      - uses: actions/checkout@v4 # Reverted to v4 for stability
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         id: setup
+
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
       - name: Build App
         run: pnpm run build
+
       - name: Package Artifact
+        run: |
+          # Ensure the file exists before uploading
+          if [ -f apps/home-assistant-matter-hub/package.tgz ]; then
+            echo "Artifact found, proceeding to upload."
+          else
+            echo "Error: package.tgz not found in expected directory!"
+            exit 1
+          fi
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: package.tgz
@@ -49,13 +65,14 @@ jobs:
         uses: ./.github/actions/find-dockerfiles
 
   docker:
-    name: "Build Docker"
+    name: "Build and Push Docker Image"
     runs-on: ubuntu-latest
     needs: [prepare-docker, verify]
     permissions:
       packages: write
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         dockerfile: ${{ fromJSON(needs.prepare-docker.outputs.dockerfiles) }}
     steps:
@@ -74,19 +91,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download Artifact
+      - name: Download App Artifact
         uses: actions/download-artifact@v4
         with:
           name: package.tgz
-          path: apps/home-assistant-matter-hub/
+          path: .  # Downloads package.tgz directly into the root workspace
 
-      - name: Build and Push
+      - name: Build and Push to GHCR
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          # THIS IS THE FIX: It uses YOUR username dynamically
+          # Dynamically tags the image with your username and input version
           tags: |
             ghcr.io/${{ github.repository_owner }}/home-assistant-matter-hub-addon:${{ github.event.inputs.version }}
             ghcr.io/${{ github.repository_owner }}/home-assistant-matter-hub-addon:latest
