@@ -1,6 +1,6 @@
 # Home-Assistant-Matter-Hub
 
-!["Home-Assistant-Matter-Hub"](./packages/docs/assets/hamh-logo-small.png)
+!["Home-Assistant-Matter-Hub"](./docs/assets/hamh-logo-small.png)
 
 ---
 
