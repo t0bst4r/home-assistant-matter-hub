@@ -19,6 +19,7 @@ export enum ClusterId {
 
   identify = "identify",
   groups = "groups",
+  scenesManagement = "scenesManagement",
 
   bridgedDeviceBasicInformation = "bridgedDeviceBasicInformation",
 

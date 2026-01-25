@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import type { BridgeData } from "@home-assistant-matter-hub/common";
 import { AggregatorEndpoint } from "@matter/main/endpoints";
 import { type Node, ServerNode } from "@matter/main/node";
+import { VendorId } from "@matter/main/types";
 import { trimToLength } from "../trim-to-length.js";
 
 export type BridgeServerNodeConfig =
@@ -23,7 +24,7 @@ export function createBridgeServerConfig(
     basicInformation: {
       uniqueId: data.id,
       nodeLabel: trimToLength(data.name, 32, "..."),
-      vendorId: data.basicInformation.vendorId,
+      vendorId: VendorId(data.basicInformation.vendorId),
       vendorName: data.basicInformation.vendorName,
       productId: data.basicInformation.productId,
       productName: data.basicInformation.productName,

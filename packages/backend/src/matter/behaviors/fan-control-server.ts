@@ -124,7 +124,7 @@ export class FanControlServerBase extends FeaturedBase {
   private targetFanModeChanged(
     fanMode: FanControl.FanMode,
     _oldValue: FanControl.FanMode,
-    context: ActionContext,
+    context?: ActionContext,
   ) {
     if (transactionIsOffline(context)) {
       return;
@@ -174,7 +174,7 @@ export class FanControlServerBase extends FeaturedBase {
   private targetAirflowDirectionChanged(
     airflowDirection: AirflowDirection,
     _oldValue: AirflowDirection,
-    context: ActionContext,
+    context?: ActionContext,
   ) {
     if (transactionIsOffline(context)) {
       return;

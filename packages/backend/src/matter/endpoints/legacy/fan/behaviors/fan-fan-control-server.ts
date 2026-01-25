@@ -21,7 +21,7 @@ const fanControlConfig: FanControlServerConfig = {
       ? FanControl.AirflowDirection.Forward
       : attributes(state).current_direction === FanDeviceDirection.REVERSE
         ? FanControl.AirflowDirection.Reverse
-        : undefined,
+        : FanControl.AirflowDirection.Forward,
   isInAutoMode: (state) => attributes(state).preset_mode === "Auto",
 
   turnOff: () => ({ action: "fan.turn_off" }),
