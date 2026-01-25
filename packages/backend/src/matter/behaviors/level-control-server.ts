@@ -30,7 +30,9 @@ export class LevelControlServerBase extends FeaturedBase {
     const maxLevel = 0xfe;
     const levelRange = maxLevel - minLevel;
 
-    const currentLevelPercent = config.getValuePercent(state, this.agent);
+    const currentLevelPercent =
+      config.getValuePercent(state, this.agent) ??
+      this.state.currentLevelPercent;
     let currentLevel =
       currentLevelPercent != null
         ? currentLevelPercent * levelRange + minLevel
@@ -44,6 +46,7 @@ export class LevelControlServerBase extends FeaturedBase {
       minLevel: minLevel,
       maxLevel: maxLevel,
       currentLevel: currentLevel,
+      currentLevelPercent: currentLevelPercent,
       onLevel: currentLevel ?? this.state.onLevel,
     });
   }
@@ -71,6 +74,7 @@ export class LevelControlServerBase extends FeaturedBase {
 export namespace LevelControlServerBase {
   export class State extends FeaturedBase.State {
     config!: LevelControlConfig;
+    currentLevelPercent: number | null = null;
   }
 }
 

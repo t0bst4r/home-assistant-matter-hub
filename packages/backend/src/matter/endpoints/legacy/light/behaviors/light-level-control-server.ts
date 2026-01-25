@@ -10,7 +10,7 @@ import {
 const config: LevelControlConfig = {
   getValuePercent: (state: HomeAssistantEntityState<LightDeviceAttributes>) => {
     const brightness = state.attributes.brightness;
-    if (brightness) {
+    if (brightness != null) {
       return brightness / 255;
     }
     return null;

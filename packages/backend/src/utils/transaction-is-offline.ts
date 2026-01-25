@@ -1,8 +1,8 @@
-import type {ActionContext} from "@matter/main";
-import {hasLocalActor} from "@matter/main/protocol";
+import type { ActionContext } from "@matter/main";
+import { hasLocalActor } from "@matter/main/protocol";
 
 export function transactionIsOffline(
-    context: ActionContext | undefined | null,
+  context: ActionContext | undefined | null,
 ) {
-    return !context || hasLocalActor(context)
+  return !context || hasLocalActor(context);
 }
