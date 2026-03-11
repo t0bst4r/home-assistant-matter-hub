@@ -62,7 +62,7 @@ jobs:
           cat "$GITHUB_OUTPUT"
 
       - name: Package Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: package.tgz
           path: apps/home-assistant-matter-hub/package.tgz
@@ -100,14 +100,14 @@ jobs:
         uses: ./.github/actions/setup-docker
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: package.tgz
           path: apps/home-assistant-matter-hub/
