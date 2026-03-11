@@ -24,6 +24,10 @@
 >
 > Thank you to everyone who used, tested, and contributed to this project ❤️
 
+---
+
+> [!IMPORTANT]
+> You should definitely consider switching to [RiDDiX/home-assistant-matter-hub](https://github.com/RiDDiX/home-assistant-matter-hub/) !
 
 ---
 
