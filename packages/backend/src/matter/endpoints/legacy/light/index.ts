@@ -15,6 +15,12 @@ const brightnessModes: LightDeviceColorMode[] = Object.values(
   .filter((mode) => mode !== LightDeviceColorMode.UNKNOWN)
   .filter((mode) => mode !== LightDeviceColorMode.ONOFF);
 
+const chromaticColorModes: LightDeviceColorMode[] = [
+  LightDeviceColorMode.HS,
+  LightDeviceColorMode.RGB,
+  LightDeviceColorMode.XY,
+];
+
 const colorModes: LightDeviceColorMode[] = [
   LightDeviceColorMode.HS,
   LightDeviceColorMode.RGB,
@@ -36,7 +42,9 @@ export function LightDevice(
   );
   const supportsColorControl =
     !!attributes.hs_color ||
-    supportedColorModes.some((mode) => colorModes.includes(mode));
+    !!attributes.rgb_color ||
+    !!attributes.xy_color ||
+    supportedColorModes.some((mode) => chromaticColorModes.includes(mode));
   const supportsColorTemperature = supportedColorModes.includes(
     LightDeviceColorMode.COLOR_TEMP,
   );
